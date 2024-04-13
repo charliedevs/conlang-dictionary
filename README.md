@@ -1,21 +1,113 @@
-# Create T3 App
+# Conlang Dictionary
+
+A web app to store and share your conlangs (constructed languages). 
+
+Read more about conlangs at [conlang.org](https://conlang.org).
+
+## Table of Contents
+
+-   [Features](#features)
+-   [Technologies](#technologies)
+-   [Getting Started](#getting-started)
+    -   [Prerequisites](#prerequisites)
+    -   [Setup](#setup)
+    -   [Deployment](#deployment)
+-   [Contributing](#contributing)
+-   [Learn More](#learn-more)
+-   [Acknowledgements](#acknowledgements)
+
+## Features
+
+- **Create and manage conlangs:** Users can add multiple conlangs, each with a lexicon and grammar rules.
+- **Share conlangs:** Conlangs can be publicly shared with others to view, download, or collaborate on.
+- **Responsive design:** Accessible from any device, providing a consistent experience on desktops, tablets, and mobile.
+
+## Technologies
+
+This project uses the following technologies:
+
+- **[Next.js](https://nextjs.org)**: The React framework for production.
+- **[Tailwind CSS](https://tailwindcss.com)**: A utility-first CSS framework for rapid UI development.
+- **[Prisma](https://prisma.io)**: Next-gen ORM for Node.js and TypeScript.
+- **[tRPC](https://trpc.io)**: End-to-end typesafe APIs made easy.
+- **[PostgreSQL](https://www.postgresql.org/)**: The world's most advanced open source relational database.
+- **[Vercel](https://vercel.com)**: Platform for frontend frameworks and static sites, integrated with GitHub for continuous deployment.
+
+
+
+## Getting Started
+
+Get a local copy of this project up and running by following these steps:
+
+### Prerequisites
+
+Make sure you have the following technologies installed on your system:
+
+- [Git](https://github.com/git-guides/install-git)
+- [Node.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+
+### Setup
+
+1. **Clone the repo**
+    ```bash
+    git clone https://github.com/charliedevs/conlang-dictionary.git
+    cd conlang-dictionary
+    ```
+    > **Note:** You may want to fork this project on github to simplify deployment and avoid needing a local db. In that case, replace the url above with the url of your own forked repo.
+2. **Install depedencies**
+    ```bash
+    npm install
+    ```
+3. **Set up environment variables**
+    ```
+    Create a .env file in the root directiory and add the following:
+    POSTGRES_PRISMA_URL="your-database-url"
+    ```
+    > **Note:** If you're using vercel for deployment and DB, follow the steps in the `.env.example` file in this repo. You can set up a vercel account for free and connect it to your own github repo hosting a fork of this project.
+4. **Run the development server**
+    ```bash
+    npm run dev
+    ```
+    Navigate to **`http://localhost:3000`**. The app wil automatically reload if you change any of the source files.
+
+### Deployment
+This project is configured for deployment on Vercel, which simplifies deploying Next.js apps. To deploy:
+
+1. **Push your changes to GitHub**
+    ```bash
+    git add .
+    git commit -m "Add a meaningful commit message describing your changes"
+    git push origin main # or another branch
+    ```
+2. **Deploy on Vercel**
+    - Go to [Vercel](https://vercel.com/) and sign in with your GitHub account.
+    - Click on "New Project" and select your repository.
+    - Follow the provided instructions to deploy.
+    - Click on Storage under your project and "Create Database" (this project uses Postgres)
+    - Connect your Vercel project to your new database
+
+Vercel will automatically build and deploy your app when changes are pushed to your repository.
+
+## Contributing
+
+This is an open-source project. Any contributions you make are **greatly appreciated.**
+
+1. **Fork the Project**
+2. **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
+4. **Push to the Branch** (`git push origin feature/AmazingFeature`)
+5. **Open a Pull Request**
+
+## Learn More
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
-## What's next? How do I make an app with this?
-
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+If you are not familiar with the different technologies used in this project, please refer to the respective docs.
 
 - [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
 - [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
-
-## Learn More
 
 To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
 
@@ -24,6 +116,28 @@ To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the fo
 
 You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
-## How do I deploy this?
+## Acknowledgements
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+This project couldn't have been created without the direction of Jessie Peterson and David Peterson, along with the amazing community of conlangers at LangTime Studio. Check out their content below:
+
+- [LangTime Studio (YouTube)](https://www.youtube.com/c/LangTimeStudio)
+- [LangTime Chat](https://chat.langtimestudio.com)
+- [LangTime Patreon](https://www.patreon.com/langtimestudio)
+
+<small>
+Copyright © 2024 Charles Davis
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+</small>
+
