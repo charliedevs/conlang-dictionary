@@ -1,20 +1,20 @@
 # Conlang Dictionary
 
-A web app to store and share your conlangs (constructed languages). 
+A web app to store and share your conlangs (constructed languages).
 
 Read more about conlangs at [conlang.org](https://conlang.org).
 
 ## Table of Contents
 
--   [Features](#features)
--   [Technologies](#technologies)
--   [Getting Started](#getting-started)
-    -   [Prerequisites](#prerequisites)
-    -   [Setup](#setup)
-    -   [Deployment](#deployment)
--   [Contributing](#contributing)
--   [Learn More](#learn-more)
--   [Acknowledgements](#acknowledgements)
+- [Features](#features)
+- [Technologies](#technologies)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Setup](#setup)
+  - [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Learn More](#learn-more)
+- [Acknowledgements](#acknowledgements)
 
 ## Features
 
@@ -32,8 +32,7 @@ This project uses the following technologies:
 - **[tRPC](https://trpc.io)**: End-to-end typesafe APIs made easy.
 - **[PostgreSQL](https://www.postgresql.org/)**: The world's most advanced open source relational database.
 - **[Vercel](https://vercel.com)**: Platform for frontend frameworks and static sites, integrated with GitHub for continuous deployment.
-
-
+- **[Clerk](https://clerk.dev)**: Easy-to-use authentication and user management that works out of the box with Next.js.
 
 ## Getting Started
 
@@ -45,46 +44,54 @@ Make sure you have the following technologies installed on your system:
 
 - [Git](https://github.com/git-guides/install-git)
 - [Node.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- [VS Code](https://code.visualstudio.com)
 
 ### Setup
 
 1. **Clone the repo**
-    ```bash
-    git clone https://github.com/charliedevs/conlang-dictionary.git
-    cd conlang-dictionary
-    ```
-    > **Note:** You may want to fork this project on github to simplify deployment and avoid needing a local db. In that case, replace the url above with the url of your own forked repo.
+   ```bash
+   git clone https://github.com/charliedevs/conlang-dictionary.git
+   cd conlang-dictionary
+   ```
+   > **Note:** Consider forking this project on GitHub to simplify local development and deployment. In that case, replace the url above with the url of your own forked repo. You can set up a vercel account for free and connect it to your own github repo hosting a fork of this project.
 2. **Install depedencies**
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 3. **Set up environment variables**
-    ```
-    Create a .env file in the root directiory and add the following:
-    POSTGRES_PRISMA_URL="your-database-url"
-    ```
-    > **Note:** If you're using vercel for deployment and DB, follow the steps in the `.env.example` file in this repo. You can set up a vercel account for free and connect it to your own github repo hosting a fork of this project.
+   Copy `.env.example` to `.env` and populate it with your actual data. The following environment variables are needed:
+   ```
+   POSTGRES_PRISMA_URL="your-database-url"
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
+   CLERK_SECRET_KEY="your-clerk-secret-key"
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/"
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/"
+   ```
+   > **Note:** Never commit secrets directly to the repository. Always use environment variables and keep sensitive data out of your codebase.
 4. **Run the development server**
-    ```bash
-    npm run dev
-    ```
-    Navigate to **`http://localhost:3000`**. The app wil automatically reload if you change any of the source files.
+   ```bash
+   npm run dev
+   ```
+   Navigate to **`http://localhost:3000`**. The app wil automatically reload if you change any of the source files.
 
 ### Deployment
+
 This project is configured for deployment on Vercel, which simplifies deploying Next.js apps. To deploy:
 
 1. **Push your changes to GitHub**
-    ```bash
-    git add .
-    git commit -m "Add a meaningful commit message describing your changes"
-    git push origin main # or another branch
-    ```
+   ```bash
+   git add .
+   git commit -m "Add a meaningful commit message describing your changes"
+   git push origin main # or another branch
+   ```
 2. **Deploy on Vercel**
-    - Go to [Vercel](https://vercel.com/) and sign in with your GitHub account.
-    - Click on "New Project" and select your repository.
-    - Follow the provided instructions to deploy.
-    - Click on Storage under your project and "Create Database" (this project uses Postgres)
-    - Connect your Vercel project to your new database
+   - Go to [Vercel](https://vercel.com/) and sign in with your GitHub account.
+   - Click on "New Project" and select your repository.
+   - Set up environment variables from your `.env` file into your project (under Settings).
+   - Click on Storage under your project and "Create Database" (this project uses Postgres)
+   - Connect your Vercel project to your new database
 
 Vercel will automatically build and deploy your app when changes are pushed to your repository.
 
@@ -140,4 +147,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 </small>
-
