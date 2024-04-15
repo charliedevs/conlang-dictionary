@@ -2,6 +2,7 @@
 
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
 
 export const CurrentUser = () => {
   const { isLoaded, isSignedIn } = useUser();
@@ -11,7 +12,11 @@ export const CurrentUser = () => {
   }
 
   if (!isSignedIn) {
-    return <SignInButton />;
+    return (
+      <SignInButton>
+        <Button variant="outline">Sign in</Button>
+      </SignInButton>
+    );
   }
 
   return <UserButton />;
