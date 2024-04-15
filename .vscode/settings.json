@@ -1,21 +1,24 @@
 {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll": "explicit"
-    },
-    "editor.tabSize": 2,
-    "editor.quickSuggestions": {
-        "other": "on",
-        "comments": "off",
-        "strings": true
-    },
-    "prettier.configPath": "prettier.config.js",
-    "css.lint.unknownAtRules": "ignore",
-    "tailwindCSS.includeLanguages": {
-        "html": "html",
-        "typescript": "typescript",
-        "typescriptreact": "typescriptreact",
-        "css": "css"
-    }
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": true
+  },
+  "prettier.configPath": "prettier.config.js",
+  "css.lint.unknownAtRules": "ignore",
+  "tailwindCSS.includeLanguages": {
+    "html": "html",
+    "typescript": "typescript",
+    "typescriptreact": "typescriptreact",
+    "css": "css"
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }
