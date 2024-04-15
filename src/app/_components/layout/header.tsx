@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { CurrentUser } from "./current-user";
 
 export const Header = () => {
   return (
@@ -23,7 +24,7 @@ export const Header = () => {
           id="header-right"
           className="flex flex-grow items-center justify-end gap-4"
         >
-          <div>user profile</div>
+          <CurrentUser />
         </div>
       </div>
     </nav>
