@@ -1,11 +1,14 @@
 "use client";
 
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import { Skeleton } from "../ui/skeleton";
 
 export const CurrentUser = () => {
-  const { isLoaded, isSignedIn } = useUser(); // TODO: Don't show all user data to client
+  const { isLoaded, isSignedIn } = useUser();
 
-  // loading, show spinner. Not signed in, show sign in button. Signed in, show avatar
+  if (!isLoaded) {
+    return <Skeleton className="h-[32px] w-[32px] rounded-full" />;
+  }
 
   if (!isSignedIn) {
     return <SignInButton />;
