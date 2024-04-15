@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
 
+import { cn } from "~/lib/utils";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ClerkProvider } from "@clerk/nextjs";
 
@@ -25,7 +26,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable} min-h-screen`}>
+      <body
+        className={cn(
+          "bg-background min-h-screen font-sans antialiased",
+          inter.variable,
+        )}
+      >
         <ClerkProvider>
           <TRPCReactProvider>
             <Header />
