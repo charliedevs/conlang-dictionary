@@ -6,6 +6,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ## Table of Contents
 
+- [TODO](#todo)
 - [Features](#features)
 - [Technologies](#technologies)
 - [Getting Started](#getting-started)
@@ -15,6 +16,10 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [Contributing](#contributing)
 - [Learn More](#learn-more)
 - [Acknowledgements](#acknowledgements)
+
+## TODO
+
+- [ ] Add authenticated private procedures in tRPC (so only authed users can perform protected actions)
 
 ## Features
 

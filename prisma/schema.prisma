@@ -2,20 +2,44 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url = env("POSTGRES_PRISMA_URL")
-    directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@index([name])
+  @@index([name])
+}
+
+model Conlang {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  emoji       String?
+  description String
+  tags        ConlangTag[]
+  ownerId     String
+  isPublic    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([name])
+}
+
+model ConlangTag {
+  id        Int     @id @default(autoincrement())
+  conlang   Conlang @relation(fields: [conlangId], references: [id])
+  conlangId Int
+  key       String
+  value     String
+
+  @@unique([conlangId, key, value])
 }
