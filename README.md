@@ -26,8 +26,9 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ### Tutorial-specific steps
 
-- [ ] Add image upload
+- [x] Add image upload
 - [ ] server-only actions
+- [ ] use next image component
 - [ ] Error management (Sentry)
 - [ ] Routing/image page (parallel route)
 - [ ] Delete button (w/ Server Actions)
@@ -91,6 +92,8 @@ Make sure you have the following technologies installed on your system:
    NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/"
    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/"
+   UPLOADTHING_SECRET="your_uploadthing_secret_here"
+   UPLOADTHING_APP_ID="your_uploadthing_app_id_here"
    ```
    > **Note:** Never commit secrets directly to the repository. Always use environment variables and keep sensitive data out of your codebase.
 4. **Run the development server**
