@@ -19,7 +19,19 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ## TODO
 
-- [ ] Add authenticated private procedures in tRPC (so only authed users can perform protected actions)
+- [ ] Scaffold basic ui with mock data
+- [ ] Set up DB
+- [ ] Attach DB to UI
+- [ ] Set up auth
+
+### Tutorial-specific steps
+
+- [ ] Add image upload
+- [ ] Error management (Sentry)
+- [ ] Routing/image page (parallel route)
+- [ ] Delete button (w/ Server Actions)
+- [ ] Analytics (posthog)
+- [ ] Ratelimiting (upstash)
 
 ## Features
 
@@ -33,8 +45,6 @@ This project uses the following technologies:
 
 - **[Next.js](https://nextjs.org)**: The React framework for production.
 - **[Tailwind CSS](https://tailwindcss.com)**: A utility-first CSS framework for rapid UI development.
-- **[Prisma](https://prisma.io)**: Next-gen ORM for Node.js and TypeScript.
-- **[tRPC](https://trpc.io)**: End-to-end typesafe APIs made easy.
 - **[PostgreSQL](https://www.postgresql.org/)**: The world's most advanced open source relational database.
 - **[Vercel](https://vercel.com)**: Platform for frontend frameworks and static sites, integrated with GitHub for continuous deployment.
 - **[Clerk](https://clerk.dev)**: Easy-to-use authentication and user management that works out of the box with Next.js.
@@ -117,9 +127,7 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 If you are not familiar with the different technologies used in this project, please refer to the respective docs.
 
 - [Next.js](https://nextjs.org)
-- [Prisma](https://prisma.io)
 - [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
 
 To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
 
