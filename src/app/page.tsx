@@ -1,5 +1,8 @@
 import { db } from "~/server/db";
 
+// Force dynamic so client always sees latest data
+export const dynamic = "force-dynamic";
+
 const mockUrls = [
   "https://utfs.io/f/e1db774b-07ce-41fa-ad86-5fa1b94f7a2c-eqkwve.png",
   "https://utfs.io/f/566e8217-7008-4926-8558-339f8d06709f-6tsut.png",
