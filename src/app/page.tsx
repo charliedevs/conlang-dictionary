@@ -1,4 +1,6 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
+import Image from "next/image";
+import { object } from "zod";
 import { getMyImages } from "~/server/queries";
 
 // Force dynamic so client always sees latest data
@@ -11,7 +13,13 @@ async function Images() {
     <div className="flex flex-wrap justify-center gap-4">
       {images.map((image) => (
         <div key={image.id} className="flex w-48 flex-col">
-          <img src={image.url} alt={image.name} />
+          <Image
+            src={image.url}
+            alt={image.name}
+            width={200}
+            height={200}
+            style={{ objectFit: "cover" }}
+          />
           <div className="text-xs">{image.name}</div>
         </div>
       ))}
