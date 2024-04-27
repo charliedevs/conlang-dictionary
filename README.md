@@ -27,6 +27,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 ### Tutorial-specific steps
 
 - [ ] Add image upload
+- [ ] server-only actions
 - [ ] Error management (Sentry)
 - [ ] Routing/image page (parallel route)
 - [ ] Delete button (w/ Server Actions)
