@@ -10,19 +10,19 @@ async function Images() {
   const images = await getMyImages();
 
   return (
-    <div className="flex flex-wrap justify-center gap-4">
+    <div className="flex flex-wrap justify-center gap-4 p-4">
       {images.map((image) => (
-        <div key={image.id} className="flex h-48 w-48 flex-col">
+        <div key={image.id} className="flex h-48 w-44 flex-col">
           <Link href={`/image/${image.id}`}>
             <Image
               src={image.url}
               alt={image.name}
               width={200}
-              height={200}
+              height={180}
               style={{ objectFit: "contain" }}
             />
           </Link>
-          <div className="text-xs">{image.name}</div>
+          <div className="truncate text-xs">{image.name}</div>
         </div>
       ))}
     </div>
@@ -31,7 +31,7 @@ async function Images() {
 
 export default async function HomePage() {
   return (
-    <main className="p-4">
+    <>
       <SignedOut>
         <div className="h-full w-full text-center text-2xl">
           Please sign in above to view the gallery.
@@ -40,6 +40,6 @@ export default async function HomePage() {
       <SignedIn>
         <Images />
       </SignedIn>
-    </main>
+    </>
   );
 }
