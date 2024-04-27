@@ -12,6 +12,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@clerk/nextjs": "^5.0.3",
     "@t3-oss/env-nextjs": "^0.10.1",
     "drizzle-orm": "^0.29.4",
     "next": "^14.2.1",
