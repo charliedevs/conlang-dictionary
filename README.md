@@ -22,7 +22,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [x] Scaffold basic ui with mock data
 - [x] Set up DB
 - [x] Attach DB to UI
-- [ ] Set up auth
+- [x] Set up auth
 
 ### Tutorial-specific steps
 
@@ -32,6 +32,12 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [ ] Delete button (w/ Server Actions)
 - [ ] Analytics (posthog)
 - [ ] Ratelimiting (upstash)
+
+### Conlang Dictionary MVP
+
+- [ ] Add ability for users to create conlangs
+- [ ] Users can add words
+- [ ] Users can tag conlang and word with custom tags
 
 ## Features
 
@@ -46,6 +52,7 @@ This project uses the following technologies:
 - **[Next.js](https://nextjs.org)**: The React framework for production.
 - **[Tailwind CSS](https://tailwindcss.com)**: A utility-first CSS framework for rapid UI development.
 - **[PostgreSQL](https://www.postgresql.org/)**: The world's most advanced open source relational database.
+- **[Drizzle](https://drizzle.team/)**: A lightweight and performant TypeScript ORM.
 - **[Vercel](https://vercel.com)**: Platform for frontend frameworks and static sites, integrated with GitHub for continuous deployment.
 - **[Clerk](https://clerk.dev)**: Easy-to-use authentication and user management that works out of the box with Next.js.
 
@@ -76,7 +83,7 @@ Make sure you have the following technologies installed on your system:
 3. **Set up environment variables**
    Copy `.env.example` to `.env` and populate it with your actual data. The following environment variables are needed:
    ```
-   POSTGRES_PRISMA_URL="your-database-url"
+   POSTGRES_URL="your-database-url"
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
    CLERK_SECRET_KEY="your-clerk-secret-key"
    NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
