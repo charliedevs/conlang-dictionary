@@ -19,7 +19,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ## TODO
 
-- [ ] Scaffold basic ui with mock data
+- [x] Scaffold basic ui with mock data
 - [ ] Set up DB
 - [ ] Attach DB to UI
 - [ ] Set up auth
