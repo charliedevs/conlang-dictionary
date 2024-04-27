@@ -29,7 +29,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [x] Add image upload
 - [x] server-only actions
 - [x] use next image component
-- [ ] Error management (Sentry)
+- [x] Error management (Sentry)
 - [ ] Routing/image page (parallel route)
 - [ ] Delete button (w/ Server Actions)
 - [ ] Analytics (posthog)
@@ -54,9 +54,10 @@ This project uses the following technologies:
 - **[Next.js](https://nextjs.org)**: The React framework for production.
 - **[Tailwind CSS](https://tailwindcss.com)**: A utility-first CSS framework for rapid UI development.
 - **[PostgreSQL](https://www.postgresql.org/)**: The world's most advanced open source relational database.
-- **[Drizzle](https://drizzle.team/)**: A lightweight and performant TypeScript ORM.
+- **[Drizzle](https://orm.drizzle.team/)**: A lightweight and performant TypeScript ORM.
 - **[Vercel](https://vercel.com)**: Platform for frontend frameworks and static sites, integrated with GitHub for continuous deployment.
 - **[Clerk](https://clerk.dev)**: Easy-to-use authentication and user management that works out of the box with Next.js.
+- **[Sentry](https://sentry.io)**: Error tracking and monitoring for production.
 
 ## Getting Started
 
@@ -69,6 +70,8 @@ Make sure you have the following technologies installed on your system:
 - [Git](https://github.com/git-guides/install-git)
 - [Node.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - [VS Code](https://code.visualstudio.com)
+
+You'll need a postgres database to run this project. You can use [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) for free.
 
 ### Setup
 
@@ -83,19 +86,10 @@ Make sure you have the following technologies installed on your system:
    npm install
    ```
 3. **Set up environment variables**
-   Copy `.env.example` to `.env` and populate it with your actual data. The following environment variables are needed:
-   ```
-   POSTGRES_URL="your-database-url"
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
-   CLERK_SECRET_KEY="your-clerk-secret-key"
-   NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
-   NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
-   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/"
-   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/"
-   UPLOADTHING_SECRET="your_uploadthing_secret_here"
-   UPLOADTHING_APP_ID="your_uploadthing_app_id_here"
-   ```
+   Copy `.env.example` to a new file called `.env` and populate it with your actual data. (You should also copy the contents of your `.env` file into your vercel project.)
+
    > **Note:** Never commit secrets directly to the repository. Always use environment variables and keep sensitive data out of your codebase.
+
 4. **Run the development server**
    ```bash
    npm run dev

@@ -1,6 +1,5 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Image from "next/image";
-import { object } from "zod";
 import { getMyImages } from "~/server/queries";
 
 // Force dynamic so client always sees latest data
