@@ -31,8 +31,8 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [x] use next image component
 - [x] Error management (Sentry)
 - [x] Routing/image page (parallel route)
-- [ ] Delete button (w/ Server Actions)
-- [ ] Analytics (posthog)
+- [x] Delete button (w/ Server Actions)
+- [x] Analytics (posthog)
 - [ ] Ratelimiting (upstash)
 
 ### Conlang Dictionary MVP

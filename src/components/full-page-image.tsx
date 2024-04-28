@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import { clerkClient } from "@clerk/nextjs/server";
-import { getImageById } from "~/server/queries";
 
-// This page is using next parallel routes. Read more about it here:
-// https://nextjs.org/docs/app/building-your-application/routing/parallel-routes
+import { deleteImage, getImageById } from "~/server/queries";
+import { Button } from "./ui/button";
+import { redirect } from "next/navigation";
+
 export default async function FullPageImageView(props: { imageId: number }) {
   const image = await getImageById(props.imageId);
-
   const uploaderInfo = await clerkClient.users.getUser(image.userId);
 
   return (
@@ -23,13 +23,26 @@ export default async function FullPageImageView(props: { imageId: number }) {
         <div className="overflow-auto break-words border-b p-2 text-center text-lg">
           {image.name}
         </div>
-        <div className="flex flex-col p-2">
-          <span>Uploaded By:</span>
-          <span>{uploaderInfo.fullName}</span>
+        <div className="p-2">
+          <div>Uploaded By:</div>
+          <div>{uploaderInfo.fullName}</div>
         </div>
-        <div className="flex flex-col p-2">
-          <span>Created On:</span>
-          <span>{new Date(image.createdAt).toLocaleDateString()}</span>
+        <div className="p-2">
+          <div>Created On:</div>
+          <div>{new Date(image.createdAt).toLocaleDateString()}</div>
+        </div>
+        <div className="p-2">
+          <form
+            action={async () => {
+              "use server";
+              await deleteImage(image.id);
+              redirect("/");
+            }}
+          >
+            <Button type="submit" variant="destructive">
+              Delete
+            </Button>
+          </form>
         </div>
       </div>
     </div>
