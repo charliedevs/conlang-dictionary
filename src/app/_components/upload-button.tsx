@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -85,8 +85,13 @@ export function UploadButton() {
     },
   });
 
+  // Only show upload button on gallery pages
+  const pathname = usePathname();
+  if (!pathname.includes("/gallery") && !pathname.includes("/image"))
+    return null;
+
   return !isUploading ? (
-    <div className="rounded-full p-1 transition-all ease-in hover:bg-slate-600/30 hover:text-white">
+    <div className="rounded-full p-1 transition-all ease-in hover:bg-slate-600/30 dark:hover:text-white">
       <label
         htmlFor="uploadButton"
         className="cursor-pointer"
