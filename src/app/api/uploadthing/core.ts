@@ -1,22 +1,23 @@
 import { auth } from "@clerk/nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+
 import { db } from "~/server/db";
 import { images } from "~/server/db/schema";
+import { ratelimit } from "~/server/ratelimit";
 
 const f = createUploadthing();
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 10 } })
-    // Set permissions and file types for this FileRoute
-    .middleware(async ({ req }) => {
-      // This code runs on your server before upload
+  imageUploader: f({ image: { maxFileSize: "1MB", maxFileCount: 10 } })
+    .middleware(async () => {
       const { userId } = auth();
-
-      // If you throw, the user will not be able to upload
       if (!userId) throw new UploadThingError("Unauthorized");
+
+      const { success } = await ratelimit.limit(userId);
+      if (!success) throw new UploadThingError("Ratelimited");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId };

@@ -78,8 +78,9 @@ export function UploadButton() {
       router.refresh();
     },
     onUploadError: (error) => {
+      toast.dismiss("uploadBegin");
       setIsUploading(false);
-      console.error(error);
+      posthog.capture("upload error", { error });
       toast.error(<span className="text-lg">Upload failed!</span>);
     },
   });
