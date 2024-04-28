@@ -9,6 +9,7 @@ import { extractRouterConfig } from "uploadthing/server";
 import { TopNav } from "./_components/topnav";
 import { Toaster } from "../components/ui/sonner";
 import { ourFileRouter } from "./api/uploadthing/core";
+import { cn } from "~/lib/utils";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -40,7 +41,7 @@ export default function RootLayout({
            */
           routerConfig={extractRouterConfig(ourFileRouter)}
         />
-        <body className={`font-sans ${inter.variable} dark`}>
+        <body className={cn("dark font-sans", inter.variable)}>
           <div className="grid h-screen grid-rows-[auto,1fr]">
             <TopNav />
             <main className="overflow-y-auto">{children}</main>
