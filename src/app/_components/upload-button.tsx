@@ -63,7 +63,7 @@ export function UploadButton() {
   const { inputProps } = useUploadThingInputProps("imageUploader", {
     onUploadBegin: () => {
       setIsUploading(true);
-      posthog.capture("upload_begin");
+      posthog.capture("uploading image");
       toast(
         <div className="flex items-center gap-2">
           <LoadingSpinner /> <span className="text-lg">Uploading...</span>
@@ -79,7 +79,8 @@ export function UploadButton() {
     },
     onUploadError: (error) => {
       setIsUploading(false);
-      alert(error.message);
+      console.error(error);
+      toast.error(<span className="text-lg">Upload failed!</span>);
     },
   });
 
