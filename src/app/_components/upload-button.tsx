@@ -1,8 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useUploadThing } from "~/utils/uploadthing";
+import { useState } from "react";
 import { toast } from "sonner";
+
+import { LoadingSpinner } from "~/components/loading-spinner";
+import { useUploadThing } from "~/utils/uploadthing";
 
 // inferred input off useUploadThing
 type Input = Parameters<typeof useUploadThing>;
@@ -50,22 +53,33 @@ function UploadSVG() {
 }
 
 export function UploadButton() {
+  const [isUploading, setIsUploading] = useState(false);
+
   const router = useRouter();
 
   const { inputProps } = useUploadThingInputProps("imageUploader", {
-    onUploadBegin: () =>
-      toast("Uploading...", { duration: 60000, id: "uploadBegin" }),
+    onUploadBegin: () => {
+      setIsUploading(true);
+      toast(
+        <div className="flex items-center gap-2">
+          <LoadingSpinner /> <span className="text-lg">Uploading...</span>
+        </div>,
+        { duration: 60000, id: "uploadBegin" },
+      );
+    },
     onClientUploadComplete: () => {
       toast.dismiss("uploadBegin");
-      toast("Upload complete!");
+      setIsUploading(false);
+      toast(<span className="text-lg">Upload complete!</span>);
       router.refresh();
     },
     onUploadError: (error) => {
+      setIsUploading(false);
       alert(error.message);
     },
   });
 
-  return (
+  return !isUploading ? (
     <div className="rounded-full p-1 transition-all ease-in hover:bg-slate-600/30 hover:text-white">
       <label
         htmlFor="uploadButton"
@@ -81,5 +95,7 @@ export function UploadButton() {
         {...inputProps}
       />
     </div>
+  ) : (
+    <LoadingSpinner />
   );
 }
