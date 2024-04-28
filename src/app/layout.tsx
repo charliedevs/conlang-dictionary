@@ -7,6 +7,7 @@ import { Inter } from "next/font/google";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { TopNav } from "./_components/topnav";
+import { Toaster } from "./_components/ui/sonner";
 import { ourFileRouter } from "./api/uploadthing/core";
 
 const inter = Inter({
@@ -46,6 +47,7 @@ export default function RootLayout({
           </div>
           {modal}
           <div id="modal-root" />
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
