@@ -10,6 +10,7 @@ import { TopNav } from "./_components/topnav";
 import { Toaster } from "../components/ui/sonner";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { cn } from "~/lib/utils";
+import { CSPostHogProvider } from "./_analytics/provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,24 +33,26 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <NextSSRPlugin
-          /**
-           * The `extractRouterConfig` will extract **only** the route configs
-           * from the router to prevent additional information from being
-           * leaked to the client. The data passed to the client is the same
-           * as if you were to fetch `/api/uploadthing` directly.
-           */
-          routerConfig={extractRouterConfig(ourFileRouter)}
-        />
-        <body className={cn("dark font-sans", inter.variable)}>
-          <div className="grid h-screen grid-rows-[auto,1fr]">
-            <TopNav />
-            <main className="overflow-y-auto">{children}</main>
-          </div>
-          {modal}
-          <div id="modal-root" />
-          <Toaster />
-        </body>
+        <CSPostHogProvider>
+          <NextSSRPlugin
+            /**
+             * The `extractRouterConfig` will extract **only** the route configs
+             * from the router to prevent additional information from being
+             * leaked to the client. The data passed to the client is the same
+             * as if you were to fetch `/api/uploadthing` directly.
+             */
+            routerConfig={extractRouterConfig(ourFileRouter)}
+          />
+          <body className={cn("dark font-sans", inter.variable)}>
+            <div className="grid h-screen grid-rows-[auto,1fr]">
+              <TopNav />
+              <main className="overflow-y-auto">{children}</main>
+            </div>
+            {modal}
+            <div id="modal-root" />
+            <Toaster />
+          </body>
+        </CSPostHogProvider>
       </html>
     </ClerkProvider>
   );
