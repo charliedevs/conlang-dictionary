@@ -7,7 +7,13 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const coreConfig = {
   images: {
-    remotePatterns: [{ hostname: "utfs.io" }],
+    remotePatterns: [
+      { hostname: "utfs.io" },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+      },
+    ],
   },
   async rewrites() {
     return [
