@@ -33,7 +33,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [x] Routing/image page (parallel route)
 - [x] Delete button (w/ Server Actions)
 - [x] Analytics (posthog)
-- [ ] Ratelimiting (upstash)
+- [x] Ratelimiting (upstash)
 
 ### Conlang Dictionary MVP
 
