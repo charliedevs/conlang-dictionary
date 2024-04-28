@@ -30,7 +30,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [x] server-only actions
 - [x] use next image component
 - [x] Error management (Sentry)
-- [ ] Routing/image page (parallel route)
+- [x] Routing/image page (parallel route)
 - [ ] Delete button (w/ Server Actions)
 - [ ] Analytics (posthog)
 - [ ] Ratelimiting (upstash)
