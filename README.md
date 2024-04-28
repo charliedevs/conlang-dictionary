@@ -19,7 +19,27 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ## TODO
 
-- [ ] Add authenticated private procedures in tRPC (so only authed users can perform protected actions)
+- [x] Scaffold basic ui with mock data
+- [x] Set up DB
+- [x] Attach DB to UI
+- [x] Set up auth
+
+### Tutorial-specific steps
+
+- [x] Add image upload
+- [x] server-only actions
+- [x] use next image component
+- [x] Error management (Sentry)
+- [x] Routing/image page (parallel route)
+- [x] Delete button (w/ Server Actions)
+- [x] Analytics (posthog)
+- [x] Ratelimiting (upstash)
+
+### Conlang Dictionary MVP
+
+- [ ] Add ability for users to create conlangs
+- [ ] Users can add words
+- [ ] Users can tag conlang and word with custom tags
 
 ## Features
 
@@ -33,11 +53,11 @@ This project uses the following technologies:
 
 - **[Next.js](https://nextjs.org)**: The React framework for production.
 - **[Tailwind CSS](https://tailwindcss.com)**: A utility-first CSS framework for rapid UI development.
-- **[Prisma](https://prisma.io)**: Next-gen ORM for Node.js and TypeScript.
-- **[tRPC](https://trpc.io)**: End-to-end typesafe APIs made easy.
 - **[PostgreSQL](https://www.postgresql.org/)**: The world's most advanced open source relational database.
+- **[Drizzle](https://orm.drizzle.team/)**: A lightweight and performant TypeScript ORM.
 - **[Vercel](https://vercel.com)**: Platform for frontend frameworks and static sites, integrated with GitHub for continuous deployment.
 - **[Clerk](https://clerk.dev)**: Easy-to-use authentication and user management that works out of the box with Next.js.
+- **[Sentry](https://sentry.io)**: Error tracking and monitoring for production.
 
 ## Getting Started
 
@@ -50,6 +70,8 @@ Make sure you have the following technologies installed on your system:
 - [Git](https://github.com/git-guides/install-git)
 - [Node.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - [VS Code](https://code.visualstudio.com)
+
+You'll need a postgres database to run this project. You can use [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) for free.
 
 ### Setup
 
@@ -64,17 +86,10 @@ Make sure you have the following technologies installed on your system:
    npm install
    ```
 3. **Set up environment variables**
-   Copy `.env.example` to `.env` and populate it with your actual data. The following environment variables are needed:
-   ```
-   POSTGRES_PRISMA_URL="your-database-url"
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
-   CLERK_SECRET_KEY="your-clerk-secret-key"
-   NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
-   NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
-   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/"
-   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/"
-   ```
+   Copy `.env.example` to a new file called `.env` and populate it with your actual data. (You should also copy the contents of your `.env` file into your vercel project.)
+
    > **Note:** Never commit secrets directly to the repository. Always use environment variables and keep sensitive data out of your codebase.
+
 4. **Run the development server**
    ```bash
    npm run dev
@@ -117,9 +132,7 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 If you are not familiar with the different technologies used in this project, please refer to the respective docs.
 
 - [Next.js](https://nextjs.org)
-- [Prisma](https://prisma.io)
 - [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
 
 To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
 
