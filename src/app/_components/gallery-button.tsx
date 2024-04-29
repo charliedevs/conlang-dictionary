@@ -32,7 +32,7 @@ export function GalleryButton() {
       <Link
         href="/gallery"
         title="View gallery"
-        className="rounded-full p-1.5 transition-all ease-in hover:bg-slate-600/30 dark:hover:text-white"
+        className="rounded-full p-1.5 transition-all ease-in hover:bg-slate-600/20 dark:hover:text-white"
       >
         <PhotoSVG />
       </Link>

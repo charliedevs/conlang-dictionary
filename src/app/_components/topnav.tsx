@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { UploadButton } from "~/app/_components/upload-button";
-import { GalleryButton } from "./gallery-button";
 import { Button } from "~/components/ui/button";
+import { DashboardButton } from "./dashboard-button";
+import { GalleryButton } from "./gallery-button";
 
 export function TopNav() {
   return (
@@ -31,6 +32,7 @@ export function TopNav() {
       </div>
       <div id="header-right" className="flex items-center gap-4">
         <div className="flex flex-grow flex-row items-center justify-end gap-4">
+          <DashboardButton />
           <GalleryButton />
           <SignedOut>
             <SignInButton>
