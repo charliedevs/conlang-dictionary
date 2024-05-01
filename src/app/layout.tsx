@@ -6,11 +6,11 @@ import { Inter } from "next/font/google";
 
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
-import { TopNav } from "./_components/topnav";
-import { Toaster } from "../components/ui/sonner";
-import { ourFileRouter } from "./api/uploadthing/core";
 import { cn } from "~/lib/utils";
-import { CSPostHogProvider } from "./_analytics/provider";
+import { Toaster } from "../components/ui/sonner";
+import { TopNav } from "./_components/topnav";
+import { ourFileRouter } from "./api/uploadthing/core";
+import Providers from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <CSPostHogProvider>
+        <Providers>
           <NextSSRPlugin
             /**
              * The `extractRouterConfig` will extract **only** the route configs
@@ -52,7 +52,7 @@ export default function RootLayout({
             <div id="modal-root" />
             <Toaster />
           </body>
-        </CSPostHogProvider>
+        </Providers>
       </html>
     </ClerkProvider>
   );
