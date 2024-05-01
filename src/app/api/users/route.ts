@@ -15,6 +15,7 @@ export type User = {
 
 export async function GET(req: Request) {
   try {
+    // Parse query params from the request
     const url = new URL(req.url);
     const queryParams = {
       userId: url.searchParams.getAll("userId"),
@@ -22,7 +23,6 @@ export async function GET(req: Request) {
       emailAddress: url.searchParams.getAll("emailAddress"),
     };
     const parsedQuery = getUsersSchema.safeParse(queryParams);
-
     if (!parsedQuery.success) {
       return new Response(
         JSON.stringify({ error: parsedQuery.error.flatten() }),
@@ -32,8 +32,8 @@ export async function GET(req: Request) {
       );
     }
 
+    // Fetch user list from Clerk
     const userList = await clerkClient.users.getUserList(parsedQuery.data);
-
     const filteredUserList = userList.data.map((user) => ({
       id: user.id,
       name: user.fullName,
