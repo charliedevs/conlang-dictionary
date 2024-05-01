@@ -19,27 +19,20 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ## TODO
 
-- [x] Scaffold basic ui with mock data
-- [x] Set up DB
-- [x] Attach DB to UI
-- [x] Set up auth
-
-### Tutorial-specific steps
-
-- [x] Add image upload
-- [x] server-only actions
-- [x] use next image component
-- [x] Error management (Sentry)
-- [x] Routing/image page (parallel route)
-- [x] Delete button (w/ Server Actions)
-- [x] Analytics (posthog)
-- [x] Ratelimiting (upstash)
-
 ### Conlang Dictionary MVP
 
-- [ ] Add ability for users to create conlangs
+- [x] Add ability for users to create conlangs
+  - [ ] Dashboard shows create form if none created, otherwise shows a button to create a new conlang
+  - [ ] Landing page shows a list of recent public conlangs
+  - [ ] Add description to conlang data
+  - [ ] Users can edit conlang to change name, description, and public status
 - [ ] Users can add words
-- [ ] Users can tag conlang and word with custom tags
+- [ ] Users can tag conlang and words with custom tags
+
+### Misc Details
+
+- [ ] Maybe create users table with data from clerk and tie it to the conlang table
+  - [ ] Then pull user info from conlang table join instead of react query
 
 ## Features
 
