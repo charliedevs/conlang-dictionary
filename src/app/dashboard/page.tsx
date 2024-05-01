@@ -9,7 +9,10 @@ export default async function DashboardPage() {
     <div className="mt-8 flex flex-col items-center justify-center md:mt-24">
       <ConlangForm />
       {/* user's current conlangs */}
-      <div id="user-conlangs" className="mt-10 flex flex-col justify-center">
+      <div
+        id="user-conlangs"
+        className="mt-10 flex flex-col justify-center gap-3"
+      >
         {conlangs.map((conlang) => (
           <div key={conlang.id} className="flex flex-col justify-center">
             {conlang.name}
