@@ -2,7 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
@@ -32,8 +34,11 @@ export function ConlangForm() {
     },
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     fetch("/api/conlang", {
       method: "POST",
       headers: {
@@ -42,8 +47,13 @@ export function ConlangForm() {
       body: JSON.stringify(values),
     })
       .then((res) => res.json())
-      .then(() => router.refresh())
-      .then(() => form.reset())
+      .then(() => {
+        form.reset();
+        setIsSubmitting(false);
+        toast.success("Congratulations! Your conlang has been created.");
+        router.push("/dashboard");
+        router.refresh();
+      })
       .catch((err) => {
         console.error("Error:", err);
       });
@@ -92,7 +102,9 @@ export function ConlangForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Create</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            Create
+          </Button>
         </form>
       </Form>
     </div>
