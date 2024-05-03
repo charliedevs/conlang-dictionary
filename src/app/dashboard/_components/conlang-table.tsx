@@ -33,7 +33,7 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
         accessorKey: "isPublic",
         header: "Public",
         cell: ({ row }) => (
-          <div className="flex justify-center">
+          <div className="ml-2 flex">
             {row.original.isPublic ? (
               <CheckCircle className="h-6 w-6 text-green-600" />
             ) : (
@@ -46,7 +46,7 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
         accessorKey: "ownerId",
         header: "Creator",
         cell: ({ row }) => (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
             {isLoading ? (
               <>
                 <div className="h-6 w-6 rounded-full bg-slate-300" />
@@ -84,15 +84,18 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
       {
         accessorKey: "createdAt",
         header: "Created",
-        cell: ({ row }) =>
-          new Date(row.original.createdAt).toLocaleDateString(),
+        cell: ({ row }) => (
+          <div className="text-muted-foreground">
+            {new Date(row.original.createdAt).toLocaleDateString()}
+          </div>
+        ),
       },
     ],
     [isLoading, userList],
   );
 
   return (
-    <div className="mx-6 my-2">
+    <div className="mx-auto my-2 w-full">
       <DataTable columns={columns} data={props.conlangs} />
     </div>
   );
