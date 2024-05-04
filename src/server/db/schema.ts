@@ -9,6 +9,7 @@ import {
   timestamp,
   varchar,
   boolean,
+  text,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -29,6 +30,8 @@ export const conlangs = createTable(
     name: varchar("name", { length: 256 }).notNull(),
     ownerId: varchar("ownerId", { length: 256 }).notNull(),
     isPublic: boolean("isPublic").notNull().default(false),
+    description: varchar("description", { length: 1024 }).notNull().default(""),
+    emoji: text("emoji"),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

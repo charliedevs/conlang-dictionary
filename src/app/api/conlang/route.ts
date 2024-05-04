@@ -3,7 +3,9 @@ import { z } from "zod";
 import { createConlang } from "~/server/queries";
 
 const createConlangSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, "Conlang name required."),
+  emoji: z.string().emoji("Must be a valid emoji.").optional(),
+  description: z.string().optional(),
   isPublic: z.boolean().default(false),
 });
 
@@ -23,6 +25,8 @@ export async function POST(req: Request) {
 
     const conlang = await createConlang(
       parsedBody.data.name,
+      parsedBody.data.description,
+      parsedBody.data.emoji,
       parsedBody.data.isPublic,
     );
     return new Response(JSON.stringify({ conlang }), {

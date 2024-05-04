@@ -2,10 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -15,12 +16,16 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
+import { FaceSmile } from "~/components/icons/face-smile";
 
 const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, "Conlang name required."),
+  emoji: z.string().emoji("Must be a valid emoji.").optional(),
+  description: z.string().optional(),
   isPublic: z.boolean().default(false),
 });
 
@@ -30,11 +35,21 @@ export function ConlangForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      emoji: undefined,
+      description: "",
       isPublic: false,
     },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle emoji input
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const handleEmojiClick = (emojiData: EmojiClickData, _e: MouseEvent) => {
+    form.setValue("emoji", emojiData.emoji);
+    setShowEmojiPicker(false);
+  };
 
   const router = useRouter();
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -79,6 +94,57 @@ export function ConlangForm() {
                   <Input placeholder="Tpaalha" {...field} />
                 </FormControl>
                 <FormDescription>The name of your conlang.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="The language of the oppossums."
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  A short description of your language.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="emoji"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel>Emoji</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      {...field}
+                      placeholder=""
+                      buttonContents={<FaceSmile />}
+                      onButtonClick={() => setShowEmojiPicker((prev) => !prev)}
+                    />
+                    {showEmojiPicker && (
+                      <div
+                        ref={emojiPickerRef}
+                        className="absolute right-0 z-50"
+                      >
+                        <EmojiPicker onEmojiClick={handleEmojiClick} />
+                      </div>
+                    )}
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  This will appear next to your language name.
+                </FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />

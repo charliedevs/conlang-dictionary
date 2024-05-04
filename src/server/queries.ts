@@ -34,7 +34,12 @@ export async function getConlangById(id: number) {
   return conlang;
 }
 
-export async function createConlang(name: string, isPublic = false) {
+export async function createConlang(
+  name: string,
+  description?: string,
+  emoji?: string,
+  isPublic = false,
+) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
@@ -42,8 +47,10 @@ export async function createConlang(name: string, isPublic = false) {
     .insert(conlangs)
     .values({
       name,
-      ownerId: userId,
+      description,
+      emoji,
       isPublic,
+      ownerId: userId,
     })
     .returning();
 
