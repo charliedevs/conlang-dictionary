@@ -12,8 +12,8 @@ import { useUsers } from "~/hooks/useUsers";
 type Conlang = {
   id: number;
   name: string;
-  description?: string;
-  emoji?: string;
+  description: string | null;
+  emoji: string | null;
   isPublic: boolean;
   ownerId: string;
   createdAt: Date;
