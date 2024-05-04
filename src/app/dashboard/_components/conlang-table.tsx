@@ -38,7 +38,15 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
         accessorKey: "name",
         header: "Name",
       },
-      { accessorKey: "description", header: "Description" },
+      {
+        accessorKey: "description",
+        header: "Description",
+        cell: ({ row }) => (
+          <div className="text-xs text-muted-foreground">
+            {row.original.description}
+          </div>
+        ),
+      },
       {
         accessorKey: "isPublic",
         header: "Public",
@@ -56,7 +64,7 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
         accessorKey: "ownerId",
         header: "Creator",
         cell: ({ row }) => (
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             {isLoading ? (
               <>
                 <div className="h-6 w-6 rounded-full bg-slate-300" />
@@ -95,7 +103,7 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
         accessorKey: "createdAt",
         header: "Created",
         cell: ({ row }) => (
-          <div className="text-muted-foreground">
+          <div className="text-xs text-muted-foreground">
             {new Date(row.original.createdAt).toLocaleDateString()}
           </div>
         ),
