@@ -31,7 +31,7 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
         accessorKey: "emoji",
         header: "",
         cell: ({ row }) => (
-          <div className="max-w-1 text-nowrap">{row.original.emoji}</div>
+          <div className="max-w-4 text-nowrap">{row.original.emoji}</div>
         ),
       },
       {

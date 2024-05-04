@@ -24,7 +24,11 @@ import { FaceSmile } from "~/components/icons/face-smile";
 
 const formSchema = z.object({
   name: z.string().min(1, "Conlang name required."),
-  emoji: z.string().emoji("Must be a valid emoji.").optional(),
+  emoji: z
+    .string()
+    .emoji("Must be a valid emoji.")
+    .max(6, "Too many emojis. Calm down.")
+    .optional(),
   description: z.string().optional(),
   isPublic: z.boolean().default(false),
 });
