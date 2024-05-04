@@ -12,8 +12,10 @@ import { useUsers } from "~/hooks/useUsers";
 type Conlang = {
   id: number;
   name: string;
-  ownerId: string;
+  description?: string;
+  emoji?: string;
   isPublic: boolean;
+  ownerId: string;
   createdAt: Date;
   updatedAt: Date | null;
 };
@@ -26,9 +28,17 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
   const columns: ColumnDef<Conlang>[] = useMemo(
     () => [
       {
+        accessorKey: "emoji",
+        header: "",
+        cell: ({ row }) => (
+          <div className="max-w-1 text-nowrap">{row.original.emoji}</div>
+        ),
+      },
+      {
         accessorKey: "name",
         header: "Name",
       },
+      { accessorKey: "description", header: "Description" },
       {
         accessorKey: "isPublic",
         header: "Public",
