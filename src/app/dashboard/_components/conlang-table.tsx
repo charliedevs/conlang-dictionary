@@ -5,8 +5,22 @@ import Image from "next/image";
 import { useMemo } from "react";
 
 import { CheckCircle } from "~/components/icons/check-circle";
+import { DocumentText } from "~/components/icons/document-text";
+import { EllipsisHorizontal } from "~/components/icons/ellipsis-horizontal";
+import { OpenPage } from "~/components/icons/open-page";
+import { Pencil } from "~/components/icons/pencil";
+import { Trash } from "~/components/icons/trash";
 import { XCircle } from "~/components/icons/x-circle";
+import { Button } from "~/components/ui/button";
 import { DataTable } from "~/components/ui/data-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/useUsers";
 
 type Conlang = {
@@ -107,6 +121,46 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
             {new Date(row.original.createdAt).toLocaleDateString()}
           </div>
         ),
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => {
+          const conlangId = row.original.id;
+          const conlangName = row.original.name;
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu for {conlangName}</span>
+                  <EllipsisHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel>{conlangName}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => alert("Conlang page not implemented")}
+                >
+                  <DocumentText className="mr-2 h-4 w-4" />
+                  <span>View</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => alert("Edit not implemented")}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => alert("Delete not implemented")}
+                  className="text-red-700 focus:bg-red-800/10 focus:text-red-700"
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  <span>Delete</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
       },
     ],
     [isLoading, userList],

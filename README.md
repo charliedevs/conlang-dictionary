@@ -21,14 +21,20 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ### Conlang Dictionary MVP
 
+#### Create & Edit Conlangs
+
 - [x] Add ability for users to create conlangs
 - [ ] Add simple dashboard to view and manage conlangs
   - [x] Dashboard shows create form if none created, otherwise shows a button to create a new conlang
   - [x] Add description to conlang data
   - [ ] Users can edit conlang to change name, description, and public status
+- [ ] Change public column to eye and eye-slash icons
 - [ ] Landing page shows a list of recent public conlangs
   - [ ] New query to get most recent public conlangs
   - [ ] Use react table visiblity to hide unwanted columns from conlang table?
+
+#### Basic Lexicon & Grammar
+
 - [ ] Users can add words
 - [ ] Users can tag conlang and words with custom tags
 
