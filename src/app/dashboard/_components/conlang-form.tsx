@@ -21,6 +21,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { FaceSmile } from "~/components/icons/face-smile";
+import { type Conlang } from "~/types/conlang";
 
 const formSchema = z.object({
   name: z.string().min(1, "Conlang name required."),
@@ -33,7 +34,11 @@ const formSchema = z.object({
   isPublic: z.boolean().default(false),
 });
 
-export function ConlangForm() {
+interface ConlangFormProps {
+  conlang?: Conlang;
+}
+
+export function ConlangForm({ conlang }: ConlangFormProps) {
   // Use react-hook-form to handle form submission with zod for validation
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,16 +70,22 @@ export function ConlangForm() {
       },
       body: JSON.stringify(values),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(res.statusText);
+        return res.json();
+      })
       .then(() => {
         form.reset();
-        setIsSubmitting(false);
         toast.success("Congratulations! Your conlang has been created.");
         router.push("/dashboard");
         router.refresh();
       })
       .catch((err) => {
         console.error("Error:", err);
+        toast.error("Failed to create conlang. Please try again.");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   }
 

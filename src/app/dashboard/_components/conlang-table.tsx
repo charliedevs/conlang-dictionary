@@ -7,7 +7,6 @@ import { useMemo } from "react";
 import { CheckCircle } from "~/components/icons/check-circle";
 import { DocumentText } from "~/components/icons/document-text";
 import { EllipsisHorizontal } from "~/components/icons/ellipsis-horizontal";
-import { OpenPage } from "~/components/icons/open-page";
 import { Pencil } from "~/components/icons/pencil";
 import { Trash } from "~/components/icons/trash";
 import { XCircle } from "~/components/icons/x-circle";
@@ -22,17 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/useUsers";
-
-type Conlang = {
-  id: number;
-  name: string;
-  description: string | null;
-  emoji: string | null;
-  isPublic: boolean;
-  ownerId: string;
-  createdAt: Date;
-  updatedAt: Date | null;
-};
+import type { Conlang } from "~/types/conlang";
 
 export function ConlangTable(props: { conlangs: Conlang[] }) {
   const { data: userList, isLoading } = useUsers({
