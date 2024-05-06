@@ -26,7 +26,7 @@ export function TopNav() {
         </Link>
         <Link
           href="/"
-          className="hidden text-xl font-bold hover:text-slate-700 dark:hover:text-slate-200 md:block"
+          className="text-md font-bold hover:text-slate-700 dark:hover:text-slate-200 sm:text-xl"
         >
           Conlang Dictionary
         </Link>
