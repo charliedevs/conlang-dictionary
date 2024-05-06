@@ -30,8 +30,8 @@ Read more about conlangs at [conlang.org](https://conlang.org).
   - [x] Users can edit conlang to change name, description, and public status
 - [x] Change public column to eye and eye-slash icons
 - [ ] Landing page shows a list of recent public conlangs
-  - [ ] New query to get most recent public conlangs
-  - [ ] Use react table visiblity to hide unwanted columns from conlang table?
+  - [x] New query to get most recent public conlangs
+  - [x] Use react table visiblity to hide unwanted columns from conlang table
 - [ ] Add view conlang page (placeholder, just shows name and description)
 - [ ] Move edit and delete buttons to individual conlang pages and make actions into open page btn
 - [ ] Add ability to delete conlang

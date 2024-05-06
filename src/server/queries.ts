@@ -34,6 +34,16 @@ export async function getConlangById(id: number) {
   return conlang;
 }
 
+export async function getRecentConlangs() {
+  const conlangs = await db.query.conlangs.findMany({
+    where: (model, { eq }) => eq(model.isPublic, true),
+    orderBy: (model, { desc }) => desc(model.createdAt),
+    limit: 5,
+  });
+
+  return conlangs;
+}
+
 export async function createConlang(
   name: string,
   description?: string,
