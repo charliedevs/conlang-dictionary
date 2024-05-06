@@ -127,7 +127,7 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const showPagination = table.getRowModel().rows.length > 10;
+  const showPagination = table.getCoreRowModel().rows.length > 10;
 
   return (
     <div id="dataTable">
