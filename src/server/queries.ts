@@ -67,6 +67,30 @@ export async function createConlang(
   });
 }
 
+export async function updateConlang(
+  id: number,
+  name: string,
+  description?: string,
+  emoji?: string,
+  isPublic?: boolean,
+) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const conlang = await db
+    .update(conlangs)
+    .set({
+      name,
+      description,
+      emoji,
+      isPublic,
+    })
+    .where(and(eq(conlangs.id, id), eq(conlangs.ownerId, userId)))
+    .returning();
+
+  if (!conlang[0]) throw new Error("Conlang not updated");
+}
+
 export async function deleteConlang(id: number) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
