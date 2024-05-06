@@ -6,7 +6,7 @@ import {
 
 import { getUsers } from "~/hooks/useUsers";
 import { getMyConlangs } from "~/server/queries";
-import { ConlangForm } from "./_components/conlang-form";
+import { NewConlangForm } from "./_components/new-conlang-form";
 import { ConlangTable } from "./_components/conlang-table";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
   return (
     <div className="mx-2 mt-8 flex flex-col items-center justify-center md:mx-8 md:mt-24">
       {conlangs.length === 0 ? (
-        <ConlangForm />
+        <NewConlangForm />
       ) : (
         <div
           id="user-conlangs"

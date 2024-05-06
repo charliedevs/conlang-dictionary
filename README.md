@@ -27,11 +27,13 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [ ] Add simple dashboard to view and manage conlangs
   - [x] Dashboard shows create form if none created, otherwise shows a button to create a new conlang
   - [x] Add description to conlang data
-  - [ ] Users can edit conlang to change name, description, and public status
+  - [x] Users can edit conlang to change name, description, and public status
 - [ ] Change public column to eye and eye-slash icons
 - [ ] Landing page shows a list of recent public conlangs
   - [ ] New query to get most recent public conlangs
   - [ ] Use react table visiblity to hide unwanted columns from conlang table?
+- [ ] Move edit and delete buttons to individual conlang pages and make actions into open page btn
+- [ ] Instead of conditionally rendering form, redirect to new conlang page if none created
 
 #### Basic Lexicon & Grammar
 
@@ -40,6 +42,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ### Misc Details
 
+- [ ] Create a custom 404/not found page
 - [ ] Maybe create users table with data from clerk and tie it to the conlang table
   - [ ] Then pull user info from conlang table join instead of react query
 

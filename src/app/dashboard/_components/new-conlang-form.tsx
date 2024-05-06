@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 
+import { FaceSmile } from "~/components/icons/face-smile";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -20,8 +21,6 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
-import { FaceSmile } from "~/components/icons/face-smile";
-import { type Conlang } from "~/types/conlang";
 
 const formSchema = z.object({
   name: z.string().min(1, "Conlang name required."),
@@ -34,11 +33,7 @@ const formSchema = z.object({
   isPublic: z.boolean().default(false),
 });
 
-interface ConlangFormProps {
-  conlang?: Conlang;
-}
-
-export function ConlangForm({ conlang }: ConlangFormProps) {
+export function NewConlangForm() {
   // Use react-hook-form to handle form submission with zod for validation
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,7 +66,8 @@ export function ConlangForm({ conlang }: ConlangFormProps) {
       body: JSON.stringify(values),
     })
       .then((res) => {
-        if (!res.ok) throw new Error(res.statusText);
+        if (!res.ok)
+          throw new Error("Failed to create conlang: " + res.statusText);
         return res.json();
       })
       .then(() => {
