@@ -84,6 +84,7 @@ export async function updateConlang(
       description,
       emoji,
       isPublic,
+      updatedAt: new Date(),
     })
     .where(and(eq(conlangs.id, id), eq(conlangs.ownerId, userId)))
     .returning();
