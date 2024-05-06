@@ -53,7 +53,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
           <HydrationBoundary state={dehydrate(queryClient)}>
-            <ConlangTable conlangs={conlangs} />
+            <ConlangTable conlangs={conlangs} visibility={{ ownerId: false }} />
           </HydrationBoundary>
         </div>
       )}

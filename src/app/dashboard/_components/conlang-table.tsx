@@ -58,19 +58,6 @@ export function ConlangTable(props: {
         ),
       },
       {
-        accessorKey: "isPublic",
-        header: () => <div className="flex justify-center">Public</div>,
-        cell: ({ row }) => (
-          <div className="flex justify-center">
-            {row.original.isPublic ? (
-              <Eye className="h-4 w-4 text-blue-500" />
-            ) : (
-              <EyeSlash className="h-4 w-4 text-muted-foreground" />
-            )}
-          </div>
-        ),
-      },
-      {
         accessorKey: "ownerId",
         header: "Creator",
         cell: ({ row }) => (
@@ -129,6 +116,19 @@ export function ConlangTable(props: {
           ) : (
             <></>
           ),
+      },
+      {
+        accessorKey: "isPublic",
+        header: () => <div className="flex justify-center">Public</div>,
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            {row.original.isPublic ? (
+              <Eye className="h-4 w-4 text-blue-500" />
+            ) : (
+              <EyeSlash className="h-4 w-4 text-muted-foreground" />
+            )}
+          </div>
+        ),
       },
       {
         id: "actions",
