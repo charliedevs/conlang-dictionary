@@ -45,7 +45,7 @@ export function EditConlangForm({ conlang }: EditConlangFormProps) {
     defaultValues: {
       id: conlang.id,
       name: conlang.name,
-      emoji: conlang.emoji ?? "",
+      emoji: conlang.emoji ?? undefined,
       description: conlang.description ?? "",
       isPublic: conlang.isPublic,
     },
