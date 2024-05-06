@@ -5,12 +5,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
-import { CheckCircle } from "~/components/icons/check-circle";
 import { DocumentText } from "~/components/icons/document-text";
 import { EllipsisHorizontal } from "~/components/icons/ellipsis-horizontal";
+import { Eye } from "~/components/icons/eye";
+import { EyeSlash } from "~/components/icons/eye-slash";
 import { Pencil } from "~/components/icons/pencil";
 import { Trash } from "~/components/icons/trash";
-import { XCircle } from "~/components/icons/x-circle";
 import { Button } from "~/components/ui/button";
 import { DataTable } from "~/components/ui/data-table";
 import {
@@ -23,6 +23,8 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/useUsers";
 import type { Conlang } from "~/types/conlang";
+
+export const dynamic = "force-dynamic";
 
 export function ConlangTable(props: { conlangs: Conlang[] }) {
   const router = useRouter();
@@ -54,13 +56,13 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
       },
       {
         accessorKey: "isPublic",
-        header: "Public",
+        header: () => <div className="flex justify-center">Public</div>,
         cell: ({ row }) => (
-          <div className="ml-2 flex">
+          <div className="flex justify-center">
             {row.original.isPublic ? (
-              <CheckCircle className="h-6 w-6 text-green-600" />
+              <Eye className="h-4 w-4 text-blue-500" />
             ) : (
-              <XCircle className="h-6 w-6 text-red-800" />
+              <EyeSlash className="h-4 w-4 text-muted-foreground" />
             )}
           </div>
         ),
