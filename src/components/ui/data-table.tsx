@@ -1,22 +1,19 @@
 "use client";
 
 import {
-  type Table as TableType,
-  type ColumnDef,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
-  useReactTable,
   getPaginationRowModel,
+  useReactTable,
+  type ColumnDef,
+  type Table as TableType,
 } from "@tanstack/react-table";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./table";
+import { ChevronDoubleLeft } from "../icons/chevron-double-left";
+import { ChevronDoubleRight } from "../icons/chevron-double-right";
+import { ChevronLeft } from "../icons/chevron-left";
+import { ChevronRight } from "../icons/chevron-right";
 import { Button } from "./button";
 import {
   Select,
@@ -25,10 +22,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./select";
-import { ChevronDoubleLeft } from "../icons/chevron-double-left";
-import { ChevronLeft } from "../icons/chevron-left";
-import { ChevronRight } from "../icons/chevron-right";
-import { ChevronDoubleRight } from "../icons/chevron-double-right";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./table";
+import { useState } from "react";
 
 interface DataTablePaginationProps<TData> {
   table: TableType<TData>;
@@ -114,17 +116,25 @@ function DataTablePagination<TData>({
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  visibility?: VisibilityState;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  visibility = {},
 }: DataTableProps<TData, TValue>) {
+  const [columnVisibility, setColumnVisibility] =
+    useState<VisibilityState>(visibility);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    state: {
+      columnVisibility,
+    },
   });
 
   const showPagination = table.getCoreRowModel().rows.length > 10;

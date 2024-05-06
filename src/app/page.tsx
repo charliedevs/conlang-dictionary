@@ -14,12 +14,21 @@ export default async function HomePage() {
         <div className="text-md p-2 text-center">
           Recently-updated languages:
         </div>
-        <ConlangTable conlangs={[]} />
+        <ConlangTable
+          conlangs={[]}
+          visibility={{ isPublic: false, createdAt: false }}
+        />
       </div>
       <div className="text-center">
         <SignedOut>
           <p className="text-lg">
-            You can also create your own conlangs by signing in above.
+            <Link
+              href="/sign-in"
+              className="text-dictionary hover:underline hover:opacity-85"
+            >
+              Sign in
+            </Link>{" "}
+            to create your own conlangs.
           </p>
         </SignedOut>
         <SignedIn>

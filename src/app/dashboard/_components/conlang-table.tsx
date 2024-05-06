@@ -1,6 +1,6 @@
 "use client";
 
-import { type ColumnDef } from "@tanstack/react-table";
+import { type VisibilityState, type ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
@@ -26,7 +26,10 @@ import type { Conlang } from "~/types/conlang";
 
 export const dynamic = "force-dynamic";
 
-export function ConlangTable(props: { conlangs: Conlang[] }) {
+export function ConlangTable(props: {
+  conlangs: Conlang[];
+  visibility?: VisibilityState;
+}) {
   const router = useRouter();
   const { data: userList, isLoading } = useUsers({
     userId: props.conlangs.map((conlang) => conlang.ownerId),
@@ -116,6 +119,18 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
         ),
       },
       {
+        accessorKey: "updatedAt",
+        header: "Updated",
+        cell: ({ row }) =>
+          row.original.updatedAt ? (
+            <div className="text-xs text-muted-foreground">
+              {new Date(row.original.updatedAt).toLocaleDateString()}
+            </div>
+          ) : (
+            <></>
+          ),
+      },
+      {
         id: "actions",
         cell: ({ row }) => {
           const conlangId = row.original.id;
@@ -163,7 +178,11 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
 
   return (
     <div className="mx-auto my-2 w-full">
-      <DataTable columns={columns} data={props.conlangs} />
+      <DataTable
+        columns={columns}
+        data={props.conlangs}
+        visibility={props.visibility}
+      />
     </div>
   );
 }
