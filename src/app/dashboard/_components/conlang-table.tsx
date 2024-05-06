@@ -2,6 +2,7 @@
 
 import { type ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
 import { CheckCircle } from "~/components/icons/check-circle";
@@ -24,6 +25,7 @@ import { useUsers } from "~/hooks/useUsers";
 import type { Conlang } from "~/types/conlang";
 
 export function ConlangTable(props: { conlangs: Conlang[] }) {
+  const router = useRouter();
   const { data: userList, isLoading } = useUsers({
     userId: props.conlangs.map((conlang) => conlang.ownerId),
   });
@@ -135,7 +137,9 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
                   <span>View</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => alert("Edit not implemented")}>
+                <DropdownMenuItem
+                  onClick={() => router.push(`/conlang/edit/${conlangId}`)}
+                >
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Edit</span>
                 </DropdownMenuItem>
@@ -152,7 +156,7 @@ export function ConlangTable(props: { conlangs: Conlang[] }) {
         },
       },
     ],
-    [isLoading, userList],
+    [isLoading, router, userList],
   );
 
   return (
