@@ -21,6 +21,10 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
+import {
+  handleApiErrorResponse,
+  isApiError,
+} from "~/utils/client-error-handler";
 
 const formSchema = z.object({
   name: z.string().min(1, "Conlang name required."),
@@ -66,8 +70,9 @@ export function NewConlangForm() {
       body: JSON.stringify(values),
     })
       .then((res) => {
-        if (!res.ok)
-          throw new Error("Failed to create conlang: " + res.statusText);
+        if (!res.ok) {
+          return handleApiErrorResponse(res);
+        }
         return res.json();
       })
       .then(() => {
@@ -78,7 +83,13 @@ export function NewConlangForm() {
       })
       .catch((err) => {
         console.error("Error:", err);
-        toast.error("Failed to create conlang. Please try again.");
+        if (isApiError(err) && err.code === "DUPLICATE_CONLANG_NAME") {
+          toast.error("A conlang with this name already exists.");
+        } else if (err instanceof Error) {
+          toast.error(err.message);
+        } else {
+          toast.error("Failed to create conlang. Please try again.");
+        }
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -117,7 +128,7 @@ export function NewConlangForm() {
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="The language of the oppossums."
+                    placeholder="The language of the opossums."
                     {...field}
                   />
                 </FormControl>

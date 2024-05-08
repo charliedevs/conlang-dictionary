@@ -22,6 +22,10 @@ import {
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { type Conlang } from "~/types/conlang";
+import {
+  handleApiErrorResponse,
+  isApiError,
+} from "~/utils/client-error-handler";
 
 const formSchema = z.object({
   id: z.number(),
@@ -72,8 +76,9 @@ export function EditConlangForm({ conlang }: EditConlangFormProps) {
       body: JSON.stringify(values),
     })
       .then((res) => {
-        if (!res.ok)
-          throw new Error("Failed to update conlang: " + res.statusText);
+        if (!res.ok) {
+          return handleApiErrorResponse(res);
+        }
         return res.json();
       })
       .then(() => {
@@ -84,7 +89,13 @@ export function EditConlangForm({ conlang }: EditConlangFormProps) {
       })
       .catch((err) => {
         console.error("Error:", err);
-        toast.error("Failed to update conlang. Please try again.");
+        if (isApiError(err) && err.code === "DUPLICATE_CONLANG_NAME") {
+          toast.error("A conlang with this name already exists.");
+        } else if (err instanceof Error) {
+          toast.error(err.message);
+        } else {
+          toast.error("Failed to update conlang. Please try again.");
+        }
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -121,7 +132,7 @@ export function EditConlangForm({ conlang }: EditConlangFormProps) {
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="The language of the oppossums."
+                    placeholder="The language of the opossums."
                     {...field}
                   />
                 </FormControl>
