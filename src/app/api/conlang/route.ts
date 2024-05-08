@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createConlang, updateConlang } from "~/server/queries";
+import { createApiErrorResponse } from "~/app/api/_utils/api-error-handler";
 
 const createConlangSchema = z.object({
   name: z.string().min(1, "Conlang name required."),
@@ -32,10 +33,17 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ conlang }), {
       status: 201,
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error }), {
-      status: 500,
-    });
+  } catch (error: unknown) {
+    const apiErrorResponse = createApiErrorResponse(error);
+    return new Response(
+      JSON.stringify({
+        error: apiErrorResponse.error,
+        code: apiErrorResponse.code,
+      }),
+      {
+        status: apiErrorResponse.status,
+      },
+    );
   }
 }
 
@@ -71,9 +79,16 @@ export async function PUT(req: Request) {
     return new Response(JSON.stringify({ conlang }), {
       status: 200,
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error }), {
-      status: 500,
-    });
+  } catch (error: unknown) {
+    const apiErrorResponse = createApiErrorResponse(error);
+    return new Response(
+      JSON.stringify({
+        error: apiErrorResponse.error,
+        code: apiErrorResponse.code,
+      }),
+      {
+        status: apiErrorResponse.status,
+      },
+    );
   }
 }
