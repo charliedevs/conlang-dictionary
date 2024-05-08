@@ -14,13 +14,18 @@ import { Bolt } from "~/components/icons/bolt";
 async function RecentConlangs() {
   const recentConlangs = await getRecentConlangs();
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center px-0.5">
       <h2 className="p-2 text-center text-xl font-medium text-muted-foreground ">
         Recently-updated languages:
       </h2>
       <ConlangTable
         conlangs={recentConlangs}
-        visibility={{ isPublic: false, createdAt: false, updatedAt: false }}
+        visibility={{
+          isPublic: false,
+          createdAt: false,
+          updatedAt: false,
+          actions: false,
+        }}
       />
     </div>
   );
