@@ -1,9 +1,11 @@
 "use client";
 
-import { type VisibilityState, type ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef, type VisibilityState } from "@tanstack/react-table";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
 
 import { DocumentText } from "~/components/icons/document-text";
 import { EllipsisHorizontal } from "~/components/icons/ellipsis-horizontal";
@@ -169,6 +171,23 @@ export function ConlangTable(props: {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          );
+        },
+      },
+      {
+        id: "open",
+        cell: ({ row }) => {
+          const conlangName = row.original.name;
+          return (
+            <Link href={`/conlang/${conlangName}`}>
+              <Button
+                variant="ghost"
+                className="h-8 w-8 rounded-full p-0 text-slate-400 transition-colors ease-in hover:bg-slate-500/10 hover:text-slate-700"
+              >
+                <span className="sr-only">Open menu for {conlangName}</span>
+                <ArrowRightCircle className="h-6 w-6" />
+              </Button>
+            </Link>
           );
         },
       },

@@ -43,11 +43,18 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [ ] Users can add words
 - [ ] Users can tag conlang and words with custom tags
 
+#### Inflections & Derivations
+
+- [ ] Users can create patterns for inflections
+- [ ] tree visualization of different possible inflections based on lexical category, class, etc.
+
 ### Misc Details
 
 - [ ] Create a custom 404/not found page
 - [ ] Maybe create users table with data from clerk and tie it to the conlang table
   - [ ] Then pull user info from conlang table join instead of react query
+- [ ] dark mode
+- [ ] custom user primary colors
 
 ## Features
 
