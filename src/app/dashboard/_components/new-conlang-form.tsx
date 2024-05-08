@@ -85,6 +85,10 @@ export function NewConlangForm() {
         console.error("Error:", err);
         if (isApiError(err) && err.code === "DUPLICATE_CONLANG_NAME") {
           toast.error("A conlang with this name already exists.");
+          form.setError("name", {
+            type: "manual",
+            message: "A conlang with this name already exists.",
+          });
         } else if (err instanceof Error) {
           toast.error(err.message);
         } else {
