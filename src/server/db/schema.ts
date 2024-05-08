@@ -27,7 +27,7 @@ export const conlangs = createTable(
   "conlang",
   {
     id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }).notNull(),
+    name: varchar("name", { length: 256 }).notNull().unique(),
     ownerId: varchar("ownerId", { length: 256 }).notNull(),
     isPublic: boolean("isPublic").notNull().default(false),
     description: varchar("description", { length: 1024 }).notNull().default(""),
