@@ -18,5 +18,13 @@
     "typescriptreact": "typescriptreact",
     "css": "css"
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "cSpell.words": [
+    "conlang",
+    "Conlang",
+    "conlanging",
+    "conlangs",
+    "Conlangs",
+    "phonotactics"
+  ]
 }
