@@ -29,12 +29,9 @@ Read more about conlangs at [conlang.org](https://conlang.org).
   - [x] Add description to conlang data
   - [x] Users can edit conlang to change name, description, and public status
 - [x] Change public column to eye and eye-slash icons
-- [x] Landing page shows a list of recent public conlangs
-  - [x] New query to get most recent public conlangs
-  - [x] Use react table visibility to hide unwanted columns from conlang table
-- [x] Update landing page copy with features and a blurb
 - [x] Add view conlang page (placeholder, just shows name and description)
-- [ ] Move edit and delete buttons to individual conlang pages and make actions into open page btn
+- [x] Add open conlang page button on conlang table
+- [ ] Move edit and delete buttons to individual conlang pages
 - [ ] Add ability to delete conlang
 - [ ] Instead of conditionally rendering form on dashboard, redirect to new conlang page if none created
 
@@ -47,6 +44,14 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 - [ ] Users can create patterns for inflections
 - [ ] tree visualization of different possible inflections based on lexical category, class, etc.
+
+#### Landing Page
+
+- [x] Landing page shows a list of recent public conlangs
+  - [x] New query to get most recent public conlangs
+  - [x] Use react table visibility to hide unwanted columns from conlang table
+- [x] Update landing page copy with features and a blurb
+- [ ] Add 'coming soon' indicators to unimplemented features
 
 ### Misc Details
 
