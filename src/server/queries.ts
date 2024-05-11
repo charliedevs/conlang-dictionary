@@ -2,12 +2,124 @@ import "server-only";
 
 import { auth } from "@clerk/nextjs/server";
 
-import { db } from "./db";
-import { images } from "./db/schema";
 import { and, eq } from "drizzle-orm";
 import analyticsServerClient from "./analytics";
+import { db } from "./db";
+import { conlangs, images } from "./db/schema";
 
-// Get all images for current user
+// CONLANGS
+export async function getMyConlangs() {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const conlangs = await db.query.conlangs.findMany({
+    where: (model, { eq }) => eq(model.ownerId, userId),
+    orderBy: (model, { desc }) => desc(model.createdAt),
+  });
+
+  return conlangs;
+}
+
+export async function getConlangById(id: number) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const conlang = await db.query.conlangs.findFirst({
+    where: (model, { eq }) => eq(model.id, id),
+  });
+  if (!conlang) throw new Error("Conlang not found");
+
+  if (conlang.ownerId !== userId) throw new Error("Unauthorized");
+
+  return conlang;
+}
+
+export async function getRecentConlangs() {
+  const conlangs = await db.query.conlangs.findMany({
+    where: (model, { eq }) => eq(model.isPublic, true),
+    orderBy: (model, { desc }) => desc(model.createdAt),
+    limit: 5,
+  });
+
+  return conlangs;
+}
+
+export async function createConlang(
+  name: string,
+  description?: string,
+  emoji?: string,
+  isPublic = false,
+) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const conlang = await db
+    .insert(conlangs)
+    .values({
+      name,
+      description,
+      emoji,
+      isPublic,
+      ownerId: userId,
+    })
+    .returning();
+
+  if (!conlang[0]) throw new Error("Conlang not created");
+
+  analyticsServerClient.capture({
+    distinctId: userId,
+    event: "conlang created",
+    properties: {
+      conlangId: conlang[0].id,
+      conlangName: conlang[0].name,
+      conlangIsPublic: conlang[0].isPublic,
+    },
+  });
+}
+
+export async function updateConlang(
+  id: number,
+  name: string,
+  description?: string,
+  emoji?: string,
+  isPublic?: boolean,
+) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const conlang = await db
+    .update(conlangs)
+    .set({
+      name,
+      description,
+      emoji,
+      isPublic,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(conlangs.id, id), eq(conlangs.ownerId, userId)))
+    .returning();
+
+  if (!conlang[0]) throw new Error("Conlang not updated");
+}
+
+export async function deleteConlang(id: number) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  await db
+    .delete(conlangs)
+    .where(and(eq(conlangs.id, id), eq(conlangs.ownerId, userId)));
+
+  analyticsServerClient.capture({
+    distinctId: userId,
+    event: "conlang deleted",
+    properties: {
+      conlangId: id,
+    },
+  });
+}
+
+// IMAGES
 export async function getMyImages() {
   const { userId } = auth();
 

@@ -19,27 +19,47 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ## TODO
 
-- [x] Scaffold basic ui with mock data
-- [x] Set up DB
-- [x] Attach DB to UI
-- [x] Set up auth
-
-### Tutorial-specific steps
-
-- [x] Add image upload
-- [x] server-only actions
-- [x] use next image component
-- [x] Error management (Sentry)
-- [x] Routing/image page (parallel route)
-- [x] Delete button (w/ Server Actions)
-- [x] Analytics (posthog)
-- [x] Ratelimiting (upstash)
-
 ### Conlang Dictionary MVP
 
-- [ ] Add ability for users to create conlangs
+#### Create & Edit Conlangs
+
+- [x] Add ability for users to create conlangs
+- [ ] Add simple dashboard to view and manage conlangs
+  - [x] Dashboard shows create form if none created, otherwise shows a button to create a new conlang
+  - [x] Add description to conlang data
+  - [x] Users can edit conlang to change name, description, and public status
+- [x] Change public column to eye and eye-slash icons
+- [x] Add view conlang page (placeholder, just shows name and description)
+- [x] Add open conlang page button on conlang table
+- [ ] Move edit and delete buttons to individual conlang pages
+- [ ] Add ability to delete conlang
+- [ ] Instead of conditionally rendering form on dashboard, redirect to new conlang page if none created
+
+#### Basic Lexicon & Grammar
+
 - [ ] Users can add words
-- [ ] Users can tag conlang and word with custom tags
+- [ ] Users can tag conlang and words with custom tags
+
+#### Inflections & Derivations
+
+- [ ] Users can create patterns for inflections
+- [ ] tree visualization of different possible inflections based on lexical category, class, etc.
+
+#### Landing Page
+
+- [x] Landing page shows a list of recent public conlangs
+  - [x] New query to get most recent public conlangs
+  - [x] Use react table visibility to hide unwanted columns from conlang table
+- [x] Update landing page copy with features and a blurb
+- [ ] Add 'coming soon' indicators to unimplemented features
+
+### Misc Details
+
+- [ ] Create a custom 404/not found page
+- [ ] Maybe create users table with data from clerk and tie it to the conlang table
+  - [ ] Then pull user info from conlang table join instead of react query
+- [ ] dark mode
+- [ ] custom user primary colors
 
 ## Features
 

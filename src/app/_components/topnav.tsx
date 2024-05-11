@@ -2,9 +2,8 @@ import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 
-import { UploadButton } from "~/app/_components/upload-button";
-import { GalleryButton } from "./gallery-button";
 import { Button } from "~/components/ui/button";
+import { DashboardButton } from "./dashboard-button";
 
 export function TopNav() {
   return (
@@ -25,20 +24,22 @@ export function TopNav() {
             className="rounded-full opacity-100 outline outline-1 outline-offset-1 hover:opacity-95 dark:outline-slate-200"
           />
         </Link>
-        <Link href="/" className="hidden text-xl font-bold md:block">
+        <Link
+          href="/"
+          className="text-md font-bold hover:text-slate-700 dark:hover:text-slate-200 sm:text-xl"
+        >
           Conlang Dictionary
         </Link>
       </div>
       <div id="header-right" className="flex items-center gap-4">
         <div className="flex flex-grow flex-row items-center justify-end gap-4">
-          <GalleryButton />
           <SignedOut>
             <SignInButton>
               <Button variant="outline">Sign in</Button>
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <UploadButton />
+            <DashboardButton />
             <UserButton />
           </SignedIn>
         </div>
