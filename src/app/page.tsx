@@ -82,66 +82,25 @@ export default function HomePage() {
               <h3 className="mb-2 text-xl font-semibold">
                 Dictionary for your conlangs
               </h3>
-              <BookOpen className="mb-2 h-8 w-8 transition-colors ease-in group-hover:text-dictionary" />
+              <BookOpen className="mb-2 h-8 w-8 min-w-8 transition-colors ease-in group-hover:text-dictionary" />
             </div>
             <p>
               Build your language&apos;s{" "}
               <span className="font-medium text-dictionary">lexicon</span>,{" "}
               <span className="font-medium text-dictionary">grammar</span>, and{" "}
               <span className="font-medium text-dictionary">phonological</span>{" "}
-              inventory. inventory.
+              inventory.
             </p>
           </div>
           <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
             <div className="flex items-center justify-between gap-2">
               <h3 className="mb-2 text-xl font-semibold">Share conlangs</h3>
-              <Users className="mb-2 h-8 w-8 transition-colors ease-in group-hover:text-dictionary" />
+              <Users className="mb-2 h-8 w-8 min-w-8 transition-colors ease-in group-hover:text-dictionary" />
             </div>
             <p>
               Showcase your work and{" "}
               <span className="font-medium text-dictionary">collaborate</span>{" "}
-              on your conlangs with others.
-            </p>
-          </div>
-          <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="mb-2 text-xl font-semibold">
-                Auto-generate inflections
-              </h3>
-              <Bolt className="mb-2 h-8 w-8 transition-colors ease-in group-hover:text-dictionary" />
-            </div>
-            <p>
-              Specify patterns for{" "}
-              <span className="font-medium text-dictionary">declensions</span>,{" "}
-              <span className="font-medium text-dictionary">conjugations</span>,
-              and{" "}
-              <span className="font-medium text-dictionary">derivations</span>
-              —and edit exceptions with ease.
-            </p>
-          </div>
-          <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="mb-2 text-xl font-semibold">Analyze your data</h3>
-              <PresentationChartLine className="mb-1 h-8 w-8 transition-colors ease-in group-hover:text-dictionary" />
-            </div>
-            <p>
-              View insights into the{" "}
-              <span className="font-medium text-dictionary">frequency</span> and{" "}
-              <span className="font-medium text-dictionary">
-                usage patterns
-              </span>{" "}
-              of your noun classes, morphemes, phonemes, and orthography.
-            </p>
-          </div>
-          <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="mb-2 text-xl font-semibold">Responsive design</h3>
-              <DevicePhoneMobile className="mb-2 h-8 w-8 transition-colors ease-in group-hover:text-dictionary" />
-            </div>
-            <p>
-              Access from{" "}
-              <span className="font-medium text-dictionary">any device</span>{" "}
-              with a consistent experience.
+              with others on your constructed languages.
             </p>
           </div>
           <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
@@ -149,12 +108,52 @@ export default function HomePage() {
               <h3 className="mb-2 text-xl font-semibold">
                 Define syntax & phonotactics
               </h3>
-              <AdjustmentsHorizontal className="mb-3 h-8 w-8 transition-colors ease-in group-hover:text-dictionary" />
+              <AdjustmentsHorizontal className="mb-3 h-8 w-8 min-w-8 transition-colors ease-in group-hover:text-dictionary" />
             </div>
             <p>
               Customize what&apos;s{" "}
               <span className="font-medium text-dictionary">permissible</span>{" "}
-              in your conlang.
+              in your conlang, from allowed sound combinations to syntactical
+              rules.
+            </p>
+          </div>
+          <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="mb-2 text-xl font-semibold">
+                Auto-generate inflections
+              </h3>
+              <Bolt className="mb-2 h-8 w-8 min-w-8 transition-colors ease-in group-hover:text-dictionary" />
+            </div>
+            <p>
+              Specify regular patterns for{" "}
+              <span className="font-medium text-dictionary">declensions</span>{" "}
+              and{" "}
+              <span className="font-medium text-dictionary">conjugations</span>,
+              —and edit exceptions with ease.
+            </p>
+          </div>
+          <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="mb-2 text-xl font-semibold">Analyze your data</h3>
+              <PresentationChartLine className="mb-1 h-8 w-8 min-w-8 transition-colors ease-in group-hover:text-dictionary" />
+            </div>
+            <p>
+              View insights into the{" "}
+              <span className="font-medium text-dictionary">frequency</span> and{" "}
+              <span className="font-medium text-dictionary">usage</span> of your
+              noun classes, morphemes, phonemes, and orthographic choices.
+            </p>
+          </div>
+          <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="mb-2 text-xl font-semibold">Responsive design</h3>
+              <DevicePhoneMobile className="mb-2 h-8 w-8 min-w-8 transition-colors ease-in group-hover:text-dictionary" />
+            </div>
+            <p>
+              Access from{" "}
+              <span className="font-medium text-dictionary">any device</span>,{" "}
+              from your computer to your phone, with a consistent &amp; reliable
+              experience.
             </p>
           </div>
         </div>
