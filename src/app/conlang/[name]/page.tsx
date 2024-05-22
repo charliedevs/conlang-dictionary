@@ -1,3 +1,4 @@
+import { SignedIn } from "@clerk/nextjs";
 import Link from "next/link";
 import {
   Breadcrumb,
@@ -16,21 +17,23 @@ export default function ConlangPage({ params }: ConlangPageProps) {
   // TODO: fetch conlang data from database
   return (
     <div className="flex flex-col p-5">
-      <div className="flex w-full justify-start">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/dashboard">Dashboard</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{params.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+      <SignedIn>
+        <div className="flex w-full justify-start">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{params.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </SignedIn>
 
       <div className="container flex flex-col items-center justify-center gap-8 px-4 py-14">
         <h1 className="text-center text-2xl font-medium">{params.name}</h1>
