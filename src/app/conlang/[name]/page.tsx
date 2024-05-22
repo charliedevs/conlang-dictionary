@@ -11,6 +11,7 @@ import {
 } from "~/components/ui/breadcrumb";
 import { NewWordForm } from "./_components/new-word-form";
 import { getConlangByName, getWordsByConlangId } from "~/server/queries";
+import { auth } from "@clerk/nextjs/server";
 
 async function WordList(props: { conlangId: number }) {
   const words = await getWordsByConlangId(props.conlangId);
@@ -42,6 +43,8 @@ interface ConlangPageProps {
 export default async function ConlangPage({ params }: ConlangPageProps) {
   // TODO: fetch conlang data from database
   const conlang = await getConlangByName(params.name);
+  // check conlang ownerId and check if signed in user matches
+  const isConlangOwner = conlang.ownerId === auth().userId;
   return (
     <div className="flex flex-col p-5">
       <SignedIn>
@@ -65,7 +68,7 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
       <div className="container flex flex-col items-center justify-center gap-8 px-4 py-14">
         <h1 className="text-center text-2xl font-medium">{params.name}</h1>
         <p>{conlang.description}</p>
-        <NewWordForm conlangId={conlang.id} />
+        {isConlangOwner && <NewWordForm conlangId={conlang.id} />}
         <WordList conlangId={conlang.id} />
       </div>
     </div>
