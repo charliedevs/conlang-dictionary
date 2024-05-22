@@ -10,6 +10,7 @@ import {
   varchar,
   boolean,
   text,
+  integer,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -39,6 +40,28 @@ export const conlangs = createTable(
   },
   (conlang) => ({
     conlangNameIndex: index("conlang_name_idx").on(conlang.name),
+  }),
+);
+
+// Words table
+export const words = createTable(
+  "word",
+  {
+    id: serial("id").primaryKey(),
+    conlangId: integer("conlangId")
+      .notNull()
+      .references(() => conlangs.id),
+    text: varchar("text", { length: 512 }).notNull(),
+    pronunciation: varchar("pronunciation", { length: 512 }),
+    gloss: varchar("gloss", { length: 512 }),
+    definition: varchar("definition", { length: 1024 }),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt"),
+  },
+  (word) => ({
+    wordTextIndex: index("word_text_idx").on(word.text),
   }),
 );
 
