@@ -38,7 +38,12 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 #### Basic Lexicon & Grammar
 
 - [ ] Users can add words
+- [ ] Card for each word with word, glosses, and examples with glosses
+- [ ] Add ability to edit word
+- [ ] Add ability to delete word
+- [ ] Table view for words as alternate to card view
 - [ ] Users can tag conlang and words with custom tags
+- [ ] Signed-in user view vs owner view vs public view
 
 #### Inflections & Derivations
 
@@ -58,6 +63,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [ ] Create a custom 404/not found page
 - [ ] Maybe create users table with data from clerk and tie it to the conlang table
   - [ ] Then pull user info from conlang table join instead of react query
+- [ ] Deal with double scroll bar when you shrink the window height (remove h-screen from layout?)
 - [ ] dark mode
 - [ ] custom user primary colors
 

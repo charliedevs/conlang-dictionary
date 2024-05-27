@@ -1,12 +1,16 @@
 "use client";
 
-import { type ColumnDef, type VisibilityState } from "@tanstack/react-table";
+import {
+  type ColumnDef,
+  type Row as RowType,
+  type VisibilityState,
+} from "@tanstack/react-table";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
-import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
 
+import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
 import { DocumentText } from "~/components/icons/document-text";
 import { EllipsisHorizontal } from "~/components/icons/ellipsis-horizontal";
 import { Eye } from "~/components/icons/eye";
@@ -67,7 +71,7 @@ export function ConlangTable(props: {
             {isLoading ? (
               <>
                 <div className="h-6 w-6 rounded-full bg-slate-300" />
-                Loading...
+                Loading ...
               </>
             ) : userList && userList.length > 0 ? (
               <>
@@ -182,10 +186,10 @@ export function ConlangTable(props: {
             <Link href={`/conlang/${conlangName}`}>
               <Button
                 variant="ghost"
-                className="h-8 w-8 rounded-full p-0 text-slate-400 transition-colors ease-in hover:bg-slate-500/10 hover:text-slate-700"
+                className="h-8 w-8 rounded-full p-0 text-slate-400 transition-colors ease-in hover:bg-slate-500/10 hover:text-slate-700 group-hover:text-slate-700"
               >
                 <span className="sr-only">Open menu for {conlangName}</span>
-                <ArrowRightCircle className="h-6 w-6" />
+                <ArrowRightCircle className="h-7 w-7" />
               </Button>
             </Link>
           );
@@ -195,12 +199,17 @@ export function ConlangTable(props: {
     [isLoading, router, userList],
   );
 
+  const handleRowClick = (row: RowType<Conlang>) => {
+    router.push(`/conlang/${row.original.name}`);
+  };
+
   return (
     <div className="mx-auto my-2 w-full">
       <DataTable
         columns={columns}
         data={props.conlangs}
         visibility={props.visibility}
+        onRowClick={handleRowClick}
       />
     </div>
   );

@@ -33,17 +33,18 @@ export default async function DashboardPage() {
   });
 
   return (
-    <div className="mx-2 mt-8 flex flex-col items-center justify-center md:mx-8 md:mt-24">
+    <div className="mx-2 flex flex-col items-center gap-8 pt-6 md:container">
+      <h1 className="w-full text-start text-3xl font-medium">Dashboard</h1>
       {conlangs.length === 0 ? (
         <NewConlangForm />
       ) : (
         <div
           id="user-conlangs"
-          className="mt-10 flex w-full flex-col justify-center gap-3"
+          className="flex w-full flex-col justify-center gap-3"
         >
           <div className="flex h-full items-end justify-between">
             <div className="mx-1 flex flex-col gap-1">
-              <h1 className="text-xl font-medium">My conlangs</h1>
+              <h2 className="text-xl font-medium">My conlangs</h2>
               <p className="text-sm text-muted-foreground">
                 View and manage your languages here.
               </p>

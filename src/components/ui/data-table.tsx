@@ -8,6 +8,7 @@ import {
   useReactTable,
   type ColumnDef,
   type Table as TableType,
+  type Row as RowType,
 } from "@tanstack/react-table";
 
 import { ChevronDoubleLeft } from "../icons/chevron-double-left";
@@ -117,12 +118,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   visibility?: VisibilityState;
+  onRowClick?: (row: RowType<TData>) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   visibility = {},
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] =
     useState<VisibilityState>(visibility);
@@ -167,6 +170,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => onRowClick && onRowClick(row)}
+                  className={onRowClick && "group cursor-pointer"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
