@@ -8,7 +8,6 @@ await import("./src/env.js");
 const coreConfig = {
   images: {
     remotePatterns: [
-      { hostname: "utfs.io" },
       {
         protocol: "https",
         hostname: "img.clerk.com",

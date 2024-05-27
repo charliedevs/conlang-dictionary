@@ -3,14 +3,14 @@
 
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   index,
+  integer,
   pgTableCreator,
   serial,
+  text,
   timestamp,
   varchar,
-  boolean,
-  text,
-  integer,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -62,23 +62,5 @@ export const words = createTable(
   },
   (word) => ({
     wordTextIndex: index("word_text_idx").on(word.text),
-  }),
-);
-
-// For image uploads and image gallery
-export const images = createTable(
-  "image",
-  {
-    id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }).notNull(),
-    url: varchar("url", { length: 1024 }).notNull(),
-    userId: varchar("userId", { length: 256 }).notNull(),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt"),
-  },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
   }),
 );
