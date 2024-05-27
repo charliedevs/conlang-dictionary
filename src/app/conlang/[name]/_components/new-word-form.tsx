@@ -27,7 +27,10 @@ const newWordSchema = z.object({
   definition: z.string().optional(),
 });
 
-export const NewWordForm = (props: { conlangId: number }) => {
+export const NewWordForm = (props: {
+  conlangId: number;
+  afterSubmit?: () => void;
+}) => {
   const form = useForm<z.infer<typeof newWordSchema>>({
     resolver: zodResolver(newWordSchema),
     defaultValues: {
@@ -54,6 +57,7 @@ export const NewWordForm = (props: { conlangId: number }) => {
         return res.json();
       })
       .then(() => {
+        props.afterSubmit?.();
         form.reset();
         router.refresh();
         toast.success("Word added.");

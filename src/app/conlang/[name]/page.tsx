@@ -1,4 +1,5 @@
 import { SignedIn } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 
 import {
@@ -9,9 +10,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
-import { NewWordForm } from "./_components/new-word-form";
 import { getConlangByName, getWordsByConlangId } from "~/server/queries";
-import { auth } from "@clerk/nextjs/server";
+import { AddWordButton } from "./_components/add-word-button";
 
 async function WordList(props: { conlangId: number }) {
   const words = await getWordsByConlangId(props.conlangId);
@@ -68,7 +68,7 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
       <div className="container flex flex-col items-center justify-center gap-8 px-4 py-14">
         <h1 className="text-center text-2xl font-medium">{params.name}</h1>
         <p>{conlang.description}</p>
-        {isConlangOwner && <NewWordForm conlangId={conlang.id} />}
+        {isConlangOwner && <AddWordButton conlangId={conlang.id} />}
         <WordList conlangId={conlang.id} />
       </div>
     </div>
