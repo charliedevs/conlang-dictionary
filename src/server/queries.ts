@@ -129,11 +129,11 @@ export async function deleteConlang(id: number) {
 }
 // #endregion
 
-// #regionWORDS
+// #region WORDS
 export async function getWordsByConlangId(conlangId: number) {
   const words = await db.query.words.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),
-    orderBy: (model, { desc }) => desc(model.text),
+    orderBy: (model, { asc }) => [asc(model.text)],
   });
 
   return words;
