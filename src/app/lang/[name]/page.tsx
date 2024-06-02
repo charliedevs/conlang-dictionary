@@ -35,7 +35,13 @@ interface ConlangPageProps {
 }
 
 export default async function ConlangPage({ params }: ConlangPageProps) {
-  const conlang = await getConlangByName(params.name);
+  let conlang;
+  try {
+    conlang = await getConlangByName(params.name);
+  } catch (error) {
+    console.error("Error:", error);
+    return <div className="py-5 text-center">Conlang not found.</div>;
+  }
   // check conlang ownerId and check if signed in user matches
   const isConlangOwner = conlang.ownerId === auth().userId;
   return (
