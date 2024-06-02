@@ -7,6 +7,7 @@ import { cn } from "~/lib/utils";
 import { Toaster } from "../components/ui/sonner";
 import { TopNav } from "./_components/topnav";
 import Providers from "./providers";
+import { Footer } from "./_components/footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,9 +30,12 @@ export default function RootLayout({
       <html lang="en">
         <Providers>
           <body className={cn("font-sans", inter.variable)}>
-            <div className="grid h-screen grid-rows-[auto,1fr]">
+            <div className="grid grid-rows-[auto,1fr]">
               <TopNav />
-              <main className="overflow-y-auto">{children}</main>
+              <main className="overflow-y-auto">
+                {children}
+                <Footer />
+              </main>
             </div>
             <Toaster />
           </body>

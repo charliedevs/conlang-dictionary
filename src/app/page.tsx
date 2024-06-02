@@ -14,13 +14,14 @@ import { Bolt } from "~/components/icons/bolt";
 async function RecentConlangs() {
   const recentConlangs = await getRecentConlangs();
   return (
-    <div className="flex flex-col items-center justify-center px-0.5">
+    <div className="flex max-w-xs flex-col items-center justify-center px-0.5 md:max-w-xl">
       <h2 className="p-2 text-center text-xl font-medium text-muted-foreground ">
-        Recently-updated languages:
+        Check out some languages here:
       </h2>
       <ConlangTable
         conlangs={recentConlangs}
         visibility={{
+          description: false,
           isPublic: false,
           createdAt: false,
           updatedAt: false,
@@ -42,35 +43,6 @@ export default function HomePage() {
         refine, and harness your conlanging creativity with a suite of versatile
         tools.
       </p>
-      <div className="text-center text-lg font-medium text-muted-foreground">
-        <SignedOut>
-          <p>
-            <Link
-              href="/sign-in"
-              className="text-dictionary hover:underline hover:opacity-85"
-            >
-              Sign in
-            </Link>{" "}
-            to get started building your own conlangs.
-          </p>
-        </SignedOut>
-        <SignedIn>
-          <p className="text-center">
-            Visit the{" "}
-            <Link
-              href="/dashboard"
-              className="inline-flex items-baseline text-dictionary hover:underline hover:opacity-85"
-            >
-              <Dashboard className=" mr-1 h-6 w-6 translate-y-1" />
-              dashboard
-            </Link>{" "}
-            to manage your conlangs.
-          </p>
-        </SignedIn>
-      </div>
-      <div className="mt-5">
-        <RecentConlangs />
-      </div>
       <div
         id="features"
         className="flex max-w-[100rem] flex-col items-center text-pretty text-left"
@@ -94,7 +66,7 @@ export default function HomePage() {
           </div>
           <div className="group rounded-lg border p-6 opacity-80 shadow-lg transition-all ease-in hover:opacity-100 hover:shadow-xl">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="mb-2 text-xl font-semibold">Share conlangs</h3>
+              <h3 className="mb-2 text-xl font-semibold">Share languages</h3>
               <Users className="mb-2 h-8 w-8 min-w-8 transition-colors ease-in group-hover:text-dictionary" />
             </div>
             <p>
@@ -113,7 +85,7 @@ export default function HomePage() {
             <p>
               Customize what&apos;s{" "}
               <span className="font-medium text-dictionary">permissible</span>{" "}
-              in your conlang, from allowed sound combinations to syntactical
+              in your language, from allowed sound combinations to syntactical
               rules.
             </p>
           </div>
@@ -156,6 +128,43 @@ export default function HomePage() {
               experience.
             </p>
           </div>
+        </div>
+      </div>
+      <div className="flex w-full flex-col items-center justify-around gap-4 md:flex-row">
+        <div id="recentConlangs" className="mt-5">
+          <RecentConlangs />
+        </div>
+        <div
+          id="callToAction"
+          className="max-w-sm rounded-lg border border-border bg-primary-foreground p-8 md:max-w-md"
+        >
+          <h2 className="mb-5 text-center text-3xl font-semibold text-foreground md:text-4xl">
+            Ready to create your own language?
+          </h2>
+          <SignedOut>
+            <p className="text-center text-2xl font-medium text-muted-foreground">
+              <Link
+                href="/sign-in"
+                className="text-dictionary hover:underline hover:opacity-85"
+              >
+                Sign in
+              </Link>{" "}
+              to get started building your own conlangs.
+            </p>
+          </SignedOut>
+          <SignedIn>
+            <p className="text-center text-2xl font-medium text-muted-foreground">
+              Visit the{" "}
+              <Link
+                href="/dashboard"
+                className="inline-flex items-baseline text-dictionary hover:underline hover:opacity-85"
+              >
+                <Dashboard className=" mr-1 h-6 w-6 translate-y-1" />
+                dashboard
+              </Link>{" "}
+              to manage your conlangs.
+            </p>
+          </SignedIn>
         </div>
       </div>
     </div>
