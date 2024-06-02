@@ -10,6 +10,7 @@ import { AdjustmentsHorizontal } from "~/components/icons/adjustments-horizontal
 import { PresentationChartLine } from "~/components/icons/presentation-chart-line";
 import { DevicePhoneMobile } from "~/components/icons/device-phone-mobile";
 import { Bolt } from "~/components/icons/bolt";
+import { Language } from "~/components/icons/language";
 
 async function RecentConlangs() {
   const recentConlangs = await getRecentConlangs();
@@ -136,24 +137,27 @@ export default function HomePage() {
         </div>
         <div
           id="callToAction"
-          className="max-w-sm rounded-lg border border-border bg-primary-foreground p-8 md:max-w-md"
+          className="group max-w-sm rounded-lg border border-border bg-primary-foreground p-8 md:max-w-md"
         >
-          <h2 className="mb-5 text-center text-3xl font-semibold text-foreground md:text-4xl">
+          <h2 className="mb-5 flex items-center gap-6 text-start text-2xl font-semibold md:gap-8 md:text-4xl">
+            <span className="text-muted-foreground transition ease-in group-hover:text-foreground">
+              <Language className="size-10 md:size-20" />
+            </span>
             Ready to create your own language?
           </h2>
           <SignedOut>
-            <p className="text-center text-2xl font-medium text-muted-foreground">
+            <p className="text-center text-lg font-medium text-muted-foreground md:text-2xl">
               <Link
-                href="/sign-in"
+                href="/sign-up"
                 className="text-dictionary hover:underline hover:opacity-85"
               >
-                Sign in
+                Sign up
               </Link>{" "}
-              to get started building your own conlangs.
+              to get started building!
             </p>
           </SignedOut>
           <SignedIn>
-            <p className="text-center text-2xl font-medium text-muted-foreground">
+            <p className="text-center text-lg font-medium text-muted-foreground md:text-2xl">
               Visit the{" "}
               <Link
                 href="/dashboard"

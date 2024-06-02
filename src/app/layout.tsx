@@ -30,12 +30,10 @@ export default function RootLayout({
       <html lang="en">
         <Providers>
           <body className={cn("font-sans", inter.variable)}>
-            <div className="grid grid-rows-[auto,1fr]">
+            <div className="flex min-h-screen flex-col ">
               <TopNav />
-              <main className="overflow-y-auto">
-                {children}
-                <Footer />
-              </main>
+              <main className="min-h-96 overflow-y-auto">{children}</main>
+              <Footer />
             </div>
             <Toaster />
           </body>
