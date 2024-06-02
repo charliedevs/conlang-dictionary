@@ -73,11 +73,11 @@ export const NewWordForm = (props: {
   }
 
   return (
-    <div id="newWordForm" className="my-10">
+    <div id="newWordForm">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex min-w-64 flex-col justify-center space-y-8"
+          className="flex min-w-64 flex-col justify-center space-y-4 px-4"
         >
           <FormField
             control={form.control}

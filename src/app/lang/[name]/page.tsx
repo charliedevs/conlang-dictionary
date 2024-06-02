@@ -15,7 +15,7 @@ async function WordList(props: { conlangId: number }) {
         {words.map((word) => (
           <div
             key={word.id}
-            className="flex flex-col p-2 hover:cursor-pointer hover:bg-secondary"
+            className="flex flex-col rounded-md p-2 hover:cursor-pointer hover:bg-secondary"
           >
             <div className="flex items-baseline gap-5">
               <div className="text-md font-bold">{word.text}</div>
