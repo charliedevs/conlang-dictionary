@@ -139,6 +139,14 @@ export async function getWordsByConlangId(conlangId: number) {
   return words;
 }
 
+export async function getWordById(id: number) {
+  const word = await db.query.words.findFirst({
+    where: (model, { eq }) => eq(model.id, id),
+  });
+  if (!word) throw new Error(`Word with id ${id} not found`);
+  return word;
+}
+
 export async function createWord(
   conlangId: number,
   text: string,

@@ -1,11 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
+import Link from "next/link";
 
 import { getConlangByName, getWordsByConlangId } from "~/server/queries";
 import { AddWordButton } from "./_components/add-word-button";
 import { Breadcrumbs } from "./_components/breadcrumbs";
 import { ScrollArea } from "~/components/ui/scroll-area";
 
-async function WordList(props: { conlangId: number }) {
+async function WordList(props: { conlangId: number; conlangName: string }) {
   const words = await getWordsByConlangId(props.conlangId);
   if (words.length < 1)
     return <div className="py-5 text-center">No words added yet.</div>;
@@ -13,8 +14,9 @@ async function WordList(props: { conlangId: number }) {
     <ScrollArea className="min-h-0 max-w-md overflow-auto rounded-md border border-border p-3 [&>div]:max-h-[calc(100vh-310px)]">
       <div className="flex flex-col gap-3">
         {words.map((word) => (
-          <div
+          <Link
             key={word.id}
+            href={`/lang/${props.conlangName}/${word.id}`}
             className="flex flex-col rounded-md p-2 hover:cursor-pointer hover:bg-secondary"
           >
             <div className="flex items-baseline gap-5">
@@ -23,7 +25,7 @@ async function WordList(props: { conlangId: number }) {
             </div>
             <div className="text-xs">{word.gloss}</div>
             <div className="whitespace-pre-wrap text-sm">{word.definition}</div>
-          </div>
+          </Link>
         ))}
       </div>
     </ScrollArea>
@@ -55,7 +57,7 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
         {isConlangOwner && <AddWordButton conlangId={conlang.id} />}
       </div>
       <div id="words" className="mx-auto w-96 max-w-full">
-        <WordList conlangId={conlang.id} />
+        <WordList conlangId={conlang.id} conlangName={params.name} />
       </div>
     </div>
   );
