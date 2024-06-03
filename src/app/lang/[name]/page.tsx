@@ -5,13 +5,14 @@ import { getConlangByName, getWordsByConlangId } from "~/server/queries";
 import { AddWordButton } from "./_components/add-word-button";
 import { Breadcrumbs } from "./_components/breadcrumbs";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import { WordDetails } from "./_components/word-details";
 
 async function WordList(props: { conlangId: number; conlangName: string }) {
   const words = await getWordsByConlangId(props.conlangId);
   if (words.length < 1)
     return <div className="py-5 text-center">No words added yet.</div>;
   return (
-    <ScrollArea className="min-h-0 max-w-md overflow-auto rounded-md border border-border p-3 [&>div]:max-h-[calc(100vh-310px)]">
+    <ScrollArea className="min-h-0 overflow-auto rounded-md border border-border p-3 [&>div]:max-h-[calc(95vh-325px)]">
       <div className="flex flex-col gap-3">
         {words.map((word) => (
           <Link
@@ -33,7 +34,7 @@ async function WordList(props: { conlangId: number; conlangName: string }) {
 }
 
 interface ConlangPageProps {
-  params: { name: string };
+  params: { name: string; wordId?: string };
 }
 
 export default async function ConlangPage({ params }: ConlangPageProps) {
@@ -53,11 +54,22 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
         <h1 className="text-start text-2xl font-medium">{params.name}</h1>
         <p>{conlang.description}</p>
       </div>
-      <div className="mx-auto flex w-96 max-w-full justify-start">
+      <div className="mx-auto flex w-full min-w-96 justify-start">
         {isConlangOwner && <AddWordButton conlangId={conlang.id} />}
       </div>
-      <div id="words" className="mx-auto w-96 max-w-full">
-        <WordList conlangId={conlang.id} conlangName={params.name} />
+      <div>
+        <div id="words" className="mx-auto w-full min-w-96">
+          <WordList conlangId={conlang.id} conlangName={params.name} />
+        </div>
+        {Boolean(params.wordId) && (
+          <div id="wordDetails">
+            <WordDetails
+              conlang={conlang}
+              isConlangOwner={isConlangOwner}
+              wordId={Number(params.wordId)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

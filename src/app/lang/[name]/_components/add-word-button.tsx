@@ -33,7 +33,7 @@ export function AddWordButton(props: { conlangId: number }) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline">
+          <Button>
             <PlusCircle className="mr-1 size-5 text-inherit" />
             Add Word
           </Button>
