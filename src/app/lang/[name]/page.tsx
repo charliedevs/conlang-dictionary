@@ -53,7 +53,7 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
         <h1 className="text-start text-2xl font-medium">{params.name}</h1>
         <p>{conlang.description}</p>
       </div>
-      <div className="mx-auto flex w-96 max-w-full justify-end">
+      <div className="mx-auto flex w-96 max-w-full justify-start">
         {isConlangOwner && <AddWordButton conlangId={conlang.id} />}
       </div>
       <div id="words" className="mx-auto w-96 max-w-full">

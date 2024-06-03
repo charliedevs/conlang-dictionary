@@ -7,6 +7,7 @@ import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -15,12 +16,14 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "~/components/ui/drawer";
 import { NewWordForm } from "./new-word-form";
+import { PlusCircle } from "~/components/icons/plus-circle";
 
 export function AddWordButton(props: { conlangId: number }) {
   const [open, setOpen] = useState(false);
@@ -30,12 +33,17 @@ export function AddWordButton(props: { conlangId: number }) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline">Add Word</Button>
+          <Button variant="outline">
+            <PlusCircle className="mr-1 size-5 text-inherit" />
+            Add Word
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add Word</DialogTitle>
-            {/* <DialogDescription></DialogDescription> */}
+            <DialogDescription>
+              You can add more details later.
+            </DialogDescription>
           </DialogHeader>
           <NewWordForm
             conlangId={props.conlangId}
@@ -48,12 +56,15 @@ export function AddWordButton(props: { conlangId: number }) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline">Add Word</Button>
+        <Button>
+          <PlusCircle className="mr-1 size-5 text-inherit" />
+          Add Word
+        </Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>Add Word</DrawerTitle>
-          {/* <DrawerDescription></DrawerDescription> */}
+          <DrawerDescription>You can add more details later.</DrawerDescription>
         </DrawerHeader>
         <NewWordForm
           conlangId={props.conlangId}
