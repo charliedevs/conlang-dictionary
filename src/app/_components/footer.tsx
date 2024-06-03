@@ -2,7 +2,7 @@ import { Github } from "~/components/icons/github";
 
 export function Footer() {
   return (
-    <footer className="mt-auto flex w-full items-end justify-between px-3 pb-2 pt-4 text-center text-sm text-muted-foreground md:px-6">
+    <footer className="mt-auto flex w-full items-end justify-between px-3 pb-2 pt-4 text-center text-xs text-muted-foreground md:px-6 md:text-sm">
       <p className="text-left">
         © 2024{" "}
         <a
