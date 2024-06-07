@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 
+import { PlusCircle } from "~/components/icons/plus-circle";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -23,7 +24,6 @@ import {
   DrawerTrigger,
 } from "~/components/ui/drawer";
 import { NewWordForm } from "./new-word-form";
-import { PlusCircle } from "~/components/icons/plus-circle";
 
 export function AddWordButton(props: { conlangId: number }) {
   const [open, setOpen] = useState(false);
@@ -33,7 +33,7 @@ export function AddWordButton(props: { conlangId: number }) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button>
+          <Button id="addWordButton" className="md:w-36">
             <PlusCircle className="mr-1 size-5 text-inherit" />
             Add Word
           </Button>
@@ -56,7 +56,7 @@ export function AddWordButton(props: { conlangId: number }) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button>
+        <Button id="addWordButton" className="md:w-36">
           <PlusCircle className="mr-1 size-5 text-inherit" />
           Add Word
         </Button>
