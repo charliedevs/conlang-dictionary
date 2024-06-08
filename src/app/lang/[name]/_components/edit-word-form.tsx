@@ -1,11 +1,9 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -17,50 +15,62 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { createWord } from "../_actions/word";
+import { type Word } from "~/types/word";
+import { updateWord } from "../_actions/word";
 
-const newWordSchema = z.object({
-  conlangId: z.number(),
+const editWordSchema = z.object({
+  id: z.number(),
   text: z.string().min(1, "Word text required."),
   pronunciation: z.string().optional(),
   gloss: z.string().optional(),
   definition: z.string().optional(),
 });
 
-export const NewWordForm = (props: {
-  conlangId: number;
+interface EditWordFormProps {
+  word: Word;
   afterSubmit?: () => void;
-}) => {
-  const form = useForm<z.infer<typeof newWordSchema>>({
-    resolver: zodResolver(newWordSchema),
-    defaultValues: {
-      conlangId: props.conlangId,
-      text: "",
-      pronunciation: "",
-      definition: "",
-    },
-  });
+}
 
+export function EditWordForm(props: EditWordFormProps) {
+  const defaultValues = {
+    id: props.word.id,
+    text: props.word.text,
+    pronunciation: props.word.pronunciation ?? "",
+    definition: props.word.definition ?? "",
+  };
+  const form = useForm<z.infer<typeof editWordSchema>>({
+    resolver: zodResolver(editWordSchema),
+    defaultValues: { ...defaultValues },
+  });
+  useEffect(() => {
+    form.reset({ ...defaultValues });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.word.id]);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  async function onSubmit(values: z.infer<typeof newWordSchema>) {
+  async function onSubmit(values: z.infer<typeof editWordSchema>) {
+    setIsSubmitting(true);
     try {
-      await createWord(values);
+      await updateWord(values);
       props.afterSubmit?.();
       router.refresh();
-      toast.success("Word added.");
+      toast.success("Word updated.");
     } catch (error) {
       console.error("Error:", error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("Failed to add word. Please try again.");
+        toast.error("Failed to update word. Please try again.");
       }
       return;
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <div id="newWordForm">
+    <div id="editWordForm">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -73,7 +83,7 @@ export const NewWordForm = (props: {
               <FormItem className="">
                 <FormLabel>Word</FormLabel>
                 <FormControl>
-                  <Input placeholder="teng" {...field} />
+                  <Input placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -86,7 +96,7 @@ export const NewWordForm = (props: {
               <FormItem className="">
                 <FormLabel>Pronunciation</FormLabel>
                 <FormControl>
-                  <Input placeholder="tʃiːn" {...field} />
+                  <Input placeholder="IPA (optional)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -99,7 +109,7 @@ export const NewWordForm = (props: {
               <FormItem className="">
                 <FormLabel>Gloss</FormLabel>
                 <FormControl>
-                  <Input placeholder="BOOK" {...field} />
+                  <Input placeholder="e.g.,BOOK (optional)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,17 +122,20 @@ export const NewWordForm = (props: {
               <FormItem className="">
                 <FormLabel>Definition</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="book; a written work" {...field} />
+                  <Textarea
+                    placeholder="Add as much info as you want (optional)"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            Add Word
+          <Button type="submit" disabled={isSubmitting}>
+            Update
           </Button>
         </form>
       </Form>
     </div>
   );
-};
+}

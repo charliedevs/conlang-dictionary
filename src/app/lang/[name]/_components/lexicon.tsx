@@ -2,21 +2,18 @@
 
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
+import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { type Word } from "~/types/word";
+import { EditWordForm } from "./edit-word-form";
 
 function WordList(props: {
   words: Word[];
@@ -33,9 +30,16 @@ function WordList(props: {
           <li
             key={word.id}
             onClick={() =>
-              props.setSelectedWord((prev) => (word === prev ? null : word))
+              props.setSelectedWord((prev) =>
+                word.id === prev?.id ? null : word,
+              )
             }
-            className="flex flex-col rounded-md p-2 hover:cursor-pointer hover:bg-secondary"
+            className={cn(
+              "flex flex-col rounded-md p-2 transition-all ease-in hover:cursor-pointer hover:bg-secondary",
+              props.selectedWord?.id === word.id
+                ? "bg-slate-400/40 hover:bg-slate-400/30"
+                : "",
+            )}
           >
             <div className="flex items-baseline gap-5">
               <div className="text-md font-bold">{word.text}</div>
@@ -55,30 +59,24 @@ function WordDetails(props: {
   setSelectedWord: Dispatch<SetStateAction<Word | null>>;
 }) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  if (isDesktop && Boolean(props.word)) {
-    return <div className="w-[50vw] bg-slate-400">{props.word?.text}</div>;
+  if (isDesktop && props.word) {
+    return (
+      <div className="min-w-[50vw]">
+        <EditWordForm word={props.word} />
+      </div>
+    );
   }
   return (
     <Sheet
       open={Boolean(props.word)}
       onOpenChange={() => props.setSelectedWord(null)}
     >
-      <SheetContent className="w-[80vw]">
+      <SheetContent className="flex w-[80vw] flex-col gap-4">
         <SheetHeader>
-          <SheetTitle>{props.word?.text}</SheetTitle>
-          <SheetDescription>description</SheetDescription>
+          <SheetTitle>Edit Word</SheetTitle>
+          <SheetDescription>Change or add word details.</SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <Label htmlFor="name">Name</Label>
-          <Input id="name" value="Pedro Duarte" />
-          <Label htmlFor="username">Username</Label>
-          <Input id="username" value="@peduarte" className="col-span-3" />
-        </div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button type="submit">Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
+        {props.word ? <EditWordForm word={props.word} /> : null}
       </SheetContent>
     </Sheet>
   );

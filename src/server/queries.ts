@@ -170,4 +170,28 @@ export async function insertWord(w: WordInsert) {
 
   if (!word[0]) throw new Error("Word not created");
 }
+
+export interface WordUpdate {
+  id: number;
+  text: string;
+  pronunciation?: string;
+  gloss?: string;
+  definition?: string;
+}
+
+export async function updateWord(w: WordUpdate) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const word = await db
+    .update(words)
+    .set({
+      ...w,
+      updatedAt: new Date(),
+    })
+    .where(eq(words.id, w.id))
+    .returning();
+
+  if (!word[0]) throw new Error("Word not updated");
+}
 // #endregion
