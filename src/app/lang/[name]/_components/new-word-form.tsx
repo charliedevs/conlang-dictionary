@@ -17,7 +17,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { handleApiErrorResponse } from "~/utils/client-error-handler";
+import { createWord } from "../_actions/createWord";
 
 const newWordSchema = z.object({
   conlangId: z.number(),
@@ -42,34 +42,21 @@ export const NewWordForm = (props: {
   });
 
   const router = useRouter();
-  function onSubmit(values: z.infer<typeof newWordSchema>) {
-    fetch("/api/word", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(values),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          return handleApiErrorResponse(res);
-        }
-        return res.json();
-      })
-      .then(() => {
-        props.afterSubmit?.();
-        form.reset();
-        router.refresh();
-        toast.success("Word added.");
-      })
-      .catch((err) => {
-        console.error("Error:", err);
-        if (err instanceof Error) {
-          toast.error(err.message);
-        } else {
-          toast.error("Failed to add word. Please try again.");
-        }
-      });
+  async function onSubmit(values: z.infer<typeof newWordSchema>) {
+    try {
+      await createWord(values);
+      props.afterSubmit?.();
+      router.refresh();
+      toast.success("Word added.");
+    } catch (error) {
+      console.error("Error:", error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to add word. Please try again.");
+      }
+      return;
+    }
   }
 
   return (

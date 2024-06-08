@@ -147,24 +147,22 @@ export async function getWordById(id: number) {
   return word;
 }
 
-export async function createWord(
-  conlangId: number,
-  text: string,
-  pronunciation?: string,
-  gloss?: string,
-  definition?: string,
-) {
+export interface WordInsert {
+  conlangId: number;
+  text: string;
+  pronunciation?: string;
+  gloss?: string;
+  definition?: string;
+}
+
+export async function insertWord(w: WordInsert) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
   const word = await db
     .insert(words)
     .values({
-      conlangId,
-      text,
-      pronunciation,
-      gloss,
-      definition,
+      ...w,
       createdAt: new Date(),
       updatedAt: new Date(),
     })
