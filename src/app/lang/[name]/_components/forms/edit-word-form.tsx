@@ -14,9 +14,10 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { Textarea } from "~/components/ui/textarea";
 import { type Word } from "~/types/word";
-import { updateWord } from "../_actions/word";
+import { updateWord } from "../../_actions/word";
 
 const editWordSchema = z.object({
   id: z.number(),
@@ -70,11 +71,14 @@ export function EditWordForm(props: EditWordFormProps) {
   }
 
   return (
-    <div id="editWordForm">
+    <ScrollArea
+      id="editWordForm"
+      className="min-h-0 min-w-64 flex-grow overflow-auto rounded-md px-2 [&>div]:max-h-[calc(95vh)]"
+    >
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex min-w-64 flex-col justify-center space-y-4 px-4"
+          className="flex flex-col justify-center gap-5 px-2 md:gap-4 md:px-4"
         >
           <FormField
             control={form.control}
@@ -109,7 +113,7 @@ export function EditWordForm(props: EditWordFormProps) {
               <FormItem className="">
                 <FormLabel>Gloss</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g.,BOOK (optional)" {...field} />
+                  <Input placeholder="e.g., BOOK (optional)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -134,8 +138,16 @@ export function EditWordForm(props: EditWordFormProps) {
           <Button type="submit" disabled={isSubmitting}>
             Update
           </Button>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={isSubmitting}
+            onClick={props.afterSubmit}
+          >
+            Cancel
+          </Button>
         </form>
       </Form>
-    </div>
+    </ScrollArea>
   );
 }

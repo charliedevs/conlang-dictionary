@@ -1,19 +1,11 @@
 "use client";
 
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { useMediaQuery } from "usehooks-ts";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "~/components/ui/sheet";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { type Word } from "~/types/word";
-import { EditWordForm } from "./edit-word-form";
+import { WordView } from "./word-view";
 
 function WordList(props: {
   words: Word[];
@@ -54,35 +46,11 @@ function WordList(props: {
   );
 }
 
-function WordDetails(props: {
-  word: Word | null;
-  setSelectedWord: Dispatch<SetStateAction<Word | null>>;
+export function Lexicon(props: {
+  conlang: Conlang;
+  words: Word[];
+  isConlangOwner: boolean;
 }) {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  if (isDesktop && props.word) {
-    return (
-      <div className="min-w-[50vw]">
-        <EditWordForm word={props.word} />
-      </div>
-    );
-  }
-  return (
-    <Sheet
-      open={Boolean(props.word)}
-      onOpenChange={() => props.setSelectedWord(null)}
-    >
-      <SheetContent className="flex w-[80vw] flex-col gap-4">
-        <SheetHeader>
-          <SheetTitle>Edit Word</SheetTitle>
-          <SheetDescription>Change or add word details.</SheetDescription>
-        </SheetHeader>
-        {props.word ? <EditWordForm word={props.word} /> : null}
-      </SheetContent>
-    </Sheet>
-  );
-}
-
-export function Lexicon(props: { conlang: Conlang; words: Word[] }) {
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   return (
     <div id="lexicon" className="flex gap-4">
@@ -92,7 +60,11 @@ export function Lexicon(props: { conlang: Conlang; words: Word[] }) {
         selectedWord={selectedWord}
         setSelectedWord={setSelectedWord}
       />
-      <WordDetails word={selectedWord} setSelectedWord={setSelectedWord} />
+      <WordView
+        word={selectedWord}
+        setSelectedWord={setSelectedWord}
+        isConlangOwner={props.isConlangOwner}
+      />
     </div>
   );
 }

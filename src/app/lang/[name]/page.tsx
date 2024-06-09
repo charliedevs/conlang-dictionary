@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 
 import { getConlangByName, getWordsByConlangId } from "~/server/queries";
-import { AddWordButton } from "./_components/add-word-button";
 import { Breadcrumbs } from "./_components/breadcrumbs";
+import { AddWordButton } from "./_components/forms/add-word-button";
 import { Lexicon } from "./_components/lexicon";
 
 interface ConlangPageProps {
@@ -28,7 +28,11 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
         <p>{conlang.description}</p>
       </div>
       {isConlangOwner && <AddWordButton conlangId={conlang.id} />}
-      <Lexicon conlang={conlang} words={words} />
+      <Lexicon
+        conlang={conlang}
+        words={words}
+        isConlangOwner={isConlangOwner}
+      />
     </div>
   );
 }

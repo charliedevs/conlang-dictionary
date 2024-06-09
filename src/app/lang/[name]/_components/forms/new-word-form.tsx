@@ -16,8 +16,9 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { Textarea } from "~/components/ui/textarea";
-import { createWord } from "../_actions/word";
+import { createWord } from "../../_actions/word";
 
 const newWordSchema = z.object({
   conlangId: z.number(),
@@ -60,11 +61,14 @@ export const NewWordForm = (props: {
   }
 
   return (
-    <div id="newWordForm">
+    <ScrollArea
+      id="newWordForm"
+      className="min-h-0 min-w-64 flex-grow overflow-auto rounded-md px-2 [&>div]:max-h-[calc(95vh)]"
+    >
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex min-w-64 flex-col justify-center space-y-4 px-4"
+          className="flex flex-col justify-center gap-4 px-4"
         >
           <FormField
             control={form.control}
@@ -73,7 +77,7 @@ export const NewWordForm = (props: {
               <FormItem className="">
                 <FormLabel>Word</FormLabel>
                 <FormControl>
-                  <Input placeholder="teng" {...field} />
+                  <Input placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -86,7 +90,7 @@ export const NewWordForm = (props: {
               <FormItem className="">
                 <FormLabel>Pronunciation</FormLabel>
                 <FormControl>
-                  <Input placeholder="tʃiːn" {...field} />
+                  <Input placeholder="IPA (optional)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -99,7 +103,7 @@ export const NewWordForm = (props: {
               <FormItem className="">
                 <FormLabel>Gloss</FormLabel>
                 <FormControl>
-                  <Input placeholder="BOOK" {...field} />
+                  <Input placeholder="e.g., BOOK (optional)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,7 +116,10 @@ export const NewWordForm = (props: {
               <FormItem className="">
                 <FormLabel>Definition</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="book; a written work" {...field} />
+                  <Textarea
+                    placeholder="Add as much info as you want (optional)"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,6 +130,6 @@ export const NewWordForm = (props: {
           </Button>
         </form>
       </Form>
-    </div>
+    </ScrollArea>
   );
 };
