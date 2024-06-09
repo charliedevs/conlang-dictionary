@@ -129,39 +129,69 @@ export async function deleteConlang(id: number) {
 }
 // #endregion
 
-// #regionWORDS
+// #region WORDS
 export async function getWordsByConlangId(conlangId: number) {
   const words = await db.query.words.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),
-    orderBy: (model, { desc }) => desc(model.text),
+    orderBy: (model, { asc }) => [asc(model.text)],
   });
 
   return words;
 }
 
-export async function createWord(
-  conlangId: number,
-  text: string,
-  pronunciation?: string,
-  gloss?: string,
-  definition?: string,
-) {
+export async function getWordById(id: number) {
+  const word = await db.query.words.findFirst({
+    where: (model, { eq }) => eq(model.id, id),
+  });
+  if (!word) throw new Error(`Word with id ${id} not found`);
+  return word;
+}
+
+export interface WordInsert {
+  conlangId: number;
+  text: string;
+  pronunciation?: string;
+  gloss?: string;
+  definition?: string;
+}
+
+export async function insertWord(w: WordInsert) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
   const word = await db
     .insert(words)
     .values({
-      conlangId,
-      text,
-      pronunciation,
-      gloss,
-      definition,
+      ...w,
       createdAt: new Date(),
       updatedAt: new Date(),
     })
     .returning();
 
   if (!word[0]) throw new Error("Word not created");
+}
+
+export interface WordUpdate {
+  id: number;
+  text: string;
+  pronunciation?: string;
+  gloss?: string;
+  definition?: string;
+}
+
+export async function updateWord(w: WordUpdate) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const word = await db
+    .update(words)
+    .set({
+      ...w,
+      updatedAt: new Date(),
+    })
+    .where(eq(words.id, w.id))
+    .returning();
+
+  if (!word[0]) throw new Error("Word not updated");
 }
 // #endregion

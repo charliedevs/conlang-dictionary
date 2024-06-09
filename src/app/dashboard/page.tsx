@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   // Get user's conlangs
   const conlangs = await getMyConlangs();
 
-  // Pretech user info for client
+  // Prefetch user info for client
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: [
@@ -49,7 +49,7 @@ export default async function DashboardPage() {
                 View and manage your languages here.
               </p>
             </div>
-            <Link href="/conlang/new">
+            <Link href="/lang/new">
               <Button variant="outline">Create a new conlang</Button>
             </Link>
           </div>

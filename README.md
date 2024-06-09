@@ -37,7 +37,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 #### Basic Lexicon & Grammar
 
-- [ ] Users can add words
+- [x] Users can add words
 - [ ] Card for each word with word, glosses, and examples with glosses
 - [ ] Add ability to edit word
 - [ ] Add ability to delete word
@@ -60,6 +60,8 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 
 ### Misc Details
 
+- [ ] Use server actions instead of API requests
+  - see createWord
 - [ ] Create a custom 404/not found page
 - [ ] Maybe create users table with data from clerk and tie it to the conlang table
   - [ ] Then pull user info from conlang table join instead of react query

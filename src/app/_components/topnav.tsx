@@ -8,7 +8,7 @@ import { DashboardButton } from "./dashboard-button";
 export function TopNav() {
   return (
     <nav
-      className="flex w-full items-center justify-between border-b p-4"
+      className="sticky top-0 z-50 flex w-full items-center justify-between border-b bg-background p-2 md:p-4"
       aria-label="Global navigation"
     >
       <div

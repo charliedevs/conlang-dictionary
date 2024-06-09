@@ -6,7 +6,11 @@ import { useEffect } from "react";
 
 export default function GlobalError(props: { error: unknown }) {
   useEffect(() => {
-    Sentry.captureException(props.error);
+    if (process.env.NODE_ENV === "development") {
+      console.error(props.error);
+    } else {
+      Sentry.captureException(props.error);
+    }
   }, [props.error]);
 
   return (

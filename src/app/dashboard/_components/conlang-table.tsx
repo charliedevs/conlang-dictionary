@@ -161,7 +161,10 @@ export function ConlangTable(props: {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => router.push(`/conlang/edit/${conlangId}`)}
+                  onClick={(e) => {
+                    router.push(`/lang/edit/${conlangId}`);
+                    e.stopPropagation();
+                  }}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Edit</span>
@@ -183,7 +186,7 @@ export function ConlangTable(props: {
         cell: ({ row }) => {
           const conlangName = row.original.name;
           return (
-            <Link href={`/conlang/${conlangName}`}>
+            <Link href={`/lang/${conlangName}`}>
               <Button
                 variant="ghost"
                 className="h-8 w-8 rounded-full p-0 text-slate-400 transition-colors ease-in hover:bg-slate-500/10 hover:text-slate-700 group-hover:text-slate-700"
@@ -200,7 +203,7 @@ export function ConlangTable(props: {
   );
 
   const handleRowClick = (row: RowType<Conlang>) => {
-    router.push(`/conlang/${row.original.name}`);
+    router.push(`/lang/${row.original.name}`);
   };
 
   return (
