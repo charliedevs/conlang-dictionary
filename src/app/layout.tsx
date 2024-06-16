@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={cn("font-sans", inter.variable)}>
+        <body className={cn("font-sans antialiased", inter.variable)}>
           <Providers>
             <div className="flex min-h-screen flex-col ">
               <TopNav />
