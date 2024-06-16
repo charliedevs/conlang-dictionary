@@ -14,20 +14,20 @@ export function TopNav() {
     >
       <div
         id="header-left"
-        className="flex items-center justify-between gap-4 md:w-auto"
+        className="flex items-center justify-between gap-2 md:w-auto md:gap-4"
       >
-        <Link href="/" className="flex" title="Go to homepage">
+        <Link href="/" title="Go to homepage">
           <Image
-            src="/images/conlang_dictionary.png"
+            src="/images/conlang_dictionary_upscale.png"
             alt="Conlang Flag Logo"
-            width={50}
-            height={50}
-            className="rounded-full opacity-100 outline outline-1 outline-offset-1 hover:opacity-95 dark:outline-slate-200"
+            width={96}
+            height={96}
+            className="size-9 rounded-full opacity-100 outline outline-1 hover:opacity-95 dark:outline-slate-200 md:size-12"
           />
         </Link>
         <Link
           href="/"
-          className="text-md font-bold hover:text-slate-700 dark:hover:text-slate-200 sm:text-xl"
+          className="text-sm font-bold hover:text-slate-700 dark:hover:text-slate-200 sm:text-xl"
         >
           Conlang Dictionary
         </Link>
