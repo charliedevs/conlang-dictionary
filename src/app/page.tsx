@@ -66,28 +66,37 @@ export default function HomePage() {
               languages.
             </p>
           </div>
-          <div className="group rounded-xl bg-accent p-6">
+          <div className="group relative rounded-xl bg-accent p-6 opacity-60">
             <AdjustmentsHorizontal className="mb-4 size-12 rounded-lg bg-card p-2 text-dictionary/80" />
             <h3 className="text-md mb-4 font-semibold">Set Rules</h3>
             <p className="text-sm font-medium tracking-wide text-muted-foreground">
               Customize what&apos;s permissible in your language, and get
               warnings if something breaks your rules.
             </p>
+            <div className="absolute right-3 top-3 rounded-sm bg-slate-200 p-2 text-xs font-semibold tracking-tight dark:bg-slate-700">
+              Coming soon!
+            </div>
           </div>
-          <div className="group rounded-xl bg-accent p-6">
+          <div className="group relative rounded-xl bg-accent p-6 opacity-60">
             <Bolt className="mb-4 size-12 rounded-lg bg-card p-2 text-dictionary/80" />
             <h3 className="text-md mb-4 font-semibold">Generate inflections</h3>
             <p className="text-sm font-medium tracking-wide text-muted-foreground">
               Specify regular patterns for declensions and conjugations—and edit
               exceptions with ease.
             </p>
+            <div className="absolute right-3 top-3 rounded-sm bg-slate-200 p-2 text-xs font-semibold tracking-tight dark:bg-slate-700">
+              Coming soon!
+            </div>
           </div>
-          <div className="group rounded-xl bg-accent p-6">
+          <div className="group relative rounded-xl bg-accent p-6 opacity-60">
             <PresentationChartLine className="mb-4 size-12 rounded-lg bg-card p-2 text-dictionary/80" />
             <h3 className="text-md mb-4 font-semibold">Analyze</h3>
             <p className="text-sm font-medium tracking-wide text-muted-foreground">
               View insights into the frequency and usage of constituents.
             </p>
+            <div className="absolute right-3 top-3 rounded-sm bg-slate-200 p-2 text-xs font-semibold tracking-tight dark:bg-slate-700">
+              Coming soon!
+            </div>
           </div>
           <div className="group rounded-xl bg-accent p-6">
             <DevicePhoneMobile className="mb-4 size-12 rounded-lg bg-card p-2 text-dictionary/80" />
@@ -111,11 +120,11 @@ export default function HomePage() {
           share a link directly to your conlang with others. Check out some
           recently-updated languages here:
         </p>
-        <Suspense fallback={<div className="h-96" />}>
-          <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center">
+          <Suspense fallback={<div className="h-96" />}>
             <RecentConlangs />
-          </div>
-        </Suspense>
+          </Suspense>
+        </div>
       </div>
       <div id="callToAction" className="group w-full rounded-xl bg-accent p-8">
         <h2 className="mb-5 flex items-center justify-between gap-1 text-start text-xl font-semibold tracking-tight md:gap-8 md:text-3xl">
