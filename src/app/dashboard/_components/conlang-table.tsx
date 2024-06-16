@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/useUsers";
+import { cn } from "~/lib/utils";
 import type { Conlang } from "~/types/conlang";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,7 @@ export const dynamic = "force-dynamic";
 export function ConlangTable(props: {
   conlangs: Conlang[];
   visibility?: VisibilityState;
+  className?: string;
 }) {
   const router = useRouter();
   const { data: userList, isLoading } = useUsers({
@@ -207,7 +209,7 @@ export function ConlangTable(props: {
   };
 
   return (
-    <div className="mx-auto my-2 w-full">
+    <div className={cn("mx-auto my-2 w-full rounded-lg", props.className)}>
       <DataTable
         columns={columns}
         data={props.conlangs}

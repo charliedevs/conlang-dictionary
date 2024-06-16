@@ -16,7 +16,7 @@ function WordList(props: {
   if (props.words.length < 1)
     return <div className="py-5 text-center">No words added yet.</div>;
   return (
-    <ScrollArea className="min-h-0 flex-grow overflow-auto rounded-md border border-border p-3 [&>div]:max-h-[calc(95vh-325px)]">
+    <ScrollArea className="min-h-0 flex-grow overflow-auto rounded-md border bg-card/90 p-3 [&>div]:max-h-[calc(95vh-325px)]">
       <ul className="flex flex-col gap-3">
         {props.words.map((word) => (
           <li

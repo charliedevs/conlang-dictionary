@@ -4,12 +4,12 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 
-import { getUsers } from "~/hooks/useUsers";
-import { getMyConlangs } from "~/server/queries";
-import { NewConlangForm } from "./_components/new-conlang-form";
-import { ConlangTable } from "./_components/conlang-table";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
+import { getUsers } from "~/hooks/useUsers";
+import { getMyConlangs } from "~/server/queries";
+import { ConlangTable } from "./_components/conlang-table";
+import { NewConlangForm } from "./_components/new-conlang-form";
 
 export const dynamic = "force-dynamic";
 
@@ -54,7 +54,11 @@ export default async function DashboardPage() {
             </Link>
           </div>
           <HydrationBoundary state={dehydrate(queryClient)}>
-            <ConlangTable conlangs={conlangs} visibility={{ ownerId: false }} />
+            <ConlangTable
+              conlangs={conlangs}
+              visibility={{ ownerId: false }}
+              className="bg-card/80"
+            />
           </HydrationBoundary>
         </div>
       )}

@@ -27,6 +27,7 @@ async function RecentConlangs() {
           updatedAt: false,
           actions: false,
         }}
+        className="bg-card/80"
       />
     </div>
   );

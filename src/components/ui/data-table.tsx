@@ -1,16 +1,17 @@
 "use client";
 
 import {
-  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
   type ColumnDef,
-  type Table as TableType,
   type Row as RowType,
+  type Table as TableType,
+  type VisibilityState,
 } from "@tanstack/react-table";
 
+import { useState } from "react";
 import { ChevronDoubleLeft } from "../icons/chevron-double-left";
 import { ChevronDoubleRight } from "../icons/chevron-double-right";
 import { ChevronLeft } from "../icons/chevron-left";
@@ -31,7 +32,6 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { useState } from "react";
 
 interface DataTablePaginationProps<TData> {
   table: TableType<TData>;
@@ -195,12 +195,12 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        {showPagination && (
+          <div className="flex items-center justify-end space-x-2 border-t py-4">
+            <DataTablePagination table={table} />
+          </div>
+        )}
       </div>
-      {showPagination && (
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <DataTablePagination table={table} />
-        </div>
-      )}
     </div>
   );
 }
