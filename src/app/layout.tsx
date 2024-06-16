@@ -5,9 +5,13 @@ import { Inter } from "next/font/google";
 
 import { cn } from "~/lib/utils";
 import { Toaster } from "../components/ui/sonner";
-import { TopNav } from "./_components/topnav";
-import Providers from "./providers";
 import { Footer } from "./_components/footer";
+import { TopNav } from "./_components/topnav";
+
+import dynamic from "next/dynamic";
+const Providers = dynamic(() => import("./providers"), {
+  ssr: false,
+});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,16 +32,16 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <Providers>
-          <body className={cn("font-sans", inter.variable)}>
+        <body className={cn("font-sans", inter.variable)}>
+          <Providers>
             <div className="flex min-h-screen flex-col ">
               <TopNav />
               <main className="min-h-96 overflow-y-auto">{children}</main>
               <Footer />
             </div>
             <Toaster />
-          </body>
-        </Providers>
+          </Providers>
+        </body>
       </html>
     </ClerkProvider>
   );

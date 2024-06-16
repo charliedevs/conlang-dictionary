@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "~/components/ui/button";
+import { DarkModeToggle } from "./dark-mode-toggle";
 import { DashboardButton } from "./dashboard-button";
 
 export function TopNav() {
@@ -42,6 +43,7 @@ export function TopNav() {
             <DashboardButton />
             <UserButton />
           </SignedIn>
+          <DarkModeToggle />
         </div>
       </div>
     </nav>
