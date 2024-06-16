@@ -127,12 +127,12 @@ export default function HomePage() {
         </div>
       </div>
       <div id="callToAction" className="group w-full rounded-xl bg-accent p-8">
-        <h2 className="mb-5 flex items-center justify-between gap-1 text-start text-xl font-semibold tracking-tight md:gap-8 md:text-3xl">
+        <h2 className="mb-4 flex items-center justify-between gap-1 text-start text-xl font-semibold tracking-tight md:gap-8 md:text-xl">
           Ready to create your own language?
           <Language className="size-16 rounded-lg bg-card p-2 text-muted-foreground transition-colors ease-in group-hover:text-dictionary/90" />
         </h2>
         <SignedOut>
-          <p className="text-left text-lg font-medium text-muted-foreground md:text-xl">
+          <p className="text-left text-sm font-medium text-muted-foreground">
             <Link
               href="/sign-up"
               className="text-secondary-foreground hover:underline hover:opacity-85"
@@ -143,13 +143,13 @@ export default function HomePage() {
           </p>
         </SignedOut>
         <SignedIn>
-          <p className="text-left text-lg font-medium text-muted-foreground md:text-xl">
+          <p className="text-left text-sm font-medium text-muted-foreground">
             Visit the{" "}
             <Link
               href="/dashboard"
               className="inline-flex items-baseline text-primary hover:underline hover:opacity-85"
             >
-              <Dashboard className=" mr-1 h-6 w-6 translate-y-1" />
+              <Dashboard className=" mr-1 size-4 translate-y-1" />
               dashboard
             </Link>{" "}
             to manage your conlangs.
