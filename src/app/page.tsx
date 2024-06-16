@@ -35,11 +35,11 @@ async function RecentConlangs() {
 
 export default function HomePage() {
   return (
-    <div className="container flex flex-col items-center justify-center gap-8 px-4 py-16">
+    <div className="container flex max-w-5xl flex-col items-center justify-center gap-8 px-4 py-16">
       <h1 className="max-w-2xl text-center text-5xl font-extrabold tracking-tight md:text-[4rem]">
         Build and share your <span className="text-dictionary">conlangs</span>
       </h1>
-      <p className="mx-auto max-w-lg text-center text-lg font-medium tracking-wide text-muted-foreground md:max-w-xl md:text-xl">
+      <p className="mx-auto max-w-lg text-pretty text-center text-lg font-medium tracking-wide text-muted-foreground md:max-w-4xl md:text-xl">
         Craft the phonology, lexicon, and grammar of your language. Collaborate,
         refine, and harness your conlanging creativity with a suite of versatile
         tools.
