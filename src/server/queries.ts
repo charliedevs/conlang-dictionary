@@ -3,6 +3,7 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 
 import { and, eq } from "drizzle-orm";
+import { type TagType } from "~/types/tag";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
 import { conlangs, tags, words, wordsToTags } from "./db/schema";
@@ -217,6 +218,7 @@ export async function getWordTagsForUser() {
 
   const userTags = await db
     .select({
+      id: tags.id,
       name: tags.text,
     })
     .from(tags)
@@ -228,7 +230,7 @@ export async function getWordTagsForUser() {
   return userTags;
 }
 
-export async function addTagToWord(wordId: number, tagId: number) {
+export async function addWordTagRelation(wordId: number, tagId: number) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
@@ -257,7 +259,6 @@ export async function removeTagFromWord(wordId: number, tagId: number) {
 // #endregion
 
 // #region TAGS
-export type TagType = "word" | "conlang";
 export interface TagInsert {
   text: string;
   type: TagType;
@@ -270,5 +271,7 @@ export async function insertTag(t: TagInsert) {
   const tag = await db.insert(tags).values(t).returning();
 
   if (!tag[0]) throw new Error("Tag not created");
+
+  return tag[0];
 }
 // #endregion

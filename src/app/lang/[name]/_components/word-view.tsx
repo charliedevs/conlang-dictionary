@@ -12,13 +12,17 @@ import {
 } from "~/components/ui/sheet";
 import { type Word } from "~/types/word";
 import { EditWordForm } from "./forms/edit-word-form";
+import { TagsForWord } from "./tags-for-word";
 
-function WordDetails(props: { word: Word }) {
+function WordDetails(props: { word: Word; conlangName: string }) {
   const { word: w } = props;
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-1">
       <h3 className="text-start text-2xl font-medium">{w.text}</h3>
-      <p className="text-sm text-muted-foreground">{w.definition}</p>
+      <TagsForWord word={w} conlangName={props.conlangName} />
+      <p className="my-6 whitespace-pre-wrap text-sm text-muted-foreground">
+        {w.definition}
+      </p>
       <div className="flex flex-col gap-2">
         {w.pronunciation && (
           <div className="flex items-center gap-2">
@@ -55,6 +59,7 @@ function EditWordButton(props: {
 
 export function WordView(props: {
   word: Word | null;
+  conlangName: string;
   setSelectedWord: Dispatch<SetStateAction<Word | null>>;
   isConlangOwner: boolean;
 }) {
@@ -66,7 +71,7 @@ export function WordView(props: {
     if (!isEditing) {
       return (
         <div className="flex min-w-[50vw] flex-col gap-4">
-          <WordDetails word={props.word} />
+          <WordDetails word={props.word} conlangName={props.conlangName} />
           {props.isConlangOwner && (
             <EditWordButton setIsEditing={setIsEditing} />
           )}
@@ -94,7 +99,9 @@ export function WordView(props: {
           <SheetHeader>
             <SheetTitle>Word Details</SheetTitle>
           </SheetHeader>
-          {props.word ? <WordDetails word={props.word} /> : null}
+          {props.word ? (
+            <WordDetails word={props.word} conlangName={props.conlangName} />
+          ) : null}
           {props.isConlangOwner && (
             <EditWordButton setIsEditing={setIsEditing} />
           )}
