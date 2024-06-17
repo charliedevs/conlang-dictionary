@@ -6,7 +6,9 @@ import {
   boolean,
   index,
   integer,
+  pgEnum,
   pgTableCreator,
+  primaryKey,
   serial,
   text,
   timestamp,
@@ -66,18 +68,45 @@ export const words = createTable(
 );
 
 export const wordsRelations = relations(words, ({ many }) => ({
-  wordTags: many(wordTags),
+  tags: many(wordsToTags),
 }));
 
-export const wordTags = createTable("wordTag", {
+// Tags
+export const tagType = pgEnum("tagType", ["word", "conlang"]);
+
+export const tags = createTable("tag", {
   id: serial("id").primaryKey(),
-  tag: varchar("tag", { length: 256 }).notNull(),
-  wordId: integer("wordId").notNull(),
+  text: varchar("tag", { length: 256 }).notNull().unique(),
+  type: tagType("type"),
 });
 
-export const wordTagsRelations = relations(wordTags, ({ one }) => ({
+export const tagsRelations = relations(tags, ({ many }) => ({
+  words: many(wordsToTags),
+}));
+
+// Table for many-to-many relationship between words and tags
+export const wordsToTags = createTable(
+  "wordsToTags",
+  {
+    wordId: integer("wordId")
+      .notNull()
+      .references(() => words.id),
+    tagId: integer("tagId")
+      .notNull()
+      .references(() => tags.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.wordId, t.tagId] }),
+  }),
+);
+
+export const wordsToTagsRelations = relations(wordsToTags, ({ one }) => ({
+  tag: one(tags, {
+    fields: [wordsToTags.tagId],
+    references: [tags.id],
+  }),
   word: one(words, {
-    fields: [wordTags.wordId],
+    fields: [wordsToTags.wordId],
     references: [words.id],
   }),
 }));
