@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
-import { conlangs, words } from "./db/schema";
+import { conlangs, tags, words, wordsToTags } from "./db/schema";
 
 // #region CONLANGS
 export async function getMyConlangs() {
@@ -134,6 +134,9 @@ export async function getWordsByConlangId(conlangId: number) {
   const words = await db.query.words.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),
     orderBy: (model, { asc }) => [asc(model.text)],
+    with: {
+      tags: true,
+    },
   });
 
   return words;
@@ -142,6 +145,9 @@ export async function getWordsByConlangId(conlangId: number) {
 export async function getWordById(id: number) {
   const word = await db.query.words.findFirst({
     where: (model, { eq }) => eq(model.id, id),
+    with: {
+      tags: true,
+    },
   });
   if (!word) throw new Error(`Word with id ${id} not found`);
   return word;
@@ -193,5 +199,76 @@ export async function updateWord(w: WordUpdate) {
     .returning();
 
   if (!word[0]) throw new Error("Word not updated");
+}
+
+// Tagging words
+export async function getAllWordTags() {
+  const tags = await db.query.tags.findMany({
+    where: (model, { eq }) => eq(model.type, "word"),
+    orderBy: (model, { asc }) => [asc(model.text)],
+  });
+
+  return tags;
+}
+
+export async function getWordTagsForUser() {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const userTags = await db
+    .select({
+      name: tags.text,
+    })
+    .from(tags)
+    .innerJoin(wordsToTags, eq(tags.id, wordsToTags.tagId))
+    .innerJoin(words, eq(wordsToTags.wordId, words.id))
+    .innerJoin(conlangs, eq(words.conlangId, conlangs.id))
+    .where(and(eq(tags.type, "word"), eq(conlangs.ownerId, userId)));
+
+  return userTags;
+}
+
+export async function addTagToWord(wordId: number, tagId: number) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const word = await db
+    .insert(wordsToTags)
+    .values({
+      wordId,
+      tagId,
+    })
+    .returning();
+
+  if (!word[0]) throw new Error("Tag not added to word");
+}
+
+export async function removeTagFromWord(wordId: number, tagId: number) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const word = await db
+    .delete(wordsToTags)
+    .where(and(eq(wordsToTags.wordId, wordId), eq(wordsToTags.tagId, tagId)))
+    .returning();
+
+  if (!word[0]) throw new Error("Tag not removed from word");
+}
+// #endregion
+
+// #region TAGS
+export type TagType = "word" | "conlang";
+export interface TagInsert {
+  text: string;
+  type: TagType;
+}
+
+export async function insertTag(t: TagInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const tag = await db.insert(tags).values(t).returning();
+
+  if (!tag[0]) throw new Error("Tag not created");
 }
 // #endregion
