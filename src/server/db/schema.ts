@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -43,7 +43,7 @@ export const conlangs = createTable(
   }),
 );
 
-// Words table
+// Words
 export const words = createTable(
   "word",
   {
@@ -64,3 +64,20 @@ export const words = createTable(
     wordTextIndex: index("word_text_idx").on(word.text),
   }),
 );
+
+export const wordsRelations = relations(words, ({ many }) => ({
+  wordTags: many(wordTags),
+}));
+
+export const wordTags = createTable("wordTag", {
+  id: serial("id").primaryKey(),
+  tag: varchar("tag", { length: 256 }).notNull(),
+  wordId: integer("wordId").notNull(),
+});
+
+export const wordTagsRelations = relations(wordTags, ({ one }) => ({
+  word: one(words, {
+    fields: [wordTags.wordId],
+    references: [words.id],
+  }),
+}));
