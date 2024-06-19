@@ -154,14 +154,20 @@ function ExistingTags(props: { tags: Tag[] }) {
   );
 }
 
-export function TagsForWord(props: { word: Word; conlangName: string }) {
+export function TagsForWord(props: {
+  word: Word;
+  conlangName: string;
+  isConlangOwner: boolean;
+}) {
   return (
     <div
       id="tagsForWord"
       className="group/tags flex min-h-8 items-center gap-2 md:gap-0.5"
     >
       <ExistingTags tags={props.word.tags} />
-      <AddTagMenu word={props.word} conlangName={props.conlangName} />
+      {props.isConlangOwner && (
+        <AddTagMenu word={props.word} conlangName={props.conlangName} />
+      )}
     </div>
   );
 }

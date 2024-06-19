@@ -14,12 +14,20 @@ import { type Word } from "~/types/word";
 import { EditWordForm } from "./forms/edit-word-form";
 import { TagsForWord } from "./tags-for-word";
 
-function WordDetails(props: { word: Word; conlangName: string }) {
+function WordDetails(props: {
+  word: Word;
+  conlangName: string;
+  isConlangOwner: boolean;
+}) {
   const { word: w } = props;
   return (
     <div className="flex flex-col gap-1">
       <h3 className="text-start text-2xl font-medium">{w.text}</h3>
-      <TagsForWord word={w} conlangName={props.conlangName} />
+      <TagsForWord
+        word={w}
+        conlangName={props.conlangName}
+        isConlangOwner={props.isConlangOwner}
+      />
       <p className="my-6 whitespace-pre-wrap text-sm text-muted-foreground">
         {w.definition}
       </p>
@@ -71,7 +79,11 @@ export function WordView(props: {
     if (!isEditing) {
       return (
         <div className="flex min-w-[50vw] flex-col gap-4">
-          <WordDetails word={props.word} conlangName={props.conlangName} />
+          <WordDetails
+            word={props.word}
+            conlangName={props.conlangName}
+            isConlangOwner={props.isConlangOwner}
+          />
           {props.isConlangOwner && (
             <EditWordButton setIsEditing={setIsEditing} />
           )}
@@ -100,7 +112,11 @@ export function WordView(props: {
             <SheetTitle>Word Details</SheetTitle>
           </SheetHeader>
           {props.word ? (
-            <WordDetails word={props.word} conlangName={props.conlangName} />
+            <WordDetails
+              word={props.word}
+              conlangName={props.conlangName}
+              isConlangOwner={props.isConlangOwner}
+            />
           ) : null}
           {props.isConlangOwner && (
             <EditWordButton setIsEditing={setIsEditing} />
