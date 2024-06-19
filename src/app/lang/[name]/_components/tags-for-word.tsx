@@ -20,7 +20,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { useTags } from "~/hooks/useTags";
+import { useTags } from "~/hooks/data/useTags";
 import { type Tag } from "~/types/tag";
 import { type Word } from "~/types/word";
 import { addTagToWord } from "../_actions/tag";

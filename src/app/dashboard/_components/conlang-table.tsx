@@ -27,7 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useUsers } from "~/hooks/useUsers";
+import { useUsers } from "~/hooks/data/useUsers";
 import { cn } from "~/lib/utils";
 import type { Conlang } from "~/types/conlang";
 
