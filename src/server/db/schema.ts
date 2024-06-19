@@ -77,7 +77,7 @@ export const tagType = pgEnum("tagType", ["word", "conlang"]);
 export const tags = createTable("tag", {
   id: serial("id").primaryKey(),
   text: varchar("tag", { length: 256 }).notNull().unique(),
-  type: tagType("type"),
+  type: tagType("type").notNull(),
 });
 
 export const tagsRelations = relations(tags, ({ many }) => ({
