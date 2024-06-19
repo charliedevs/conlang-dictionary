@@ -32,7 +32,7 @@ const AddTagButton = forwardRef<HTMLButtonElement>(
         ref={forwardedRef}
         variant="outline"
         size="sm"
-        className="flex h-6 items-center gap-1 px-1 text-muted-foreground"
+        className="mt-0.5 flex h-6 items-center gap-1 px-1 text-muted-foreground md:mt-[0.05rem] md:border-none"
       >
         <Plus className="size-[14px]" />
         <p className="pr-0.5 text-xs font-semibold tracking-tighter md:sr-only">
@@ -138,7 +138,8 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
 
 function ExistingTags(props: { tags: Tag[] }) {
   return (
-    <div className="flex justify-start gap-1">
+    <div className="flex items-center justify-start gap-1">
+      <TagIcon className="mr-1 mt-[0.05em] size-4 rotate-[135deg] text-muted-foreground" />
       {props.tags.map((tag) => (
         <Button
           key={tag.id}
@@ -157,9 +158,8 @@ export function TagsForWord(props: { word: Word; conlangName: string }) {
   return (
     <div
       id="tagsForWord"
-      className="group/tags flex min-h-8 items-center gap-2"
+      className="group/tags flex min-h-8 items-center gap-2 md:gap-0.5"
     >
-      <TagIcon className="size-5 rotate-[135deg] text-muted-foreground" />
       <ExistingTags tags={props.word.tags} />
       <AddTagMenu word={props.word} conlangName={props.conlangName} />
     </div>
