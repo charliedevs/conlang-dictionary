@@ -18,6 +18,12 @@ export function useKeyboardNavigation(
         setFocusedItemIndex((prevIndex) =>
           prevIndex > 0 ? prevIndex - 1 : prevIndex,
         );
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        setFocusedItemIndex(0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        setFocusedItemIndex(itemCount - 1);
       }
     };
 
