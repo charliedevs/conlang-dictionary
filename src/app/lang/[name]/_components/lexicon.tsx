@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import { useKeyboardNavigation } from "~/hooks/accessibility/useKeyboardNavigation";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { type Word } from "~/types/word";
@@ -13,19 +14,35 @@ function WordList(props: {
   selectedWord: Word | null;
   setSelectedWord: Dispatch<SetStateAction<Word | null>>;
 }) {
+  const { focusedItemIndex, setFocusedItemIndex } = useKeyboardNavigation(
+    props.words.length,
+    "word",
+  );
   if (props.words.length < 1)
     return <div className="py-5 text-center">No words added yet.</div>;
   return (
     <ScrollArea className="min-h-0 flex-grow overflow-auto rounded-md border bg-card/90 p-3 [&>div]:max-h-[calc(95vh-325px)]">
       <ul className="flex flex-col gap-3">
-        {props.words.map((word) => (
+        {props.words.map((word, idx) => (
           <li
+            id={`word-${idx}`}
             key={word.id}
-            onClick={() =>
+            tabIndex={idx === focusedItemIndex ? 0 : -1}
+            onFocus={() => setFocusedItemIndex(idx)}
+            onClick={() => {
               props.setSelectedWord((prev) =>
                 word.id === prev?.id ? null : word,
-              )
-            }
+              );
+              setFocusedItemIndex(idx);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                props.setSelectedWord((prev) =>
+                  word.id === prev?.id ? null : word,
+                );
+                setFocusedItemIndex(idx);
+              }
+            }}
             className={cn(
               "flex flex-col rounded-md p-2 transition-all ease-in hover:cursor-pointer hover:bg-secondary",
               props.selectedWord?.id === word.id
