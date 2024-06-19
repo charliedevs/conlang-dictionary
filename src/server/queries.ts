@@ -217,15 +217,18 @@ export async function getWordTagsForUser() {
   if (!userId) throw new Error("Unauthorized");
 
   const userTags = await db
-    .select({
+    .selectDistinct({
       id: tags.id,
-      name: tags.text,
+      text: tags.text,
+      type: tags.type,
     })
     .from(tags)
     .innerJoin(wordsToTags, eq(tags.id, wordsToTags.tagId))
     .innerJoin(words, eq(wordsToTags.wordId, words.id))
     .innerJoin(conlangs, eq(words.conlangId, conlangs.id))
     .where(and(eq(tags.type, "word"), eq(conlangs.ownerId, userId)));
+
+  console.log("userTags", userTags);
 
   return userTags;
 }
@@ -261,7 +264,7 @@ export async function addWordTagRelation(wordId: number, tagId: number) {
   if (!word[0]) throw new Error("Tag not added to word");
 }
 
-export async function removeTagFromWord(wordId: number, tagId: number) {
+export async function removeWordTagRelation(wordId: number, tagId: number) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 

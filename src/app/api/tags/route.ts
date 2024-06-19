@@ -6,6 +6,7 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const queryParams = {
       tagType: url.searchParams.get("tagType"),
+      isForUser: Boolean(url.searchParams.get("isForUser")),
     };
     const parsedQuery = getTagsSchema.safeParse(queryParams);
     if (!parsedQuery.success) {
@@ -23,9 +24,10 @@ export async function GET(req: Request) {
       if (isForUser) {
         const tags = await getWordTagsForUser();
         return new Response(JSON.stringify(tags));
+      } else {
+        const tags = await getAllWordTags();
+        return new Response(JSON.stringify(tags));
       }
-      const tags = await getAllWordTags();
-      return new Response(JSON.stringify(tags));
     } else {
       return new Response(
         "Not implemented. Provide a query param for tagType=word",
