@@ -228,8 +228,6 @@ export async function getWordTagsForUser() {
     .innerJoin(conlangs, eq(words.conlangId, conlangs.id))
     .where(and(eq(tags.type, "word"), eq(conlangs.ownerId, userId)));
 
-  console.log("userTags", userTags);
-
   return userTags;
 }
 
