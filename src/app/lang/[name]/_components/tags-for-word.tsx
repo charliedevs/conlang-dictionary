@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { forwardRef, useState } from "react";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
+import { LoadingSpinner } from "~/components/loading-spinner";
 import { Button } from "~/components/ui/button";
 import {
   Drawer,
@@ -43,10 +44,16 @@ const AddTagButton = forwardRef<HTMLButtonElement>(
   },
 );
 
-function UserTagList(props: { tagSearch: string; existingWordTags: Tag[] }) {
+function UserTagList(props: {
+  tagSearch: string;
+  existingWordTags: Tag[];
+  onTagClick: (tag: Partial<Tag>) => void;
+}) {
   const userTags = useTags();
-  if (userTags.isLoading) return <div>Loading...</div>;
-  if (!userTags.data) return <div>No tags found</div>;
+  if (userTags.isLoading)
+    return <div className="text-md md:text-xs">Loading...</div>;
+  if (!userTags.data)
+    return <div className="text-md md:text-xs">No tags found</div>;
   const userTagsNotOnWord = userTags.data.filter(
     (tag) =>
       !props.existingWordTags.find(
@@ -59,9 +66,30 @@ function UserTagList(props: { tagSearch: string; existingWordTags: Tag[] }) {
   return (
     <ScrollArea className="min-h-0 flex-grow overflow-auto [&>div]:max-h-60 [&>div]:md:max-h-44">
       <ul className="flex flex-col gap-2">
+        {props.tagSearch.length > 0 ? (
+          props.existingWordTags.some((t) => t.text === props.tagSearch) ? (
+            <li className="p-1">
+              <div className="text-md md:text-xs">
+                Tag &quot;{props.tagSearch}&quot; already on word
+              </div>
+            </li>
+          ) : (
+            !searchTags.some((t) => t.text === props.tagSearch) && (
+              <li
+                onClick={() => props.onTagClick({ text: props.tagSearch })}
+                className="rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary"
+              >
+                <div className="text-md md:text-xs">
+                  Add new tag &quot;{props.tagSearch}&quot;
+                </div>
+              </li>
+            )
+          )
+        ) : null}
         {searchTags.map((tag) => (
           <li
             key={tag.id}
+            onClick={() => props.onTagClick(tag)}
             className="rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary"
           >
             <div className="text-md md:text-xs">{tag.text}</div>
@@ -73,26 +101,29 @@ function UserTagList(props: { tagSearch: string; existingWordTags: Tag[] }) {
 }
 
 function AddTagMenu(props: { word: Word; conlangName: string }) {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [tagSearch, setTagSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
-  async function handleAddTag() {
+  async function handleAddTag(tag: Partial<Tag>) {
     try {
-      await addTagToWord(props.word.id, "flowing");
+      setIsLoading(true);
+      await addTagToWord(props.word.id, tag);
+      setTagSearch("");
       router.refresh();
     } catch (error) {
-      // check if it's a unique constraint error
       if (error instanceof Error && error.message.includes("unique")) {
         toast.error("Tag already exists");
       } else {
         toast.error("Failed to add tag");
       }
       console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
-  const [tagSearch, setTagSearch] = useState("");
-
-  // Desktop view
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   if (isDesktop) {
     return (
       <Popover>
@@ -105,12 +136,16 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
               Assign tags to {props.word.text}
             </p>
             <Input
+              value={tagSearch}
               onChange={(e) => setTagSearch(e.target.value)}
+              disabled={isLoading}
+              endAdornment={isLoading ? <LoadingSpinner /> : null}
               className="h-8"
             />
             <UserTagList
               tagSearch={tagSearch}
               existingWordTags={props.word.tags}
+              onTagClick={handleAddTag}
             />
           </div>
         </PopoverContent>
@@ -124,13 +159,24 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
       <DrawerTrigger asChild>
         <AddTagButton />
       </DrawerTrigger>
-      <DrawerContent className="flex min-h-[40vh] flex-col gap-4 px-28 pb-10">
+      <DrawerContent className="flex min-h-[40vh] flex-col gap-4 px-10 pb-10">
         <DrawerDescription className="text-md py-4 text-center">
           Assign tags to {props.word.text}
         </DrawerDescription>
-        <ExistingTags tags={props.word.tags} />
-        <Input onChange={(e) => setTagSearch(e.target.value)} />
-        <UserTagList tagSearch={tagSearch} existingWordTags={props.word.tags} />
+        <div className="flex flex-wrap items-center justify-start gap-1">
+          <ExistingTags tags={props.word.tags} />
+        </div>
+        <Input
+          value={tagSearch}
+          onChange={(e) => setTagSearch(e.target.value)}
+          disabled={isLoading}
+          endAdornment={isLoading ? <LoadingSpinner /> : null}
+        />
+        <UserTagList
+          tagSearch={tagSearch}
+          existingWordTags={props.word.tags}
+          onTagClick={handleAddTag}
+        />
       </DrawerContent>
     </Drawer>
   );
@@ -138,7 +184,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
 
 function ExistingTags(props: { tags: Tag[] }) {
   return (
-    <div className="flex items-center justify-start gap-1">
+    <>
       <TagIcon className="mr-1 mt-[0.05em] size-4 rotate-[135deg] text-muted-foreground" />
       {props.tags.map((tag) => (
         <Button
@@ -150,7 +196,7 @@ function ExistingTags(props: { tags: Tag[] }) {
           {tag.text}
         </Button>
       ))}
-    </div>
+    </>
   );
 }
 
@@ -162,7 +208,7 @@ export function TagsForWord(props: {
   return (
     <div
       id="tagsForWord"
-      className="group/tags flex min-h-8 items-center gap-2 md:gap-0.5"
+      className="group/tags flex min-h-8 flex-wrap items-center justify-start gap-2 md:gap-0.5"
     >
       <ExistingTags tags={props.word.tags} />
       {props.isConlangOwner && (

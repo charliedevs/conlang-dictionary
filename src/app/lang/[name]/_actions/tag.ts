@@ -1,23 +1,20 @@
 "use server";
-import {
-  addWordTagRelation,
-  getAllWordTags,
-  insertTag,
-} from "~/server/queries";
+import { addWordTagRelation, insertTag } from "~/server/queries";
+import { type Tag } from "~/types/tag";
 
-export async function addTagToWord(wordId: number, tagText: string) {
-  // TODO: if tag exists then don't add it to tags table
-  const tags = await getAllWordTags();
-
-  let tag = tags.find((tag) => tag.text === tagText);
-
-  if (!tag) {
-    // Add tag to Tags table first
-    tag = await insertTag({
-      text: tagText,
+export async function addTagToWord(wordId: number, tag: Partial<Tag>) {
+  let newTag: Tag;
+  if (!tag.id) {
+    if (!tag.text) throw new Error("Tag text is required");
+    // Add new tag to Tags table first
+    newTag = (await insertTag({
+      text: tag.text,
       type: "word",
-    });
+    })) as Tag;
+  } else {
+    newTag = tag as Tag;
   }
+
   // and then associate it with the word
-  await addWordTagRelation(wordId, tag.id);
+  await addWordTagRelation(wordId, newTag.id);
 }

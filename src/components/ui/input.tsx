@@ -4,12 +4,17 @@ import { cn } from "~/lib/utils";
 import { Button } from "./button";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  endAdornment?: React.ReactNode;
   buttonContents?: React.ReactNode;
   onButtonClick?: () => void;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, buttonContents, onButtonClick, ...props }, ref) => {
+  (
+    { className, type, endAdornment, buttonContents, onButtonClick, ...props },
+    ref,
+  ) => {
+    const hasEndContent = Boolean(endAdornment) || Boolean(buttonContents);
     return (
       <div className="relative flex w-full items-center">
         <input
@@ -21,15 +26,24 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           {...props}
         />
-        {buttonContents && (
-          <Button
-            type="button"
-            variant="ghost"
-            className="absolute right-1 top-0 h-full w-8 p-1 text-sm font-medium text-muted-foreground hover:bg-transparent hover:text-foreground"
-            onClick={onButtonClick}
-          >
-            {buttonContents}
-          </Button>
+        {hasEndContent && (
+          <div className="absolute right-1 top-0 flex h-full items-center justify-center gap-1">
+            {endAdornment && (
+              <div className="w-8 p-1 text-muted-foreground">
+                {endAdornment}
+              </div>
+            )}
+            {buttonContents && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-8 p-1 text-sm font-medium text-muted-foreground hover:bg-transparent hover:text-foreground"
+                onClick={onButtonClick}
+              >
+                {buttonContents}
+              </Button>
+            )}
+          </div>
         )}
       </div>
     );
