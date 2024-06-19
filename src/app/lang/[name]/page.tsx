@@ -6,7 +6,7 @@ import { AddWordButton } from "./_components/forms/add-word-button";
 import { Lexicon } from "./_components/lexicon";
 
 interface ConlangPageProps {
-  params: { name: string; wordId?: string };
+  params: { name: string };
 }
 
 export default async function ConlangPage({ params }: ConlangPageProps) {
@@ -18,7 +18,6 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
     return <div className="py-5 text-center">Language not found.</div>;
   }
   const words = await getWordsByConlangId(conlang.id);
-
   const isConlangOwner = conlang.ownerId === auth().userId;
   return (
     <div className="container flex flex-col gap-4 px-5 pb-1 pt-5">

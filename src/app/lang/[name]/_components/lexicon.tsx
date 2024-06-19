@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
@@ -52,6 +52,15 @@ export function Lexicon(props: {
   isConlangOwner: boolean;
 }) {
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+  // Update state if selectedWord changes on the server
+  const selectedWordFromServer = props.words.find(
+    (w) => w.id === selectedWord?.id,
+  );
+  useEffect(() => {
+    if (selectedWord && selectedWordFromServer) {
+      setSelectedWord(selectedWordFromServer);
+    }
+  }, [selectedWord, selectedWordFromServer]);
   return (
     <div id="lexicon" className="flex gap-4">
       <WordList
@@ -63,8 +72,8 @@ export function Lexicon(props: {
       <WordView
         word={selectedWord}
         conlangName={props.conlang.name}
-        setSelectedWord={setSelectedWord}
         isConlangOwner={props.isConlangOwner}
+        setSelectedWord={setSelectedWord}
       />
     </div>
   );
