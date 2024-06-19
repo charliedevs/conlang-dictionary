@@ -40,7 +40,6 @@ export async function getConlangByName(name: string) {
     where: (model, { eq }) => eq(model.name, name),
   });
   if (!conlang) throw new Error("Conlang not found");
-
   return conlang;
 }
 
@@ -135,23 +134,23 @@ export async function getWordsByConlangId(conlangId: number) {
   const words = await db.query.words.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),
     orderBy: (model, { asc }) => [asc(model.text)],
-    with: {
-      tags: true,
-    },
+    with: { tags: { with: { tag: true } } },
   });
-
-  return words;
+  const wordsWithTags = words.map((w) => ({
+    ...w,
+    tags: w.tags.map((t) => t.tag),
+  }));
+  return wordsWithTags;
 }
 
 export async function getWordById(id: number) {
   const word = await db.query.words.findFirst({
     where: (model, { eq }) => eq(model.id, id),
-    with: {
-      tags: true,
-    },
+    with: { tags: { with: { tag: true } } },
   });
   if (!word) throw new Error(`Word with id ${id} not found`);
-  return word;
+  const wordWithTags = { ...word, tags: word.tags.map((t) => t.tag) };
+  return wordWithTags;
 }
 
 export interface WordInsert {
@@ -201,8 +200,9 @@ export async function updateWord(w: WordUpdate) {
 
   if (!word[0]) throw new Error("Word not updated");
 }
+// #endregion
 
-// Tagging words
+// #region TAGS
 export async function getAllWordTags() {
   const tags = await db.query.tags.findMany({
     where: (model, { eq }) => eq(model.type, "word"),
@@ -230,6 +230,22 @@ export async function getWordTagsForUser() {
   return userTags;
 }
 
+export interface TagInsert {
+  text: string;
+  type: TagType;
+}
+
+export async function insertTag(t: TagInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const tag = await db.insert(tags).values(t).returning();
+
+  if (!tag[0]) throw new Error("Tag not created");
+
+  return tag[0];
+}
+
 export async function addWordTagRelation(wordId: number, tagId: number) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
@@ -255,23 +271,5 @@ export async function removeTagFromWord(wordId: number, tagId: number) {
     .returning();
 
   if (!word[0]) throw new Error("Tag not removed from word");
-}
-// #endregion
-
-// #region TAGS
-export interface TagInsert {
-  text: string;
-  type: TagType;
-}
-
-export async function insertTag(t: TagInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const tag = await db.insert(tags).values(t).returning();
-
-  if (!tag[0]) throw new Error("Tag not created");
-
-  return tag[0];
 }
 // #endregion
