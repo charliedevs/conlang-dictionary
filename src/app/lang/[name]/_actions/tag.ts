@@ -3,6 +3,7 @@ import {
   addWordTagRelation,
   getAllWordTags,
   insertTag,
+  removeWordTagRelation,
 } from "~/server/queries";
 import { type Tag } from "~/types/tag";
 
@@ -26,4 +27,8 @@ export async function addTagToWord(wordId: number, tag: Partial<Tag>) {
 
   // and then associate it with the word
   await addWordTagRelation(wordId, newTag.id);
+}
+
+export async function removeTagFromWord(wordId: number, tagId: number) {
+  await removeWordTagRelation(wordId, tagId);
 }

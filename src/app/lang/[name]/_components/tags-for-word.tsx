@@ -1,6 +1,7 @@
 "use client";
 
-import { Plus, TagIcon } from "lucide-react";
+import { PopoverArrow } from "@radix-ui/react-popover";
+import { Plus, TagIcon, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { forwardRef, useState } from "react";
 import { toast } from "sonner";
@@ -23,7 +24,7 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { useTags } from "~/hooks/data/useTags";
 import { type Tag } from "~/types/tag";
 import { type Word } from "~/types/word";
-import { addTagToWord } from "../_actions/tag";
+import { addTagToWord, removeTagFromWord } from "../_actions/tag";
 
 const AddTagButton = forwardRef<HTMLButtonElement>(
   function AddTagButton(props, forwardedRef) {
@@ -164,7 +165,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
           Assign tags to {props.word.text}
         </DrawerDescription>
         <div className="flex flex-wrap items-center justify-start gap-1">
-          <ExistingTags tags={props.word.tags} />
+          <ExistingTags tags={props.word.tags} wordId={props.word.id} />
         </div>
         <Input
           value={tagSearch}
@@ -182,19 +183,52 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
   );
 }
 
-function ExistingTags(props: { tags: Tag[] }) {
+function ExistingTags(props: { tags: Tag[]; wordId: number }) {
+  const [isDeletingTag, setIsDeletingTag] = useState(0);
+
+  const router = useRouter();
+  async function handleRemoveTag(tag: Tag) {
+    try {
+      setIsDeletingTag(tag.id);
+      await removeTagFromWord(props.wordId, tag.id);
+      router.refresh();
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Could not remove tag");
+    }
+  }
   return (
     <>
       <TagIcon className="mr-1 mt-[0.05em] size-4 rotate-[135deg] text-muted-foreground" />
       {props.tags.map((tag) => (
-        <Button
-          key={tag.id}
-          variant="ghost"
-          size="sm"
-          className="flex h-6 items-center gap-1 px-1 text-muted-foreground"
-        >
-          {tag.text}
-        </Button>
+        <Popover key={tag.id}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex h-6 items-center gap-1 px-1 text-muted-foreground"
+              tabIndex={-1}
+            >
+              {tag.text}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-fit border-none p-2">
+            <div className="flex flex-col items-center justify-center gap-1 text-xs">
+              <Button
+                onClick={() => handleRemoveTag(tag)}
+                disabled={isDeletingTag === tag.id}
+                variant="destructive"
+                className="size-8 p-1 text-xs"
+              >
+                {isDeletingTag === tag.id ? (
+                  <LoadingSpinner className="size-4" />
+                ) : (
+                  <Trash2 className="size-5" />
+                )}
+              </Button>
+            </div>
+            <PopoverArrow className="fill-card" />
+          </PopoverContent>
+        </Popover>
       ))}
     </>
   );
@@ -210,7 +244,7 @@ export function TagsForWord(props: {
       id="tagsForWord"
       className="group/tags flex min-h-8 flex-wrap items-center justify-start gap-2 md:gap-0.5"
     >
-      <ExistingTags tags={props.word.tags} />
+      <ExistingTags tags={props.word.tags} wordId={props.word.id} />
       {props.isConlangOwner && (
         <AddTagMenu word={props.word} conlangName={props.conlangName} />
       )}
