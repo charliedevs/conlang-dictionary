@@ -10,8 +10,10 @@ import { LoadingSpinner } from "~/components/loading-spinner";
 import { Button } from "~/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerTrigger,
 } from "~/components/ui/drawer";
 import { Input } from "~/components/ui/input";
@@ -64,38 +66,55 @@ function UserTagList(props: {
   const searchTags = userTagsNotOnWord.filter((tag) =>
     tag.text.toLowerCase().includes(props.tagSearch.toLowerCase()),
   );
+  const isTagAlreadyOnWord = props.existingWordTags.some(
+    (existingTag) => existingTag.text === props.tagSearch,
+  );
+  const isNewTagName = !searchTags.some((t) => t.text === props.tagSearch);
+
   return (
-    <ScrollArea className="min-h-0 flex-grow overflow-auto [&>div]:max-h-60 [&>div]:md:max-h-44">
+    <ScrollArea className="min-h-0 flex-grow overflow-auto pb-10 md:pb-0 [&>div]:max-h-60 [&>div]:md:max-h-44">
       <ul className="flex flex-col gap-2">
+        {searchTags.map((tag) => (
+          <li
+            key={tag.id}
+            onClick={() => props.onTagClick(tag)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                props.onTagClick(tag);
+              }
+            }}
+            tabIndex={0}
+            className="rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary focus:bg-secondary focus:outline-none"
+          >
+            <div className="text-md md:text-xs">{tag.text}</div>
+          </li>
+        ))}
         {props.tagSearch.length > 0 ? (
-          props.existingWordTags.some((t) => t.text === props.tagSearch) ? (
+          isTagAlreadyOnWord ? (
             <li className="p-1">
-              <div className="text-md md:text-xs">
+              <div className="text-md italic text-muted-foreground md:text-xs">
                 Tag &quot;{props.tagSearch}&quot; already on word
               </div>
             </li>
           ) : (
-            !searchTags.some((t) => t.text === props.tagSearch) && (
+            isNewTagName && (
               <li
                 onClick={() => props.onTagClick({ text: props.tagSearch })}
-                className="rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    props.onTagClick({ text: props.tagSearch });
+                  }
+                }}
+                tabIndex={0}
+                className="rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary focus:bg-secondary focus:outline-none"
               >
-                <div className="text-md md:text-xs">
+                <div className="text-md font-medium md:text-xs">
                   Add new tag &quot;{props.tagSearch}&quot;
                 </div>
               </li>
             )
           )
         ) : null}
-        {searchTags.map((tag) => (
-          <li
-            key={tag.id}
-            onClick={() => props.onTagClick(tag)}
-            className="rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary"
-          >
-            <div className="text-md md:text-xs">{tag.text}</div>
-          </li>
-        ))}
       </ul>
     </ScrollArea>
   );
@@ -141,12 +160,13 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
             <Input
               value={tagSearch}
               onChange={(e) => setTagSearch(e.target.value)}
+              placeholder="Enter tag name..."
               disabled={isLoading}
               endAdornment={isLoading ? <LoadingSpinner /> : null}
               className="h-8"
             />
             <UserTagList
-              tagSearch={tagSearch}
+              tagSearch={tagSearch.trim()}
               existingWordTags={props.word.tags}
               onTagClick={handleAddTag}
             />
@@ -162,7 +182,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
       <DrawerTrigger asChild>
         <AddTagButton />
       </DrawerTrigger>
-      <DrawerContent className="flex min-h-[40vh] flex-col gap-4 px-10 pb-10">
+      <DrawerContent className="flex min-h-[40vh] flex-col gap-4 px-10">
         <DrawerDescription className="text-md py-4 text-center">
           Assign tags to {props.word.text}
         </DrawerDescription>
@@ -172,14 +192,20 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
         <Input
           value={tagSearch}
           onChange={(e) => setTagSearch(e.target.value)}
+          placeholder="Enter tag name..."
           disabled={isLoading}
           endAdornment={isLoading ? <LoadingSpinner /> : null}
         />
         <UserTagList
-          tagSearch={tagSearch}
+          tagSearch={tagSearch.trim()}
           existingWordTags={props.word.tags}
           onTagClick={handleAddTag}
         />
+        <DrawerFooter>
+          <DrawerClose asChild>
+            <Button variant="outline">Close</Button>
+          </DrawerClose>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
