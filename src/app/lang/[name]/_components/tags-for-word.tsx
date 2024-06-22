@@ -38,13 +38,13 @@ import { type Word } from "~/types/word";
 import { addTagToWord, removeTagFromWord, type TagAdd } from "../_actions/tag";
 
 function getTagColor(color: TagColor | null) {
-  if (color === "red") return "border-red-500 bg-red-400/70";
-  if (color === "orange") return "border-orange-500 bg-orange-400/60";
-  if (color === "yellow") return "border-yellow-400 bg-yellow-300/70";
-  if (color === "green") return "border-green-500 bg-green-400/70";
-  if (color === "blue") return "border-blue-500 bg-blue-400/70";
-  if (color === "purple") return "border-purple-500 bg-purple-400/70";
-  if (color === "neutral") return "border-slate-400 bg-slate-300/70";
+  if (color === "red") return "border-red-400 bg-red-400/60";
+  if (color === "orange") return "border-orange-400 bg-orange-400/60";
+  if (color === "yellow") return "border-yellow-300 bg-yellow-300/60";
+  if (color === "green") return "border-green-400 bg-green-400/60";
+  if (color === "blue") return "border-blue-400 bg-blue-400/60";
+  if (color === "purple") return "border-purple-400 bg-purple-400/60";
+  if (color === "neutral") return "border-slate-300 bg-slate-300/60";
   return "";
 }
 
@@ -56,7 +56,7 @@ function Tag(props: {
   return (
     <div
       className={cn(
-        "flex w-fit items-center rounded-md border px-1 py-0.5 text-xs not-italic text-secondary-foreground",
+        "flex w-fit items-center rounded-md border px-1 py-0.5 text-xs not-italic text-primary",
         getTagColor(props.color),
         props.className,
       )}
@@ -107,7 +107,9 @@ function AddTagList(props: {
   const isTagAlreadyOnWord = props.existingWordTags.some(
     (existingTag) => existingTag.text === props.tagSearch,
   );
-  const isNewTagName = !searchTags.some((t) => t.text === props.tagSearch);
+  const isNewTagName =
+    !searchTags.some((t) => t.text === props.tagSearch) &&
+    searchTags.length === 0;
 
   // Set selected tag from search input so user can press enter to add tag
   useEffect(() => {
@@ -152,7 +154,11 @@ function AddTagList(props: {
                 : "",
             )}
           >
-            <Tag text={tag.text} color={tag.color ?? null} />
+            <Tag
+              text={tag.text}
+              color={tag.color ?? null}
+              className="text-md md:text-xs"
+            />
           </li>
         ))}
         {props.tagSearch.length > 0 ? (
@@ -161,8 +167,16 @@ function AddTagList(props: {
               <div className="text-md flex items-center gap-1 italic text-muted-foreground md:text-xs">
                 Tag
                 <Tag
-                  text={props.tagSearch}
-                  color={props.selectedColor}
+                  text={
+                    props.existingWordTags.find(
+                      (t) => t.text === props.tagSearch,
+                    )?.text ?? props.tagSearch
+                  }
+                  color={
+                    props.existingWordTags.find(
+                      (t) => t.text === props.tagSearch,
+                    )?.color ?? null
+                  }
                   className="py-[0.05em]"
                 />
                 already on word
@@ -227,13 +241,11 @@ function ColorDot(props: { color: TagColor | null }) {
   return (
     <div
       className={cn(
-        "flex size-4 items-center justify-center rounded-full border bg-transparent dark:border-muted-foreground",
+        "flex size-6 items-center justify-center rounded-full border border-muted-foreground bg-transparent md:size-4",
         getTagColor(props.color),
       )}
     >
-      {!props.color && (
-        <X className="size-3 text-border dark:text-muted-foreground" />
-      )}
+      {!props.color && <X className="size-5 text-muted-foreground md:size-3" />}
     </div>
   );
 }
@@ -242,6 +254,7 @@ function TagColorSelector(props: {
   visible: boolean;
   selectedColor: TagColor | null;
   setSelectedColor: Dispatch<SetStateAction<TagColor | null>>;
+  className?: string;
 }) {
   const colors = tagColor.enumValues;
   return (
@@ -249,6 +262,7 @@ function TagColorSelector(props: {
       className={cn(
         "flex w-full items-center justify-between gap-2 px-2",
         props.visible ? "not-sr-only" : "sr-only",
+        props.className,
       )}
     >
       <ColorButton onClick={() => props.setSelectedColor(null)}>
@@ -269,6 +283,8 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
   const [selectedColor, setSelectedColor] = useState<TagColor | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => setSelectedColor(null), [props.word.text]);
 
   const router = useRouter();
   async function handleAddTag(tag: TagAdd) {
@@ -356,6 +372,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
               await handleAddTag(selectedTag);
             }
           }}
+          autoFocus
           placeholder="Enter tag name..."
           disabled={isLoading}
           endAdornment={isLoading ? <LoadingSpinner /> : null}
@@ -368,7 +385,13 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
           setSelectedTag={setSelectedTag}
           selectedColor={selectedColor}
         />
-        <DrawerFooter>
+        <TagColorSelector
+          visible={Boolean(selectedTag && !selectedTag.id)}
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
+          className="mx-auto my-5 max-w-96"
+        />
+        <DrawerFooter className="w-full">
           <DrawerClose asChild>
             <Button variant="outline">Close</Button>
           </DrawerClose>
@@ -405,10 +428,13 @@ function ExistingTags(props: { tags: Tag[]; wordId: number }) {
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="flex h-6 items-center gap-1 px-1 text-muted-foreground"
-              tabIndex={-1}
+              className="mx-0.5 h-6 p-0 focus-visible:ring-offset-0"
             >
-              <Tag text={tag.text} color={tag.color ?? null} />
+              <Tag
+                text={tag.text}
+                color={tag.color ?? null}
+                className="text-primary/80 hover:drop-shadow-sm"
+              />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-fit border-none p-2">
