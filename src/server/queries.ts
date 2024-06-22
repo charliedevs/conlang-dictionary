@@ -216,18 +216,10 @@ export async function getWordTagsForUser() {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const userTags = await db
-    .selectDistinct({
-      id: tags.id,
-      text: tags.text,
-      type: tags.type,
-      color: tags.color,
-    })
-    .from(tags)
-    .innerJoin(wordsToTags, eq(tags.id, wordsToTags.tagId))
-    .innerJoin(words, eq(wordsToTags.wordId, words.id))
-    .innerJoin(conlangs, eq(words.conlangId, conlangs.id))
-    .where(and(eq(tags.type, "word"), eq(conlangs.ownerId, userId)));
+  const userTags = await db.query.tags.findMany({
+    where: (model, { eq }) => eq(model.createdBy, userId),
+    orderBy: (model, { asc }) => [asc(model.text)],
+  });
 
   return userTags;
 }
@@ -242,7 +234,15 @@ export async function insertTag(t: TagInsert) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const tag = await db.insert(tags).values(t).returning();
+  const tag = await db
+    .insert(tags)
+    .values({
+      ...t,
+      createdBy: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning();
 
   if (!tag[0]) throw new Error("Tag not created");
 

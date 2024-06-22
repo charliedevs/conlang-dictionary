@@ -1,7 +1,7 @@
 "use server";
 import {
   addWordTagRelation,
-  getAllWordTags,
+  getWordTagsForUser,
   insertTag,
   removeWordTagRelation,
 } from "~/server/queries";
@@ -11,7 +11,7 @@ export async function addTagToWord(wordId: number, tag: Partial<Tag>) {
   let newTag: Tag;
   if (!tag.id) {
     if (!tag.text) throw new Error("Tag text is required");
-    const allTags = await getAllWordTags();
+    const allTags = await getWordTagsForUser();
     const existingTag = allTags.find((t) => t.text === tag.text);
     if (!existingTag) {
       newTag = (await insertTag({

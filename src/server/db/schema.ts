@@ -57,7 +57,7 @@ export const words = createTable(
     pronunciation: varchar("pronunciation", { length: 512 }),
     gloss: varchar("gloss", { length: 512 }),
     definition: varchar("definition", { length: 1024 }),
-    createdAt: timestamp("created_at")
+    createdAt: timestamp("createdAt")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt"),
@@ -84,9 +84,12 @@ export const tagColor = pgEnum("tagColor", [
 ]);
 export const tags = createTable("tag", {
   id: serial("id").primaryKey(),
-  text: varchar("tag", { length: 256 }).notNull().unique(),
+  text: varchar("tag", { length: 256 }).notNull(),
   type: tagType("type").notNull(),
   color: tagColor("color"),
+  createdBy: varchar("createdBy", { length: 256 }),
+  createdAt: timestamp("createdAt"),
+  updatedAt: timestamp("updatedAt"),
 });
 
 export const tagsRelations = relations(tags, ({ many }) => ({
