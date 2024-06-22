@@ -1,9 +1,9 @@
 "use client";
 
-import { PopoverArrow } from "@radix-ui/react-popover";
+import { PopoverArrow, PopoverClose } from "@radix-ui/react-popover";
 import { Plus, TagIcon, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 import { LoadingSpinner } from "~/components/loading-spinner";
@@ -185,6 +185,10 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
 
 function ExistingTags(props: { tags: Tag[]; wordId: number }) {
   const [isDeletingTag, setIsDeletingTag] = useState(0);
+  useEffect(() => {
+    setIsDeletingTag(0);
+    console.log("tags length", props.tags.length);
+  }, [props.tags.length]);
 
   const router = useRouter();
   async function handleRemoveTag(tag: Tag) {
@@ -197,10 +201,13 @@ function ExistingTags(props: { tags: Tag[]; wordId: number }) {
       toast.error("Could not remove tag");
     }
   }
+
+  const tagList = props.tags.filter((t) => t.id !== isDeletingTag);
+
   return (
     <>
       <TagIcon className="mr-1 mt-[0.05em] size-4 rotate-[135deg] text-muted-foreground" />
-      {props.tags.map((tag) => (
+      {tagList.map((tag) => (
         <Popover key={tag.id}>
           <PopoverTrigger asChild>
             <Button
@@ -213,18 +220,16 @@ function ExistingTags(props: { tags: Tag[]; wordId: number }) {
           </PopoverTrigger>
           <PopoverContent className="w-fit border-none p-2">
             <div className="flex flex-col items-center justify-center gap-1 text-xs">
-              <Button
-                onClick={() => handleRemoveTag(tag)}
-                disabled={isDeletingTag === tag.id}
-                variant="destructive"
-                className="size-8 p-1 text-xs"
-              >
-                {isDeletingTag === tag.id ? (
-                  <LoadingSpinner className="size-4" />
-                ) : (
+              <PopoverClose asChild>
+                <Button
+                  onClick={() => handleRemoveTag(tag)}
+                  disabled={isDeletingTag === tag.id}
+                  variant="destructive"
+                  className="size-8 p-1 text-xs"
+                >
                   <Trash2 className="size-5" />
-                )}
-              </Button>
+                </Button>
+              </PopoverClose>
             </div>
             <PopoverArrow className="fill-card" />
           </PopoverContent>
