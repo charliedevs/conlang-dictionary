@@ -37,6 +37,35 @@ import { type Tag, type TagColor } from "~/types/tag";
 import { type Word } from "~/types/word";
 import { addTagToWord, removeTagFromWord, type TagAdd } from "../_actions/tag";
 
+function getTagColor(color: TagColor | null) {
+  if (color === "red") return "border-red-500 bg-red-400/70";
+  if (color === "orange") return "border-orange-500 bg-orange-400/60";
+  if (color === "yellow") return "border-yellow-400 bg-yellow-300/70";
+  if (color === "green") return "border-green-500 bg-green-400/70";
+  if (color === "blue") return "border-blue-500 bg-blue-400/70";
+  if (color === "purple") return "border-purple-500 bg-purple-400/70";
+  if (color === "neutral") return "border-slate-400 bg-slate-300/70";
+  return "";
+}
+
+function Tag(props: {
+  text: string;
+  color: TagColor | null;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex w-fit items-center rounded-md border px-1 py-0.5 text-xs not-italic text-secondary-foreground",
+        getTagColor(props.color),
+        props.className,
+      )}
+    >
+      <div className="text-md md:text-xs">{props.text}</div>
+    </div>
+  );
+}
+
 const AddTagButton = forwardRef<HTMLButtonElement>(
   function AddTagButton(props, forwardedRef) {
     return (
@@ -56,7 +85,7 @@ const AddTagButton = forwardRef<HTMLButtonElement>(
   },
 );
 
-function UserTagList(props: {
+function AddTagList(props: {
   tagSearch: string;
   existingWordTags: Tag[];
   onTagClick: (tag: TagAdd) => void;
@@ -104,7 +133,7 @@ function UserTagList(props: {
 
   return (
     <ScrollArea className="min-h-0 flex-grow overflow-auto pb-10 md:pb-0 [&>div]:max-h-60 [&>div]:md:max-h-44">
-      <ul className="flex flex-col gap-2">
+      <ul className="flex flex-col gap-1">
         {searchTags.map((tag) => (
           <li
             key={tag.id}
@@ -123,14 +152,20 @@ function UserTagList(props: {
                 : "",
             )}
           >
-            <div className="text-md md:text-xs">{tag.text}</div>
+            <Tag text={tag.text} color={tag.color ?? null} />
           </li>
         ))}
         {props.tagSearch.length > 0 ? (
           isTagAlreadyOnWord ? (
             <li className="p-1">
-              <div className="text-md italic text-muted-foreground md:text-xs">
-                Tag &quot;{props.tagSearch}&quot; already on word
+              <div className="text-md flex items-center gap-1 italic text-muted-foreground md:text-xs">
+                Tag
+                <Tag
+                  text={props.tagSearch}
+                  color={props.selectedColor}
+                  className="py-[0.05em]"
+                />
+                already on word
               </div>
             </li>
           ) : (
@@ -151,8 +186,13 @@ function UserTagList(props: {
                     : "",
                 )}
               >
-                <div className="text-md md:text-xs">
-                  Add new tag &quot;{props.tagSearch}&quot;
+                <div className="text-md flex items-center gap-1 md:text-xs">
+                  Add new tag{" "}
+                  <Tag
+                    text={props.tagSearch}
+                    color={props.selectedColor}
+                    className="py-[0.05em]"
+                  />
                 </div>
               </li>
             )
@@ -188,13 +228,7 @@ function ColorDot(props: { color: TagColor | null }) {
     <div
       className={cn(
         "flex size-4 items-center justify-center rounded-full border bg-transparent dark:border-muted-foreground",
-        props.color === "red" ? "border-red-500 bg-red-400/90" : "",
-        props.color === "orange" ? "border-orange-500 bg-orange-400/90" : "",
-        props.color === "yellow" ? "border-yellow-400 bg-yellow-300/90" : "",
-        props.color === "green" ? "border-green-500 bg-green-400/90" : "",
-        props.color === "blue" ? "border-blue-500 bg-blue-400/90" : "",
-        props.color === "purple" ? "border-purple-500 bg-purple-400/90" : "",
-        props.color === "neutral" ? "border-slate-400 bg-slate-300/90" : "",
+        getTagColor(props.color),
       )}
     >
       {!props.color && (
@@ -282,7 +316,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
               endAdornment={isLoading ? <LoadingSpinner /> : null}
               className="h-8"
             />
-            <UserTagList
+            <AddTagList
               tagSearch={tagSearch.trim()}
               existingWordTags={props.word.tags}
               onTagClick={handleAddTag}
@@ -326,7 +360,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
           disabled={isLoading}
           endAdornment={isLoading ? <LoadingSpinner /> : null}
         />
-        <UserTagList
+        <AddTagList
           tagSearch={tagSearch.trim()}
           existingWordTags={props.word.tags}
           onTagClick={handleAddTag}
@@ -374,7 +408,7 @@ function ExistingTags(props: { tags: Tag[]; wordId: number }) {
               className="flex h-6 items-center gap-1 px-1 text-muted-foreground"
               tabIndex={-1}
             >
-              {tag.text}
+              <Tag text={tag.text} color={tag.color ?? null} />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-fit border-none p-2">
