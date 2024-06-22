@@ -3,7 +3,13 @@
 import { PopoverArrow, PopoverClose } from "@radix-ui/react-popover";
 import { Plus, TagIcon, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 import { LoadingSpinner } from "~/components/loading-spinner";
@@ -24,9 +30,10 @@ import {
 } from "~/components/ui/popover";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { useTags } from "~/hooks/data/useTags";
+import { cn } from "~/lib/utils";
 import { type Tag } from "~/types/tag";
 import { type Word } from "~/types/word";
-import { addTagToWord, removeTagFromWord } from "../_actions/tag";
+import { addTagToWord, removeTagFromWord, type TagAdd } from "../_actions/tag";
 
 const AddTagButton = forwardRef<HTMLButtonElement>(
   function AddTagButton(props, forwardedRef) {
@@ -36,7 +43,7 @@ const AddTagButton = forwardRef<HTMLButtonElement>(
         ref={forwardedRef}
         variant="outline"
         size="sm"
-        className="mt-0.5 flex h-6 items-center gap-1 px-1 text-muted-foreground md:mt-[0.05rem] md:border-none"
+        className="mt-0.5 flex h-6 items-center gap-1 px-1 text-muted-foreground focus:bg-accent focus:text-primary focus-visible:ring-offset-0 md:mt-[0.05rem] md:border-none"
       >
         <Plus className="size-[14px]" />
         <p className="pr-0.5 text-xs font-semibold tracking-tighter md:sr-only">
@@ -50,19 +57,18 @@ const AddTagButton = forwardRef<HTMLButtonElement>(
 function UserTagList(props: {
   tagSearch: string;
   existingWordTags: Tag[];
-  onTagClick: (tag: Partial<Tag>) => void;
+  onTagClick: (tag: TagAdd) => void;
+  selectedTag: TagAdd | null;
+  setSelectedTag: Dispatch<SetStateAction<TagAdd | null>>;
 }) {
   const userTags = useTags();
-  if (userTags.isLoading)
-    return <div className="text-md md:text-xs">Loading...</div>;
-  if (!userTags.data)
-    return <div className="text-md md:text-xs">No tags found</div>;
-  const userTagsNotOnWord = userTags.data.filter(
-    (tag) =>
-      !props.existingWordTags.find(
-        (existingTag) => existingTag.text === tag.text,
-      ),
-  );
+  const userTagsNotOnWord =
+    userTags.data?.filter(
+      (tag) =>
+        !props.existingWordTags.find(
+          (existingTag) => existingTag.text === tag.text,
+        ),
+    ) ?? [];
   const searchTags = userTagsNotOnWord.filter((tag) =>
     tag.text.toLowerCase().includes(props.tagSearch.toLowerCase()),
   );
@@ -70,6 +76,28 @@ function UserTagList(props: {
     (existingTag) => existingTag.text === props.tagSearch,
   );
   const isNewTagName = !searchTags.some((t) => t.text === props.tagSearch);
+
+  // Set selected tag from search input so user can press enter to add tag
+  useEffect(() => {
+    if (props.tagSearch.length > 0) {
+      const matchingTag = searchTags.find((t) =>
+        t.text.includes(props.tagSearch),
+      );
+      if (matchingTag) {
+        props.setSelectedTag(matchingTag);
+      } else if (isNewTagName) {
+        props.setSelectedTag({ text: props.tagSearch });
+      }
+    } else {
+      props.setSelectedTag(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.tagSearch]);
+
+  if (userTags.isLoading)
+    return <div className="text-md md:text-xs">Loading...</div>;
+  if (!userTags.data)
+    return <div className="text-md md:text-xs">No tags found</div>;
 
   return (
     <ScrollArea className="min-h-0 flex-grow overflow-auto pb-10 md:pb-0 [&>div]:max-h-60 [&>div]:md:max-h-44">
@@ -83,8 +111,14 @@ function UserTagList(props: {
                 props.onTagClick(tag);
               }
             }}
+            onFocus={() => props.setSelectedTag(tag)}
             tabIndex={0}
-            className="rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary focus:bg-secondary focus:outline-none"
+            className={cn(
+              "rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary focus:bg-secondary focus:outline-none",
+              props.selectedTag?.text === tag.text
+                ? "bg-secondary/70 font-medium"
+                : "",
+            )}
           >
             <div className="text-md md:text-xs">{tag.text}</div>
           </li>
@@ -105,10 +139,16 @@ function UserTagList(props: {
                     props.onTagClick({ text: props.tagSearch });
                   }
                 }}
+                onFocus={() => props.setSelectedTag({ text: props.tagSearch })}
                 tabIndex={0}
-                className="rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary focus:bg-secondary focus:outline-none"
+                className={cn(
+                  "rounded-md p-1 transition-all ease-in hover:cursor-pointer hover:bg-secondary focus:bg-secondary focus:outline-none",
+                  props.selectedTag?.text === props.tagSearch
+                    ? "bg-secondary/70 font-medium"
+                    : "",
+                )}
               >
-                <div className="text-md font-medium md:text-xs">
+                <div className="text-md md:text-xs">
                   Add new tag &quot;{props.tagSearch}&quot;
                 </div>
               </li>
@@ -122,11 +162,12 @@ function UserTagList(props: {
 
 function AddTagMenu(props: { word: Word; conlangName: string }) {
   const [tagSearch, setTagSearch] = useState("");
+  const [selectedTag, setSelectedTag] = useState<TagAdd | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();
-  async function handleAddTag(tag: Partial<Tag>) {
+  async function handleAddTag(tag: TagAdd) {
     try {
       setIsLoading(true);
       await addTagToWord(props.word.id, tag);
@@ -160,6 +201,11 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
             <Input
               value={tagSearch}
               onChange={(e) => setTagSearch(e.target.value)}
+              onKeyDown={async (e) => {
+                if (e.key === "Enter" && selectedTag) {
+                  await handleAddTag(selectedTag);
+                }
+              }}
               placeholder="Enter tag name..."
               disabled={isLoading}
               endAdornment={isLoading ? <LoadingSpinner /> : null}
@@ -169,6 +215,8 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
               tagSearch={tagSearch.trim()}
               existingWordTags={props.word.tags}
               onTagClick={handleAddTag}
+              selectedTag={selectedTag}
+              setSelectedTag={setSelectedTag}
             />
           </div>
         </PopoverContent>
@@ -192,6 +240,11 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
         <Input
           value={tagSearch}
           onChange={(e) => setTagSearch(e.target.value)}
+          onKeyDown={async (e) => {
+            if (e.key === "Enter" && selectedTag) {
+              await handleAddTag(selectedTag);
+            }
+          }}
           placeholder="Enter tag name..."
           disabled={isLoading}
           endAdornment={isLoading ? <LoadingSpinner /> : null}
@@ -200,6 +253,8 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
           tagSearch={tagSearch.trim()}
           existingWordTags={props.word.tags}
           onTagClick={handleAddTag}
+          selectedTag={selectedTag}
+          setSelectedTag={setSelectedTag}
         />
         <DrawerFooter>
           <DrawerClose asChild>

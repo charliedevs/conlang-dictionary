@@ -7,10 +7,11 @@ import {
 } from "~/server/queries";
 import { type Tag } from "~/types/tag";
 
-export async function addTagToWord(wordId: number, tag: Partial<Tag>) {
+export type TagAdd = Pick<Tag, "text"> & Partial<Tag>;
+
+export async function addTagToWord(wordId: number, tag: TagAdd) {
   let newTag: Tag;
   if (!tag.id) {
-    if (!tag.text) throw new Error("Tag text is required");
     const allTags = await getWordTagsForUser();
     const existingTag = allTags.find((t) => t.text === tag.text);
     if (!existingTag) {
