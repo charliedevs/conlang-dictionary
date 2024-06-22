@@ -104,6 +104,7 @@ function UserTagList(props: {
 function AddTagMenu(props: { word: Word; conlangName: string }) {
   const [tagSearch, setTagSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();
   async function handleAddTag(tag: Partial<Tag>) {
@@ -121,13 +122,14 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
       console.error("Error:", error);
     } finally {
       setIsLoading(false);
+      setIsOpen(false);
     }
   }
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
   if (isDesktop) {
     return (
-      <Popover>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <AddTagButton />
         </PopoverTrigger>
@@ -187,7 +189,6 @@ function ExistingTags(props: { tags: Tag[]; wordId: number }) {
   const [isDeletingTag, setIsDeletingTag] = useState(0);
   useEffect(() => {
     setIsDeletingTag(0);
-    console.log("tags length", props.tags.length);
   }, [props.tags.length]);
 
   const router = useRouter();
@@ -203,7 +204,6 @@ function ExistingTags(props: { tags: Tag[]; wordId: number }) {
   }
 
   const tagList = props.tags.filter((t) => t.id !== isDeletingTag);
-
   return (
     <>
       <TagIcon className="mr-1 mt-[0.05em] size-4 rotate-[135deg] text-muted-foreground" />
