@@ -73,11 +73,20 @@ export const wordsRelations = relations(words, ({ many }) => ({
 
 // Tags
 export const tagType = pgEnum("tagType", ["word", "conlang"]);
-
+export const tagColor = pgEnum("tagColor", [
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "purple",
+  "neutral",
+]);
 export const tags = createTable("tag", {
   id: serial("id").primaryKey(),
   text: varchar("tag", { length: 256 }).notNull().unique(),
   type: tagType("type").notNull(),
+  color: tagColor("color"),
 });
 
 export const tagsRelations = relations(tags, ({ many }) => ({

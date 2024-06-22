@@ -3,7 +3,7 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 
 import { and, eq } from "drizzle-orm";
-import { type TagType } from "~/types/tag";
+import { type TagColor, type TagType } from "~/types/tag";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
 import { conlangs, tags, words, wordsToTags } from "./db/schema";
@@ -221,6 +221,7 @@ export async function getWordTagsForUser() {
       id: tags.id,
       text: tags.text,
       type: tags.type,
+      color: tags.color,
     })
     .from(tags)
     .innerJoin(wordsToTags, eq(tags.id, wordsToTags.tagId))
@@ -234,6 +235,7 @@ export async function getWordTagsForUser() {
 export interface TagInsert {
   text: string;
   type: TagType;
+  color?: TagColor | null;
 }
 
 export async function insertTag(t: TagInsert) {

@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { tagTypes } from "~/types/tag";
+import { tagType } from "~/server/db/schema";
 
 export const getTagsSchema = z.object({
-  tagType: z.enum(tagTypes).optional(),
+  tagType: z.enum(tagType.enumValues).optional(),
   isForUser: z.boolean().optional(),
 });

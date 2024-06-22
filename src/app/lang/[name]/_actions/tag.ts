@@ -17,6 +17,7 @@ export async function addTagToWord(wordId: number, tag: Partial<Tag>) {
       newTag = (await insertTag({
         text: tag.text,
         type: "word",
+        color: tag.color,
       })) as Tag;
     } else {
       newTag = existingTag;
