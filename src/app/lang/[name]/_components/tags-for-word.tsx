@@ -8,6 +8,7 @@ import {
   useEffect,
   useState,
   type Dispatch,
+  type PropsWithChildren,
   type SetStateAction,
 } from "react";
 import { toast } from "sonner";
@@ -31,6 +32,7 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { useTags } from "~/hooks/data/useTags";
 import { cn } from "~/lib/utils";
+import { tagColor } from "~/server/db/schema";
 import { type Tag, type TagColor } from "~/types/tag";
 import { type Word } from "~/types/word";
 import { addTagToWord, removeTagFromWord, type TagAdd } from "../_actions/tag";
@@ -161,11 +163,53 @@ function UserTagList(props: {
   );
 }
 
+interface ColorButtonProps {
+  onClick: () => void;
+}
+function ColorButton(props: PropsWithChildren<ColorButtonProps>) {
+  return (
+    <button
+      type="button"
+      onClick={props.onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          props.onClick();
+        }
+      }}
+      className="rounded-full opacity-80 hover:opacity-100"
+    >
+      {props.children}
+    </button>
+  );
+}
+
+function ColorDot(props: { color: TagColor | null }) {
+  return (
+    <div
+      className={cn(
+        "flex size-4 items-center justify-center rounded-full border bg-transparent dark:border-muted-foreground",
+        props.color === "red" ? "border-red-500 bg-red-400/90" : "",
+        props.color === "orange" ? "border-orange-500 bg-orange-400/90" : "",
+        props.color === "yellow" ? "border-yellow-400 bg-yellow-300/90" : "",
+        props.color === "green" ? "border-green-500 bg-green-400/90" : "",
+        props.color === "blue" ? "border-blue-500 bg-blue-400/90" : "",
+        props.color === "purple" ? "border-purple-500 bg-purple-400/90" : "",
+        props.color === "neutral" ? "border-slate-400 bg-slate-300/90" : "",
+      )}
+    >
+      {!props.color && (
+        <X className="size-3 text-border dark:text-muted-foreground" />
+      )}
+    </div>
+  );
+}
+
 function TagColorSelector(props: {
   visible: boolean;
   selectedColor: TagColor | null;
   setSelectedColor: Dispatch<SetStateAction<TagColor | null>>;
 }) {
+  const colors = tagColor.enumValues;
   return (
     <div
       className={cn(
@@ -173,48 +217,14 @@ function TagColorSelector(props: {
         props.visible ? "not-sr-only" : "sr-only",
       )}
     >
-      <button
-        type="button"
-        onClick={() => props.setSelectedColor(null)}
-        className="flex size-4 items-center justify-center rounded-full border bg-transparent dark:border-muted-foreground"
-      >
-        <X className="size-3 text-border dark:text-muted-foreground" />
-      </button>
-      <button
-        type="button"
-        onClick={() => props.setSelectedColor("red")}
-        className="size-4 rounded-full border border-red-500 bg-red-400/90"
-      />
-      <button
-        type="button"
-        onClick={() => props.setSelectedColor("orange")}
-        className="size-4 rounded-full border border-orange-500 bg-orange-400/90"
-      />
-      <button
-        type="button"
-        onClick={() => props.setSelectedColor("yellow")}
-        className="size-4 rounded-full border border-yellow-400 bg-yellow-300/90"
-      />
-      <button
-        type="button"
-        onClick={() => props.setSelectedColor("green")}
-        className="size-4 rounded-full border border-green-500 bg-green-400/90"
-      />
-      <button
-        type="button"
-        onClick={() => props.setSelectedColor("blue")}
-        className="size-4 rounded-full border border-blue-500 bg-blue-400/90"
-      />
-      <button
-        type="button"
-        onClick={() => props.setSelectedColor("purple")}
-        className="size-4 rounded-full border border-purple-500 bg-purple-400/90"
-      />
-      <button
-        type="button"
-        onClick={() => props.setSelectedColor("neutral")}
-        className="size-4 rounded-full border border-slate-400 bg-slate-300/90"
-      />
+      <ColorButton onClick={() => props.setSelectedColor(null)}>
+        <ColorDot color={null} />
+      </ColorButton>
+      {colors.map((color) => (
+        <ColorButton key={color} onClick={() => props.setSelectedColor(color)}>
+          <ColorDot color={color} />
+        </ColorButton>
+      ))}
     </div>
   );
 }
