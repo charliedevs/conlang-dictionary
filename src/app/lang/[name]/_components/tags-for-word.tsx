@@ -1,7 +1,7 @@
 "use client";
 
 import { PopoverArrow, PopoverClose } from "@radix-ui/react-popover";
-import { Plus, TagIcon, Trash2 } from "lucide-react";
+import { Plus, TagIcon, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   forwardRef,
@@ -31,7 +31,7 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { useTags } from "~/hooks/data/useTags";
 import { cn } from "~/lib/utils";
-import { type Tag } from "~/types/tag";
+import { type Tag, type TagColor } from "~/types/tag";
 import { type Word } from "~/types/word";
 import { addTagToWord, removeTagFromWord, type TagAdd } from "../_actions/tag";
 
@@ -60,6 +60,7 @@ function UserTagList(props: {
   onTagClick: (tag: TagAdd) => void;
   selectedTag: TagAdd | null;
   setSelectedTag: Dispatch<SetStateAction<TagAdd | null>>;
+  selectedColor: TagColor | null;
 }) {
   const userTags = useTags();
   const userTagsNotOnWord =
@@ -160,17 +161,77 @@ function UserTagList(props: {
   );
 }
 
+function TagColorSelector(props: {
+  visible: boolean;
+  selectedColor: TagColor | null;
+  setSelectedColor: Dispatch<SetStateAction<TagColor | null>>;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex w-full items-center justify-between gap-2 px-2",
+        props.visible ? "not-sr-only" : "sr-only",
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => props.setSelectedColor(null)}
+        className="flex size-4 items-center justify-center rounded-full border bg-transparent dark:border-muted-foreground"
+      >
+        <X className="size-3 text-border dark:text-muted-foreground" />
+      </button>
+      <button
+        type="button"
+        onClick={() => props.setSelectedColor("red")}
+        className="size-4 rounded-full border border-red-500 bg-red-400/90"
+      />
+      <button
+        type="button"
+        onClick={() => props.setSelectedColor("orange")}
+        className="size-4 rounded-full border border-orange-500 bg-orange-400/90"
+      />
+      <button
+        type="button"
+        onClick={() => props.setSelectedColor("yellow")}
+        className="size-4 rounded-full border border-yellow-400 bg-yellow-300/90"
+      />
+      <button
+        type="button"
+        onClick={() => props.setSelectedColor("green")}
+        className="size-4 rounded-full border border-green-500 bg-green-400/90"
+      />
+      <button
+        type="button"
+        onClick={() => props.setSelectedColor("blue")}
+        className="size-4 rounded-full border border-blue-500 bg-blue-400/90"
+      />
+      <button
+        type="button"
+        onClick={() => props.setSelectedColor("purple")}
+        className="size-4 rounded-full border border-purple-500 bg-purple-400/90"
+      />
+      <button
+        type="button"
+        onClick={() => props.setSelectedColor("neutral")}
+        className="size-4 rounded-full border border-slate-400 bg-slate-300/90"
+      />
+    </div>
+  );
+}
+
 function AddTagMenu(props: { word: Word; conlangName: string }) {
   const [tagSearch, setTagSearch] = useState("");
   const [selectedTag, setSelectedTag] = useState<TagAdd | null>(null);
+  const [selectedColor, setSelectedColor] = useState<TagColor | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();
   async function handleAddTag(tag: TagAdd) {
+    const newTag = tag.id ? tag : { ...tag, color: selectedColor };
     try {
       setIsLoading(true);
-      await addTagToWord(props.word.id, tag);
+      await addTagToWord(props.word.id, newTag);
       setTagSearch("");
       router.refresh();
     } catch (error) {
@@ -217,6 +278,12 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
               onTagClick={handleAddTag}
               selectedTag={selectedTag}
               setSelectedTag={setSelectedTag}
+              selectedColor={selectedColor}
+            />
+            <TagColorSelector
+              visible={Boolean(selectedTag && !selectedTag.id)}
+              selectedColor={selectedColor}
+              setSelectedColor={setSelectedColor}
             />
           </div>
         </PopoverContent>
@@ -255,6 +322,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
           onTagClick={handleAddTag}
           selectedTag={selectedTag}
           setSelectedTag={setSelectedTag}
+          selectedColor={selectedColor}
         />
         <DrawerFooter>
           <DrawerClose asChild>
