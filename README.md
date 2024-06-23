@@ -31,6 +31,7 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [x] Change public column to eye and eye-slash icons
 - [x] Add view conlang page (placeholder, just shows name and description)
 - [x] Add open conlang page button on conlang table
+- [ ] User can add tags to conlang
 - [ ] Move edit and delete buttons to individual conlang pages
 - [ ] Add ability to delete conlang
 - [ ] Instead of conditionally rendering form on dashboard, redirect to new conlang page if none created
@@ -38,11 +39,10 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 #### Basic Lexicon & Grammar
 
 - [x] Users can add words
-- [ ] Card for each word with word, glosses, and examples with glosses
-- [ ] Add ability to edit word
+- [x] Add ability to edit word
 - [ ] Add ability to delete word
-- [ ] Table view for words as alternate to card view
-- [ ] Users can tag conlang and words with custom tags
+- [x] Users can tag words with custom tags
+- [ ] User can add multiple sections and definitions to a word
 - [ ] Signed-in user view vs owner view vs public view
 
 #### Inflections & Derivations
@@ -58,15 +58,20 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [x] Update landing page copy with features and a blurb
 - [ ] Add 'coming soon' indicators to unimplemented features
 
+### Production Environment
+
+- [ ] Create separate db/tagged tables for production
+- [ ] Set up clerk auth for production
+
 ### Misc Details
 
 - [ ] Use server actions instead of API requests
   - see createWord
 - [ ] Create a custom 404/not found page
+- [ ] Update afterSignInUrl to fallbackUrl and forceUrl
 - [ ] Maybe create users table with data from clerk and tie it to the conlang table
   - [ ] Then pull user info from conlang table join instead of react query
-- [ ] Deal with double scroll bar when you shrink the window height (remove h-screen from layout?)
-- [ ] dark mode
+- [x] dark mode
 - [ ] custom user primary colors
 
 ## Features

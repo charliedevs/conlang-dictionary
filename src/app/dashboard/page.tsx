@@ -6,7 +6,7 @@ import {
 
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
-import { getUsers } from "~/hooks/useUsers";
+import { getUsers } from "~/hooks/data/useUsers";
 import { getMyConlangs } from "~/server/queries";
 import { ConlangTable } from "./_components/conlang-table";
 import { NewConlangForm } from "./_components/new-conlang-form";

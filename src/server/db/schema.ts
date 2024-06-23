@@ -1,12 +1,14 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   index,
   integer,
+  pgEnum,
   pgTableCreator,
+  primaryKey,
   serial,
   text,
   timestamp,
@@ -43,7 +45,7 @@ export const conlangs = createTable(
   }),
 );
 
-// Words table
+// Words
 export const words = createTable(
   "word",
   {
@@ -55,7 +57,7 @@ export const words = createTable(
     pronunciation: varchar("pronunciation", { length: 512 }),
     gloss: varchar("gloss", { length: 512 }),
     definition: varchar("definition", { length: 1024 }),
-    createdAt: timestamp("created_at")
+    createdAt: timestamp("createdAt")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt"),
@@ -64,3 +66,59 @@ export const words = createTable(
     wordTextIndex: index("word_text_idx").on(word.text),
   }),
 );
+
+export const wordsRelations = relations(words, ({ many }) => ({
+  tags: many(wordsToTags),
+}));
+
+// Tags
+export const tagType = pgEnum("tagType", ["word", "conlang"]);
+export const tagColor = pgEnum("tagColor", [
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "purple",
+  "neutral",
+]);
+export const tags = createTable("tag", {
+  id: serial("id").primaryKey(),
+  text: varchar("tag", { length: 256 }).notNull(),
+  type: tagType("type").notNull(),
+  color: tagColor("color"),
+  createdBy: varchar("createdBy", { length: 256 }),
+  createdAt: timestamp("createdAt"),
+  updatedAt: timestamp("updatedAt"),
+});
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+  words: many(wordsToTags),
+}));
+
+// Table for many-to-many relationship between words and tags
+export const wordsToTags = createTable(
+  "wordsToTags",
+  {
+    wordId: integer("wordId")
+      .notNull()
+      .references(() => words.id),
+    tagId: integer("tagId")
+      .notNull()
+      .references(() => tags.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.wordId, t.tagId] }),
+  }),
+);
+
+export const wordsToTagsRelations = relations(wordsToTags, ({ one }) => ({
+  tag: one(tags, {
+    fields: [wordsToTags.tagId],
+    references: [tags.id],
+  }),
+  word: one(words, {
+    fields: [wordsToTags.wordId],
+    references: [words.id],
+  }),
+}));
