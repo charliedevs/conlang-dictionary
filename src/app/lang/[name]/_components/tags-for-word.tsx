@@ -134,7 +134,7 @@ function AddTagList(props: {
     return <div className="text-md md:text-xs">No tags found</div>;
 
   return (
-    <ScrollArea className="min-h-0 flex-grow overflow-auto pb-10 md:pb-0 [&>div]:max-h-60 [&>div]:md:max-h-44">
+    <ScrollArea className="min-h-0 flex-grow overflow-x-auto overflow-y-scroll pb-10 md:pb-0 [&>div]:max-h-32 [&>div]:md:max-h-44">
       <ul className="flex flex-col gap-1">
         {searchTags.map((tag) => (
           <li
@@ -177,7 +177,7 @@ function AddTagList(props: {
                       (t) => t.text === props.tagSearch,
                     )?.color ?? null
                   }
-                  className="py-[0.05em]"
+                  className="text-md py-[0.05em] md:text-xs"
                 />
                 already on word
               </div>
@@ -205,7 +205,7 @@ function AddTagList(props: {
                   <Tag
                     text={props.tagSearch}
                     color={props.selectedColor}
-                    className="py-[0.05em]"
+                    className="py-[0.05em] text-sm md:text-xs"
                   />
                 </div>
               </li>
@@ -357,8 +357,8 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
       <DrawerTrigger asChild>
         <AddTagButton />
       </DrawerTrigger>
-      <DrawerContent className="flex min-h-[40vh] flex-col gap-4 px-10">
-        <DrawerDescription className="text-md py-4 text-center">
+      <DrawerContent className="flex min-h-[10vh] flex-col gap-3 px-10">
+        <DrawerDescription className="text-md py-1 text-center">
           Assign tags to {props.word.text}
         </DrawerDescription>
         <div className="flex flex-wrap items-center justify-start gap-1">
@@ -389,7 +389,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
           visible={Boolean(selectedTag && !selectedTag.id)}
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
-          className="mx-auto my-5 max-w-96"
+          className="mx-auto my-2 max-w-96"
         />
         <DrawerFooter className="w-full">
           <DrawerClose asChild>
