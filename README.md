@@ -39,9 +39,10 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 #### Basic Lexicon & Grammar
 
 - [x] Users can add words
-- [ ] Add ability to edit word
+- [x] Add ability to edit word
 - [ ] Add ability to delete word
-- [ ] Users can tag words with custom tags
+- [x] Users can tag words with custom tags
+- [ ] User can add multiple sections and definitions to a word
 - [ ] Signed-in user view vs owner view vs public view
 
 #### Inflections & Derivations
@@ -70,7 +71,6 @@ Read more about conlangs at [conlang.org](https://conlang.org).
 - [ ] Update afterSignInUrl to fallbackUrl and forceUrl
 - [ ] Maybe create users table with data from clerk and tie it to the conlang table
   - [ ] Then pull user info from conlang table join instead of react query
-- [ ] Deal with double scroll bar when you shrink the window height (remove h-screen from layout?)
 - [x] dark mode
 - [ ] custom user primary colors
 
