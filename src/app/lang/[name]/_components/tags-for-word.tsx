@@ -298,8 +298,6 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
     }
   }
 
-  // const isDesktop = useMediaQuery("(min-width: 768px)");
-  // if (isDesktop) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -340,56 +338,6 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
       </PopoverContent>
     </Popover>
   );
-  // }
-
-  // Mobile view
-  // return (
-  //   <Drawer>
-  //     <DrawerTrigger asChild>
-  //       <AddTagButton />
-  //     </DrawerTrigger>
-  //     <DrawerContent className="flex flex-col gap-3 px-10">
-  //       <DrawerDescription className="text-md py-1 text-center">
-  //         Assign tags to {props.word.text}
-  //       </DrawerDescription>
-  //       <div className="flex flex-wrap items-center justify-start gap-1">
-  //         <ExistingTags tags={props.word.tags} wordId={props.word.id} />
-  //       </div>
-  //       <Input
-  //         value={tagSearch}
-  //         onChange={(e) => setTagSearch(e.target.value)}
-  //         onKeyDown={async (e) => {
-  //           if (e.key === "Enter" && selectedTag) {
-  //             await handleAddTag(selectedTag);
-  //           }
-  //         }}
-  //         autoFocus
-  //         placeholder="Enter tag name..."
-  //         disabled={isLoading}
-  //         endAdornment={isLoading ? <LoadingSpinner /> : null}
-  //       />
-  //       <AddTagList
-  //         tagSearch={tagSearch.trim()}
-  //         existingWordTags={props.word.tags}
-  //         onTagClick={handleAddTag}
-  //         selectedTag={selectedTag}
-  //         setSelectedTag={setSelectedTag}
-  //         selectedColor={selectedColor}
-  //       />
-  //       <TagColorSelector
-  //         visible={Boolean(selectedTag && !selectedTag.id)}
-  //         selectedColor={selectedColor}
-  //         setSelectedColor={setSelectedColor}
-  //         className="mx-auto my-2 max-w-96"
-  //       />
-  //       <DrawerFooter className="w-full">
-  //         <DrawerClose asChild>
-  //           <Button variant="outline">Close</Button>
-  //         </DrawerClose>
-  //       </DrawerFooter>
-  //     </DrawerContent>
-  //   </Drawer>
-  // );
 }
 
 function ExistingTags(props: { tags: Tag[]; wordId: number }) {
