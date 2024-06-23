@@ -1,8 +1,12 @@
-# Conlang Dictionary
+<a href="https://conlangdictionary.com" target="_blank">
+  <img width="762" alt="Conlang Dictionary Logo" src="https://github.com/charliedevs/conlang-dictionary/assets/34718612/85a923a8-0e3b-4795-8c87-012272f48682">
+</a>
 
-A web app to store and share your conlangs (constructed languages).
+A web app to store and share your constructed languages.
 
-Read more about conlangs at [conlang.org](https://conlang.org).
+<br>
+
+*Read more about conlangs at [conlang.org](https://conlang.org).*
 
 ## Table of Contents
 
