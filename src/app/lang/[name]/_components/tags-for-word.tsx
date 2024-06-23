@@ -258,7 +258,7 @@ function TagColorSelector(props: {
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between gap-2 px-2",
+        "my-2 flex w-full items-center justify-between gap-2 px-2 md:my-0",
         props.visible ? "not-sr-only" : "sr-only",
         props.className,
       )}
@@ -328,6 +328,11 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
             endAdornment={isLoading ? <LoadingSpinner /> : null}
             className="md:h-8"
           />
+          <TagColorSelector
+            visible={Boolean(selectedTag && !selectedTag.id)}
+            selectedColor={selectedColor}
+            setSelectedColor={setSelectedColor}
+          />
           <AddTagList
             tagSearch={tagSearch.trim()}
             existingWordTags={props.word.tags}
@@ -335,11 +340,6 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
             selectedTag={selectedTag}
             setSelectedTag={setSelectedTag}
             selectedColor={selectedColor}
-          />
-          <TagColorSelector
-            visible={Boolean(selectedTag && !selectedTag.id)}
-            selectedColor={selectedColor}
-            setSelectedColor={setSelectedColor}
           />
         </div>
       </PopoverContent>
