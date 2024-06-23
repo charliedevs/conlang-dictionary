@@ -29,14 +29,21 @@ import { type Word } from "~/types/word";
 import { addTagToWord, removeTagFromWord, type TagAdd } from "../_actions/tag";
 
 function getTagColor(color: TagColor | null) {
-  if (color === "red") return "border-red-400 bg-red-400/60";
-  if (color === "orange") return "border-orange-400 bg-orange-400/60";
-  if (color === "yellow") return "border-yellow-300 bg-yellow-300/60";
-  if (color === "green") return "border-green-400 bg-green-400/60";
-  if (color === "blue") return "border-blue-400 bg-blue-400/60";
-  if (color === "purple") return "border-purple-400 bg-purple-400/60";
-  if (color === "neutral") return "border-slate-300 bg-slate-300/60";
-  return "";
+  if (color === "red")
+    return "border-red-400 bg-red-400/60 text-red-900 dark:text-red-100/90";
+  if (color === "orange")
+    return "border-orange-400 bg-orange-400/60 text-orange-900 dark:text-orange-200";
+  if (color === "yellow")
+    return "border-yellow-300 bg-yellow-300/60 text-yellow-900 dark:text-yellow-100";
+  if (color === "green")
+    return "border-green-400 bg-green-400/60 text-green-800 dark:text-green-200";
+  if (color === "blue")
+    return "border-blue-400 bg-blue-400/60 text-blue-900 dark:text-blue-100/90";
+  if (color === "purple")
+    return "border-purple-400 bg-purple-400/60 text-purple-900 dark:text-purple-200";
+  if (color === "neutral")
+    return "border-slate-300 bg-slate-300/60 text-slate-600 dark:text-slate-200";
+  return "outline outline-border outline-1 text-slate-700 dark:text-slate-200";
 }
 
 function Tag(props: {
@@ -47,12 +54,14 @@ function Tag(props: {
   return (
     <div
       className={cn(
-        "flex w-fit items-center rounded-md border px-1 py-0.5 text-xs not-italic text-primary",
+        "flex w-fit items-center rounded-md px-1.5 py-0.5 not-italic",
         getTagColor(props.color),
         props.className,
       )}
     >
-      <div className="text-md md:text-xs">{props.text}</div>
+      <div className="text-[16px] font-medium tracking-tight md:text-xs">
+        {props.text}
+      </div>
     </div>
   );
 }
@@ -65,10 +74,10 @@ const AddTagButton = forwardRef<HTMLButtonElement>(
         ref={forwardedRef}
         variant="outline"
         size="sm"
-        className="mt-0.5 flex h-6 items-center gap-1 px-1 text-muted-foreground focus:bg-accent focus:text-primary focus-visible:ring-offset-0 md:mt-[0.05rem] md:border-none"
+        className="flex h-7 items-center gap-1 px-1 text-muted-foreground focus:bg-accent focus:text-primary focus-visible:ring-offset-0 md:mt-[0.05rem] md:h-6 md:border-none"
       >
         <Plus className="size-[14px]" />
-        <p className="pr-0.5 text-xs font-semibold tracking-tighter md:sr-only">
+        <p className="pr-0.5 text-sm font-semibold tracking-tighter md:sr-only md:text-xs">
           Add Tag
         </p>
       </Button>
@@ -119,13 +128,11 @@ function AddTagList(props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.tagSearch]);
 
-  if (userTags.isLoading)
-    return <div className="text-md md:text-xs">Loading...</div>;
-  if (!userTags.data)
-    return <div className="text-md md:text-xs">No tags found</div>;
+  if (userTags.isLoading) return <div className="md:text-xs">Loading...</div>;
+  if (!userTags.data) return <div className="md:text-xs">No tags found</div>;
 
   return (
-    <ScrollArea className="min-h-0 flex-grow overflow-x-auto overflow-y-scroll pb-10 md:pb-0 [&>div]:max-h-32 [&>div]:md:max-h-44">
+    <ScrollArea className="h-24 md:h-fit md:min-h-0 md:flex-grow [&>div]:md:max-h-44">
       <ul className="flex flex-col gap-1">
         {searchTags.map((tag) => (
           <li
@@ -148,14 +155,14 @@ function AddTagList(props: {
             <Tag
               text={tag.text}
               color={tag.color ?? null}
-              className="text-md md:text-xs"
+              className="md:text-sm"
             />
           </li>
         ))}
         {props.tagSearch.length > 0 ? (
           isTagAlreadyOnWord ? (
             <li className="p-1">
-              <div className="text-md flex items-center gap-1 italic text-muted-foreground md:text-xs">
+              <div className="flex items-center gap-1 italic text-muted-foreground md:text-xs">
                 Tag
                 <Tag
                   text={
@@ -168,7 +175,7 @@ function AddTagList(props: {
                       (t) => t.text === props.tagSearch,
                     )?.color ?? null
                   }
-                  className="text-md py-[0.05em] md:text-xs"
+                  className="py-[0.05em] md:text-sm"
                 />
                 already on word
               </div>
@@ -191,12 +198,12 @@ function AddTagList(props: {
                     : "",
                 )}
               >
-                <div className="text-md flex items-center gap-1 md:text-xs">
+                <div className="flex items-center gap-1 md:text-xs">
                   Add new tag{" "}
                   <Tag
                     text={props.tagSearch}
                     color={props.selectedColor}
-                    className="py-[0.05em] text-sm md:text-xs"
+                    className="py-[0.05em] md:text-sm"
                   />
                 </div>
               </li>
@@ -299,7 +306,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
   }
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen} modal>
       <PopoverTrigger asChild>
         <AddTagButton />
       </PopoverTrigger>
@@ -319,7 +326,7 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
             placeholder="Enter tag name..."
             disabled={isLoading}
             endAdornment={isLoading ? <LoadingSpinner /> : null}
-            className="h-8"
+            className="md:h-8"
           />
           <AddTagList
             tagSearch={tagSearch.trim()}
@@ -372,7 +379,7 @@ function ExistingTags(props: { tags: Tag[]; wordId: number }) {
               <Tag
                 text={tag.text}
                 color={tag.color ?? null}
-                className="text-primary/80 hover:drop-shadow-sm"
+                className="hover:drop-shadow-sm"
               />
             </Button>
           </PopoverTrigger>
