@@ -64,8 +64,8 @@ export function Combobox({
                 <CommandItem
                   key={String(o.value)}
                   value={String(o.value)}
-                  onSelect={(val) => {
-                    onChange(val);
+                  onSelect={(newValue) => {
+                    onChange(newValue === value ? "" : newValue);
                     setOpen(false);
                   }}
                 >
