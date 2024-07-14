@@ -69,6 +69,7 @@ export const words = createTable(
 
 export const wordsRelations = relations(words, ({ many }) => ({
   tags: many(wordsToTags),
+  sections: many(sections),
 }));
 
 // Tags
@@ -136,15 +137,25 @@ export const lexicalCategories = createTable("lexicalCategories", {
 // Sections
 export const sections = createTable("sections", {
   id: serial("id").primaryKey(),
-  wordId: integer("wordId")
-    .notNull()
-    .references(() => words.id),
-  definitionId: integer("definitionId").references(() => definitions.id),
+  wordId: integer("wordId").notNull(),
+  definitionId: integer("definitionId"),
   // pronunciationId: integer("pronunciationId")
   //   .references(() => pronunciations.id),
   customTitle: text("customTitle"),
   customText: text("customText"),
+  //parentSectionId: integer("parentSectionId"),
 });
+
+export const sectionsRelations = relations(sections, ({ one }) => ({
+  word: one(words, {
+    fields: [sections.wordId],
+    references: [words.id],
+  }),
+  definition: one(definitions, {
+    fields: [sections.definitionId],
+    references: [definitions.id],
+  }),
+}));
 
 export const definitions = createTable("definitions", {
   id: serial("id").primaryKey(),
@@ -153,6 +164,13 @@ export const definitions = createTable("definitions", {
     .references(() => lexicalCategories.id),
   text: text("text"),
 });
+
+export const definitionsRelations = relations(definitions, ({ one }) => ({
+  lexicalCategory: one(lexicalCategories, {
+    fields: [definitions.lexicalCategoryId],
+    references: [lexicalCategories.id],
+  }),
+}));
 
 // TODO: Add other section types one at a time and test
 // export const pronunciations = createTable("pronunciations", {

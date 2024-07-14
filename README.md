@@ -72,6 +72,7 @@ _Read more about conlangs at [conlang.org](https://conlang.org)._
 
 - [ ] Use server actions instead of API requests
   - see createWord
+- [ ] Use zod for insert/update and infer types where possible instead of declaring types manually
 - [ ] Create a custom 404/not found page
 - [ ] Update afterSignInUrl to fallbackUrl and forceUrl
 - [ ] Maybe create users table with data from clerk and tie it to the conlang table

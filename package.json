@@ -41,6 +41,7 @@
     "cmdk": "^1.0.0",
     "drizzle-orm": "^0.31.2",
     "emoji-picker-react": "^4.9.2",
+    "html-react-parser": "^5.1.10",
     "lucide-react": "^0.376.0",
     "next": "^14.2.3",
     "next-themes": "^0.3.0",

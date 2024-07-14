@@ -8,6 +8,26 @@ export type Word = {
   gloss: string | null;
   definition: string | null;
   tags: Tag[];
+  sections: Section[];
   createdAt: Date;
   updatedAt: Date | null;
+};
+
+export type Section = {
+  id: number;
+  wordId: number;
+  definition?: Definition | null;
+  customTitle?: string | null;
+  customText?: string | null;
+};
+
+export type Definition = {
+  id: number;
+  lexicalCategory: LexicalCategory;
+  text: string;
+};
+
+export type LexicalCategory = {
+  id: number;
+  category: string;
 };

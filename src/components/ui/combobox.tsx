@@ -46,7 +46,7 @@ export function Combobox({
           role="combobox"
           aria-expanded={open}
           aria-label={ariaLabel ?? "Select option"}
-          className={cn("justify-between gap-0.5", className)}
+          className={cn("justify-between gap-0.5 px-3", className)}
         >
           {selectedValue
             ? options.find((o) => o.value === selectedValue)?.label

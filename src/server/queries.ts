@@ -6,7 +6,15 @@ import { and, eq } from "drizzle-orm";
 import { type TagColor, type TagType } from "~/types/tag";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
-import { conlangs, tags, words, wordsToTags } from "./db/schema";
+import {
+  conlangs,
+  definitions,
+  lexicalCategories,
+  sections,
+  tags,
+  words,
+  wordsToTags,
+} from "./db/schema";
 
 // #region CONLANGS
 export async function getMyConlangs() {
@@ -134,7 +142,10 @@ export async function getWordsByConlangId(conlangId: number) {
   const words = await db.query.words.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),
     orderBy: (model, { asc }) => [asc(model.text)],
-    with: { tags: { with: { tag: true } } },
+    with: {
+      tags: { with: { tag: true } },
+      sections: { with: { definition: { with: { lexicalCategory: true } } } },
+    },
   });
   const wordsWithTags = words.map((w) => ({
     ...w,
@@ -274,5 +285,77 @@ export async function removeWordTagRelation(wordId: number, tagId: number) {
     .returning();
 
   if (!word[0]) throw new Error("Tag not removed from word");
+}
+// #endregion
+
+// #region SECTIONS
+export async function getSectionsByWordId(wordId: number) {
+  const sections = await db.query.sections.findMany({
+    where: (model, { eq }) => eq(model.wordId, wordId),
+    orderBy: (model, { asc }) => [asc(model.customTitle)],
+  });
+
+  return sections;
+}
+
+// get lexical categories for conlang
+export async function getLexicalCategoriesForConlang(conlangId: number) {
+  const lexicalCategories = await db.query.lexicalCategories.findMany({
+    where: (model, { eq }) => eq(model.conlangId, conlangId),
+    orderBy: (model, { asc }) => [asc(model.category)],
+  });
+
+  return lexicalCategories;
+}
+
+export interface LexicalCategoryInsert {
+  category: string;
+  conlangId: number;
+}
+
+export async function insertLexicalCategory(l: LexicalCategoryInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const lexicalCategory = await db
+    .insert(lexicalCategories)
+    .values({
+      ...l,
+      ownerId: userId,
+    })
+    .returning();
+
+  if (!lexicalCategory[0]) throw new Error("Lexical category not created");
+}
+
+export interface DefinitionInsert {
+  lexicalCategoryId: number;
+  text: string;
+}
+
+export async function insertDefinition(d: DefinitionInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const definition = await db.insert(definitions).values(d).returning();
+
+  if (!definition[0]) throw new Error("Definition not created");
+
+  return definition[0];
+}
+
+export interface SectionInsert {
+  wordId: number;
+  customTitle?: string;
+  customText?: string;
+}
+
+export async function insertSection(s: SectionInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const section = await db.insert(sections).values(s).returning();
+
+  if (!section[0]) throw new Error("Section not created");
 }
 // #endregion
