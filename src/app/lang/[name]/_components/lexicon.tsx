@@ -95,6 +95,7 @@ export function Lexicon(props: {
         setSelectedWord={setSelectedWord}
       />
       <WordView
+        key={selectedWord?.id ?? 0}
         word={selectedWord}
         conlangName={props.conlang.name}
         isConlangOwner={props.isConlangOwner}

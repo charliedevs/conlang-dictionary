@@ -1,22 +1,11 @@
 "use client";
 
-import { CommandGroup } from "cmdk";
-import { CheckIcon, ChevronsUpDownIcon, PlusIcon, XIcon } from "lucide-react";
+import { PlusIcon, XIcon } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import { TextEditor } from "~/components/text-editor";
 import { Button } from "~/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "~/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+import { Combobox } from "~/components/ui/combobox";
 import {
   Sheet,
   SheetContent,
@@ -24,7 +13,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
-import { cn } from "~/lib/utils";
 import { type Word } from "~/types/word";
 import { EditWordForm } from "./forms/edit-word-form";
 import { TagsForWord } from "./tags-for-word";
@@ -35,63 +23,6 @@ const sectionTypes = [
   { value: "related", label: "Related Words" },
   { value: "custom", label: "Custom" },
 ];
-
-function SectionTypeSelect(props: {
-  selectedType: string;
-  setSelectedType: Dispatch<SetStateAction<string>>;
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          aria-label="Select Section Type"
-          className="w-full justify-between"
-        >
-          {props.selectedType
-            ? sectionTypes.find((t) => t.value === props.selectedType)?.label
-            : "Select Type..."}
-          <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
-        <Command>
-          <CommandInput placeholder="Search Types..." />
-          <CommandList>
-            <CommandEmpty>No Type found.</CommandEmpty>
-            <CommandGroup>
-              {sectionTypes.map((type) => (
-                <CommandItem
-                  key={type.value}
-                  value={type.value}
-                  onSelect={(val) => {
-                    props.setSelectedType(
-                      val === props.selectedType ? "" : type.value,
-                    );
-                    setOpen(false);
-                  }}
-                >
-                  <CheckIcon
-                    className={cn(
-                      "mr-2 size-4",
-                      props.selectedType === type.value
-                        ? "opacity-100"
-                        : "opacity-0",
-                    )}
-                  />
-                  {type.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 function AddSection(props: { word: Word }) {
   const [isAdding, setIsAdding] = useState(false);
@@ -112,11 +43,27 @@ function AddSection(props: { word: Word }) {
             </Button>
           </div>
           <div className="flex flex-col gap-2 p-4">
-            <SectionTypeSelect
-              key={selectedType}
-              selectedType={selectedType}
-              setSelectedType={setSelectedType}
+            <Combobox
+              options={sectionTypes}
+              value={selectedType}
+              onChange={setSelectedType}
+              placeholder="Select a section type..."
+              className="w-full"
             />
+            {selectedType === "pronunciation" && (
+              <div>pronunciation inputs</div>
+            )}
+            {selectedType === "definition" && (
+              <div>
+                <TextEditor
+                  value={""}
+                  onChange={() => null}
+                  className="bg-background"
+                />
+              </div>
+            )}
+            {selectedType === "related" && <div>related word inputs</div>}
+            {selectedType === "custom" && <div>custom inputs</div>}
           </div>
         </div>
       ) : (
@@ -164,7 +111,7 @@ function WordDetails(props: {
           </div>
         )}
       </div>
-      <AddSection word={w} />
+      {props.isConlangOwner && <AddSection word={w} />}
     </div>
   );
 }
@@ -198,7 +145,7 @@ export function WordView(props: {
   if (isDesktop && props.word) {
     if (!isEditing) {
       return (
-        <div className="flex min-w-[45vw] flex-col gap-4">
+        <div className="flex min-w-[45vw] max-w-[50vw] flex-col gap-4">
           <WordDetails
             word={props.word}
             conlangName={props.conlangName}
