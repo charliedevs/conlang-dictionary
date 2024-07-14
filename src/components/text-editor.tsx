@@ -48,16 +48,16 @@ export function TextEditor({ value, onChange, className }: TextEditorProps) {
   });
 
   return (
-    <>
+    <div id="textEditor">
       <EditorContent editor={editor} />
       {editor ? <RichTextEditorToolbar editor={editor} /> : null}
-    </>
+    </div>
   );
 }
 
 const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
   return (
-    <div className="flex flex-row items-center gap-1 rounded-bl-md rounded-br-md border border-input bg-transparent p-1">
+    <div className="flex flex-row items-center gap-1 rounded-bl-md rounded-br-md border border-input bg-transparent p-1 dark:bg-background">
       <Toggle
         size="sm"
         pressed={editor.isActive("bold")}

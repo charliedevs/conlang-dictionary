@@ -6,6 +6,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { TextEditor } from "~/components/text-editor";
 import { Button } from "~/components/ui/button";
 import { Combobox } from "~/components/ui/combobox";
+import { Input } from "~/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -30,11 +31,16 @@ function AddSection(props: { word: Word }) {
   return (
     <div className="min-h-6 rounded-md bg-accent transition-all">
       {isAdding ? (
-        <div className="flex flex-col gap-1 p-2">
+        <div className="flex flex-col gap-4 p-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium">Add Section</h3>
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Add Section
+            </h3>
             <Button
-              onClick={() => setIsAdding(false)}
+              onClick={() => {
+                setIsAdding(false);
+                setSelectedType("");
+              }}
               variant="ghost"
               size="icon"
               className="size-4"
@@ -42,28 +48,51 @@ function AddSection(props: { word: Word }) {
               <XIcon className="text-muted-foreground" />
             </Button>
           </div>
-          <div className="flex flex-col gap-2 p-4">
+          <div className="flex flex-col gap-2 p-2">
             <Combobox
               options={sectionTypes}
               value={selectedType}
               onChange={setSelectedType}
               placeholder="Select a section type..."
-              className="w-full"
+              className="w-full font-semibold"
             />
             {selectedType === "pronunciation" && (
-              <div>pronunciation inputs</div>
+              <>
+                {/* TODO: IPA input? Keyboard? */}
+                <Input placeholder="IPA" />
+                {/* TODO: Rhymes with input? Phonology? */}
+                <Input placeholder="Rhymes with... (optional)" />
+                {/* TODO: Word select? */}
+                <Input placeholder="Homophones with... (optional)" />
+              </>
             )}
             {selectedType === "definition" && (
-              <div>
+              <>
+                {/* TODO: Make input into custom combobox pulled from db with extra actions */}
+                <Input placeholder="Part of speech..." />
                 <TextEditor
                   value={""}
                   onChange={() => null}
                   className="bg-background"
                 />
-              </div>
+              </>
             )}
-            {selectedType === "related" && <div>related word inputs</div>}
-            {selectedType === "custom" && <div>custom inputs</div>}
+            {selectedType === "related" && (
+              <>
+                {/* TODO: Word select */}
+                <Input placeholder="Related Words..." />
+              </>
+            )}
+            {selectedType === "custom" && (
+              <>
+                <Input placeholder="Section title..." />
+                <TextEditor
+                  value=""
+                  onChange={() => null}
+                  className="bg-background"
+                />
+              </>
+            )}
           </div>
         </div>
       ) : (
