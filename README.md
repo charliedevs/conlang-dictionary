@@ -6,7 +6,7 @@ A web app to store and share your constructed languages.
 
 <br>
 
-*Read more about conlangs at [conlang.org](https://conlang.org).*
+_Read more about conlangs at [conlang.org](https://conlang.org)._
 
 ## Table of Contents
 
@@ -47,7 +47,8 @@ A web app to store and share your constructed languages.
 - [ ] Add ability to delete word
 - [x] Users can tag words with custom tags
 - [ ] User can add multiple sections and definitions to a word
-- [ ] Signed-in user view vs owner view vs public view
+- [ ] User can customize their own lexical categories
+  - [ ] Add other field types to lexical categories (e.g., noun classes)
 
 #### Inflections & Derivations
 

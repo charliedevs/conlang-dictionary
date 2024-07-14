@@ -122,3 +122,67 @@ export const wordsToTagsRelations = relations(wordsToTags, ({ one }) => ({
     references: [words.id],
   }),
 }));
+
+// Lexical Categories
+export const lexicalCategories = createTable("lexicalCategories", {
+  id: serial("id").primaryKey(),
+  category: text("category").notNull(),
+  conlangId: integer("conlangId")
+    .notNull()
+    .references(() => conlangs.id),
+  ownerId: varchar("ownerId", { length: 256 }).notNull(),
+});
+
+// Sections
+export const sections = createTable("sections", {
+  id: serial("id").primaryKey(),
+  wordId: integer("wordId")
+    .notNull()
+    .references(() => words.id),
+  definitionId: integer("definitionId").references(() => definitions.id),
+  // pronunciationId: integer("pronunciationId")
+  //   .references(() => pronunciations.id),
+  customTitle: text("customTitle"),
+  customText: text("customText"),
+});
+
+export const definitions = createTable("definitions", {
+  id: serial("id").primaryKey(),
+  lexicalCategoryId: integer("lexicalCategoryId")
+    .notNull()
+    .references(() => lexicalCategories.id),
+  text: text("text"),
+});
+
+// TODO: Add other section types one at a time and test
+// export const pronunciations = createTable("pronunciations", {
+//   id: serial("id").primaryKey(),
+//   ipa: text("ipa"),
+// });
+
+// // table for related words that allows many to many between words
+// export const relatedWords = createTable(
+//   "relatedWords",
+//   {
+//     wordId: integer("wordId")
+//       .notNull()
+//       .references(() => words.id),
+//     relatedWordId: integer("tagId")
+//       .notNull()
+//       .references(() => tags.id),
+//   },
+//   (r) => ({
+//     pk: primaryKey({ columns: [r.wordId, r.relatedWordId] }),
+//   }),
+// );
+
+// export const relatedWordsRelations = relations(relatedWords, ({ one }) => ({
+//   word: one(words, {
+//     fields: [relatedWords.wordId],
+//     references: [words.id],
+//   }),
+//   relatedWord: one(words, {
+//     fields: [relatedWords.relatedWordId],
+//     references: [words.id],
+//   }),
+// }));
