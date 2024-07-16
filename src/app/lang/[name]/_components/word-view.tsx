@@ -23,6 +23,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
+import { cn } from "~/lib/utils";
 import { type Section, type SectionType, type Word } from "~/types/word";
 import {
   createDefinition,
@@ -176,7 +177,7 @@ function AddSection(props: { word: Word }) {
   );
 }
 
-function AddDefinition(props: { section: Section }) {
+function AddDefinition(props: { section: Section; className?: string }) {
   const [isAdding, setIsAdding] = useState(false);
   // TODO: change to useform and zod schema
   const [definition, setDefinition] = useState({
@@ -190,10 +191,12 @@ function AddDefinition(props: { section: Section }) {
       <Button
         onClick={() => setIsAdding(true)}
         variant="secondary"
-        className="h-8 w-full opacity-50 transition-all hover:opacity-100"
-        title="Add Definition"
+        className={cn(
+          "h-8 w-full text-sm opacity-70 transition-all hover:opacity-100",
+          props.className,
+        )}
       >
-        <PlusIcon className="size-4" />
+        <PlusIcon className="size-4" /> Add Definition
       </Button>
     );
   return (
@@ -212,6 +215,41 @@ function AddDefinition(props: { section: Section }) {
       >
         Add Definition
       </Button>
+    </div>
+  );
+}
+
+function DefinitionView(props: {
+  word: Word;
+  section: Section;
+  isConlangOwner: boolean;
+}) {
+  const { word: w, section: s } = props;
+  return (
+    <div>
+      <h3 className="mb-2 text-lg font-bold">
+        {s?.lexicalCategory?.category ?? ""}
+      </h3>
+      <h4 className="text-sm font-bold">{w.text}</h4>
+      <ol className="m-4 list-decimal pl-4 text-sm text-primary/80">
+        {s.definitions
+          ?.sort((a, b) => a.order - b.order)
+          .map((d) => (
+            <li key={d.id} className="pb-1">
+              {parseHtml(d.text)}
+            </li>
+          ))}
+      </ol>
+      {props.isConlangOwner && (
+        <AddDefinition
+          section={s}
+          className={
+            !s.definitions?.length
+              ? ""
+              : "transition-all md:invisible md:group-hover/section:visible"
+          }
+        />
+      )}
     </div>
   );
 }
@@ -248,26 +286,15 @@ function WordDetails(props: {
         )}
       </div>
       {w.sections.length > 0 && (
-        <div className="mb-4 flex flex-col gap-2">
+        <div className="mb-4 flex flex-col gap-4">
           {w.sections.map((s) => (
-            <div key={s.id} className="flex flex-col gap-1">
+            <div key={s.id} className="group/section flex flex-col gap-1">
               {s.type === "definition" && (
-                <div>
-                  <h3 className="mb-2 text-lg font-bold">
-                    {s?.lexicalCategory?.category ?? ""}
-                  </h3>
-                  <h4 className="text-sm font-bold">{w.text}</h4>
-                  <ol className="m-4 list-decimal pl-4 text-sm text-primary/80">
-                    {s.definitions
-                      ?.sort((a, b) => a.order - b.order)
-                      .map((d) => (
-                        <li key={d.id} className="pb-1">
-                          {parseHtml(d.text)}
-                        </li>
-                      ))}
-                  </ol>
-                  <AddDefinition section={s} />
-                </div>
+                <DefinitionView
+                  word={w}
+                  section={s}
+                  isConlangOwner={props.isConlangOwner}
+                />
               )}
               {s.customTitle && (
                 <div className="flex items-center gap-2">
