@@ -23,6 +23,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
+import { ordinal } from "~/lib/numbers";
 import { cn } from "~/lib/utils";
 import { type Section, type SectionType, type Word } from "~/types/word";
 import {
@@ -180,6 +181,7 @@ function AddSection(props: { word: Word }) {
 function AddDefinition(props: { section: Section; className?: string }) {
   const [isAdding, setIsAdding] = useState(false);
   // TODO: change to useform and zod schema
+  const currentNumberOfDefinitions = props.section.definitions?.length ?? 0;
   const [definition, setDefinition] = useState({
     sectionId: props.section.id,
     text: "",
@@ -196,7 +198,8 @@ function AddDefinition(props: { section: Section; className?: string }) {
           props.className,
         )}
       >
-        <PlusIcon className="size-4" /> Add Definition
+        <PlusIcon className="size-4" /> Add{" "}
+        {ordinal(currentNumberOfDefinitions + 1)} Definition
       </Button>
     );
   return (
@@ -210,10 +213,22 @@ function AddDefinition(props: { section: Section; className?: string }) {
         onClick={async () => {
           await createDefinition(definition);
           setIsAdding(false);
+          setDefinition({ sectionId: props.section.id, text: "" });
           router.refresh();
         }}
       >
         Add Definition
+      </Button>
+      <Button
+        onClick={() => {
+          setIsAdding(false);
+          setDefinition({ sectionId: props.section.id, text: "" });
+        }}
+        variant="ghost"
+        className="w-full"
+        title="Cancel"
+      >
+        Cancel
       </Button>
     </div>
   );
@@ -246,7 +261,7 @@ function DefinitionView(props: {
           className={
             !s.definitions?.length
               ? ""
-              : "transition-all md:invisible md:group-hover/section:visible"
+              : "transition-all md:opacity-0 md:group-hover/section:opacity-100"
           }
         />
       )}
