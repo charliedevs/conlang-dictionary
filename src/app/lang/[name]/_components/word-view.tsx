@@ -340,20 +340,22 @@ export function WordView(props: {
   if (isDesktop && props.word) {
     if (!isEditing) {
       return (
-        <div className="flex min-w-[45vw] max-w-[50vw] flex-col gap-4">
-          <WordDetails
-            word={props.word}
-            conlangName={props.conlangName}
-            isConlangOwner={props.isConlangOwner}
-          />
-          {props.isConlangOwner && (
-            <EditWordButton setIsEditing={setIsEditing} />
-          )}
+        <div className="h-full min-w-[50vw] max-w-[70vw]">
+          <div className="flex w-full max-w-[600px] flex-col gap-4">
+            <WordDetails
+              word={props.word}
+              conlangName={props.conlangName}
+              isConlangOwner={props.isConlangOwner}
+            />
+            {props.isConlangOwner && (
+              <EditWordButton setIsEditing={setIsEditing} />
+            )}
+          </div>
         </div>
       );
     }
     return (
-      <div className="min-w-[45vw]">
+      <div className="min-w-[50vw] max-w-[70vw]">
         <EditWordForm
           word={props.word}
           afterSubmit={() => setIsEditing(false)}
