@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 
 import { and, eq } from "drizzle-orm";
 import { type TagColor, type TagType } from "~/types/tag";
+import { type SectionType } from "~/types/word";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
 import {
@@ -144,7 +145,7 @@ export async function getWordsByConlangId(conlangId: number) {
     orderBy: (model, { asc }) => [asc(model.text)],
     with: {
       tags: { with: { tag: true } },
-      sections: { with: { definition: { with: { lexicalCategory: true } } } },
+      sections: { with: { lexicalCategory: true, definitions: true } },
     },
   });
   const wordsWithTags = words.map((w) => ({
@@ -298,7 +299,24 @@ export async function getSectionsByWordId(wordId: number) {
   return sections;
 }
 
-// get lexical categories for conlang
+export interface SectionInsert {
+  wordId: number;
+  order: number;
+  type: SectionType;
+  lexicalCategoryId?: number;
+  customTitle?: string;
+  customText?: string;
+}
+
+export async function insertSection(s: SectionInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const section = await db.insert(sections).values(s).returning();
+
+  if (!section[0]) throw new Error("Section not created");
+}
+
 export async function getLexicalCategoriesForConlang(conlangId: number) {
   const lexicalCategories = await db.query.lexicalCategories.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),
@@ -328,8 +346,18 @@ export async function insertLexicalCategory(l: LexicalCategoryInsert) {
   if (!lexicalCategory[0]) throw new Error("Lexical category not created");
 }
 
+export async function getDefinitionsBySectionId(sectionId: number) {
+  const definitions = await db.query.definitions.findMany({
+    where: (model, { eq }) => eq(model.sectionId, sectionId),
+    orderBy: (model, { asc }) => [asc(model.order)],
+  });
+
+  return definitions;
+}
+
 export interface DefinitionInsert {
-  lexicalCategoryId: number;
+  sectionId: number;
+  order: number;
   text: string;
 }
 
@@ -342,20 +370,5 @@ export async function insertDefinition(d: DefinitionInsert) {
   if (!definition[0]) throw new Error("Definition not created");
 
   return definition[0];
-}
-
-export interface SectionInsert {
-  wordId: number;
-  customTitle?: string;
-  customText?: string;
-}
-
-export async function insertSection(s: SectionInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const section = await db.insert(sections).values(s).returning();
-
-  if (!section[0]) throw new Error("Section not created");
 }
 // #endregion

@@ -23,21 +23,25 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
-import { type Word } from "~/types/word";
-import { createSection } from "../_actions/section";
+import { type Section, type SectionType, type Word } from "~/types/word";
+import {
+  createDefinition,
+  createSection,
+  type CreateSection,
+} from "../_actions/section";
 import { EditWordForm } from "./forms/edit-word-form";
 import { TagsForWord } from "./tags-for-word";
 
-const sectionTypes = [
-  { value: "pronunciation", label: "Pronunciation" },
+const sectionTypes: { value: SectionType; label: string }[] = [
+  // { value: "pronunciation", label: "Pronunciation" },
   { value: "definition", label: "Definition" },
-  { value: "related", label: "Related Words" },
+  // { value: "related", label: "Related Words" },
   { value: "custom", label: "Custom" },
 ];
 
 function LexicalCategorySelect(props: {
   conlangId: number;
-  value: number | null;
+  defaultValue?: number | null;
   onChange: (value: string) => void;
   className?: string;
 }) {
@@ -50,7 +54,10 @@ function LexicalCategorySelect(props: {
     })),
   };
   return (
-    <Select onValueChange={props.onChange} defaultValue={String(props.value)}>
+    <Select
+      onValueChange={props.onChange}
+      defaultValue={String(props.defaultValue)}
+    >
       <SelectTrigger
         disabled={lexicalCategories.isLoading}
         className={props.className}
@@ -71,12 +78,8 @@ function LexicalCategorySelect(props: {
 
 function AddSection(props: { word: Word }) {
   const [isAdding, setIsAdding] = useState(false);
-  const [selectedType, setSelectedType] = useState<string>("");
   // TODO: change to useform and zod schema
-  const [definition, setDefinition] = useState({
-    lexicalCategoryId: 0,
-    text: "",
-  });
+  const [section, setSection] = useState<CreateSection | null>(null);
   const router = useRouter();
   return (
     <div className="min-h-6 rounded-md bg-accent transition-all">
@@ -84,12 +87,12 @@ function AddSection(props: { word: Word }) {
         <div className="flex flex-col gap-4 p-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium text-muted-foreground">
-              Add Section
+              New Section
             </h3>
             <Button
               onClick={() => {
                 setIsAdding(false);
-                setSelectedType("");
+                setSection(null);
               }}
               variant="ghost"
               size="icon"
@@ -102,74 +105,61 @@ function AddSection(props: { word: Word }) {
             {/* TODO: Just change to select? combobox is weird on mobile */}
             <Combobox
               options={sectionTypes}
-              value={selectedType}
-              onChange={setSelectedType}
+              value={section?.type ?? ""}
+              onChange={(value) => {
+                if (value) {
+                  setSection({
+                    wordId: props.word.id,
+                    type: value as SectionType,
+                  });
+                } else {
+                  setSection(null);
+                }
+              }}
               placeholder="Select a section type..."
               className="w-full font-semibold"
             />
-            {selectedType === "pronunciation" && (
+            {section && (
               <>
-                {/* TODO: IPA input? Keyboard? */}
-                <Input placeholder="IPA" />
-                {/* TODO: Rhymes with input? Phonology? */}
-                <Input placeholder="Rhymes with... (optional)" />
-                {/* TODO: Word select? */}
-                <Input placeholder="Homophones with... (optional)" />
+                {section.type === "definition" && (
+                  <>
+                    {/* TODO: Make input into custom combobox pulled from db with extra actions */}
+                    <LexicalCategorySelect
+                      conlangId={props.word.conlangId}
+                      defaultValue={section.lexicalCategoryId}
+                      onChange={(value) =>
+                        setSection({
+                          ...section,
+                          lexicalCategoryId: Number(value),
+                        })
+                      }
+                    />
+                  </>
+                )}
+                {section.type === "custom" && (
+                  <>
+                    <Input placeholder="Section title..." />
+                    <TextEditor
+                      value=""
+                      onChange={() => null}
+                      className="bg-background"
+                    />
+                  </>
+                )}
+                <Button
+                  // disabled={!definition.lexicalCategoryId || !definition.text}
+                  onClick={async () => {
+                    await createSection(section);
+                    setIsAdding(false);
+                    router.refresh();
+                  }}
+                >
+                  {section.type === "definition"
+                    ? "Add Definition Section"
+                    : "Add Section"}
+                </Button>
               </>
             )}
-            {selectedType === "definition" && (
-              <>
-                {/* TODO: Make input into custom combobox pulled from db with extra actions */}
-                <LexicalCategorySelect
-                  conlangId={props.word.conlangId}
-                  value={definition.lexicalCategoryId}
-                  onChange={(value) =>
-                    setDefinition({
-                      ...definition,
-                      lexicalCategoryId: Number(value),
-                    })
-                  }
-                />
-                <TextEditor
-                  value={definition.text}
-                  onChange={(value) =>
-                    setDefinition({ ...definition, text: value })
-                  }
-                  className="bg-background"
-                />
-              </>
-            )}
-            {selectedType === "related" && (
-              <>
-                {/* TODO: Word select */}
-                <Input placeholder="Related Words..." />
-              </>
-            )}
-            {selectedType === "custom" && (
-              <>
-                <Input placeholder="Section title..." />
-                <TextEditor
-                  value=""
-                  onChange={() => null}
-                  className="bg-background"
-                />
-              </>
-            )}
-            <Button
-              disabled={!definition.lexicalCategoryId || !definition.text}
-              onClick={async () => {
-                await createSection({
-                  wordId: props.word.id,
-                  definitionText: definition.text,
-                  lexicalCategoryId: definition.lexicalCategoryId,
-                });
-                setIsAdding(false);
-                router.refresh();
-              }}
-            >
-              {" "}
-              Save
-            </Button>
           </div>
         </div>
       ) : (
@@ -182,6 +172,46 @@ function AddSection(props: { word: Word }) {
           <PlusIcon className="h-5 w-5" />
         </Button>
       )}
+    </div>
+  );
+}
+
+function AddDefinition(props: { section: Section }) {
+  const [isAdding, setIsAdding] = useState(false);
+  // TODO: change to useform and zod schema
+  const [definition, setDefinition] = useState({
+    sectionId: props.section.id,
+    text: "",
+  });
+  const router = useRouter();
+
+  if (!isAdding)
+    return (
+      <Button
+        onClick={() => setIsAdding(true)}
+        variant="secondary"
+        className="h-8 w-full opacity-50 transition-all hover:opacity-100"
+        title="Add Definition"
+      >
+        <PlusIcon className="size-4" />
+      </Button>
+    );
+  return (
+    <div className="my-4 flex flex-col gap-2">
+      <TextEditor
+        value={definition.text}
+        onChange={(value) => setDefinition({ ...definition, text: value })}
+        className="bg-background"
+      />
+      <Button
+        onClick={async () => {
+          await createDefinition(definition);
+          setIsAdding(false);
+          router.refresh();
+        }}
+      >
+        Add Definition
+      </Button>
     </div>
   );
 }
@@ -221,15 +251,22 @@ function WordDetails(props: {
         <div className="mb-4 flex flex-col gap-2">
           {w.sections.map((s) => (
             <div key={s.id} className="flex flex-col gap-1">
-              {s.definition && (
+              {s.type === "definition" && (
                 <div>
                   <h3 className="mb-2 text-lg font-bold">
-                    {s.definition.lexicalCategory.category}
+                    {s?.lexicalCategory?.category ?? ""}
                   </h3>
-                  <h4 className="text-sm">{w.text}</h4>
-                  <div className="text-sm text-muted-foreground">
-                    {parseHtml(s.definition.text)}
-                  </div>
+                  <h4 className="text-sm font-bold">{w.text}</h4>
+                  <ol className="m-4 list-decimal pl-4 text-sm text-primary/80">
+                    {s.definitions
+                      ?.sort((a, b) => a.order - b.order)
+                      .map((d) => (
+                        <li key={d.id} className="pb-1">
+                          {parseHtml(d.text)}
+                        </li>
+                      ))}
+                  </ol>
+                  <AddDefinition section={s} />
                 </div>
               )}
               {s.customTitle && (

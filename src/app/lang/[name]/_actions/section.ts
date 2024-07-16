@@ -1,22 +1,36 @@
 "use server";
 
-import { insertDefinition, insertSection } from "~/server/queries";
+import {
+  getDefinitionsBySectionId,
+  getSectionsByWordId,
+  insertDefinition,
+  insertSection,
+} from "~/server/queries";
+import { type SectionType } from "~/types/word";
 
-interface SectionInsert {
+export interface CreateSection {
   wordId: number;
-  definitionId?: number;
+  order?: number;
+  type: SectionType;
   lexicalCategoryId?: number;
-  definitionText?: string;
   customTitle?: string;
   customText?: string;
 }
-export async function createSection(section: SectionInsert) {
-  if (section.lexicalCategoryId && section.definitionText) {
-    const definition = await insertDefinition({
-      lexicalCategoryId: section.lexicalCategoryId,
-      text: section.definitionText,
-    });
-    section.definitionId = definition.id;
-  }
-  await insertSection(section);
+export async function createSection(section: CreateSection) {
+  const sections = await getSectionsByWordId(section.wordId);
+  const maxOrder = sections.reduce((max, s) => Math.max(max, s.order), 0);
+  section.order = maxOrder + 1;
+  await insertSection(section as CreateSection & { order: number });
+}
+
+interface DefinitionInsert {
+  sectionId: number;
+  order?: number;
+  text: string;
+}
+export async function createDefinition(definition: DefinitionInsert) {
+  const definitions = await getDefinitionsBySectionId(definition.sectionId);
+  const maxOrder = definitions.reduce((max, d) => Math.max(max, d.order), 0);
+  definition.order = maxOrder + 1;
+  await insertDefinition(definition as DefinitionInsert & { order: number });
 }
