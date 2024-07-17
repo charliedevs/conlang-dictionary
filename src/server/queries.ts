@@ -39,7 +39,8 @@ export async function getConlangById(id: number) {
   });
   if (!conlang) throw new Error("Conlang not found");
 
-  if (conlang.ownerId !== userId) throw new Error("Unauthorized");
+  if (conlang.ownerId !== userId && !conlang.isPublic)
+    throw new Error("Unauthorized");
 
   return conlang;
 }

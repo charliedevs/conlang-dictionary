@@ -1,18 +1,19 @@
 import { auth } from "@clerk/nextjs/server";
 
-import { getConlangByName, getWordsByConlangId } from "~/server/queries";
+import { getConlangById, getWordsByConlangId } from "~/server/queries";
 import { Breadcrumbs } from "./_components/breadcrumbs";
 import { AddWordButton } from "./_components/forms/add-word-button";
 import { Lexicon } from "./_components/lexicon";
 
 interface ConlangPageProps {
-  params: { name: string };
+  params: { id: string };
 }
 
 export default async function ConlangPage({ params }: ConlangPageProps) {
+  const conlangId = Number(params.id);
   let conlang;
   try {
-    conlang = await getConlangByName(params.name);
+    conlang = await getConlangById(conlangId);
   } catch (error) {
     console.error("Error:", error);
     return <div className="py-5 text-center">Language not found.</div>;
@@ -21,9 +22,9 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
   const isConlangOwner = conlang.ownerId === auth().userId;
   return (
     <div className="container flex flex-col gap-4 px-5 pb-1 pt-5">
-      <Breadcrumbs name={params.name} />
+      <Breadcrumbs name={conlang.name} />
       <div id="conlangInfo" className="flex flex-col gap-1">
-        <h1 className="text-start text-2xl font-medium">{params.name}</h1>
+        <h1 className="text-start text-2xl font-medium">{conlang.name}</h1>
         <p>{conlang.description}</p>
       </div>
       {isConlangOwner && <AddWordButton conlangId={conlang.id} />}
