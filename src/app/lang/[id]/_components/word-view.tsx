@@ -24,6 +24,7 @@ import {
   SheetTitle,
 } from "~/components/ui/sheet";
 import { ordinal } from "~/lib/numbers";
+import { capitalize } from "~/lib/strings";
 import { cn } from "~/lib/utils";
 import { type DefinitionUpdate } from "~/server/queries";
 import {
@@ -39,7 +40,7 @@ import {
   removeDefinition,
   type CreateSection,
 } from "../_actions/word";
-import { AddLexicalCategoryButton } from "./forms/add-lexical-category-button";
+import { AddLexicalCategoryButton } from "./add-lexical-category-button";
 import { EditWordForm } from "./forms/edit-word-form";
 import { TagsForWord } from "./tags-for-word";
 
@@ -125,7 +126,7 @@ function AddSection(props: {
             {section && (
               <>
                 {section.type === "definition" && (
-                  <>
+                  <div className="flex gap-1">
                     {/* TODO: Make input into custom combobox pulled from db with extra actions */}
                     <LexicalCategorySelect
                       options={props.lexicalCategories}
@@ -141,7 +142,7 @@ function AddSection(props: {
                     <AddLexicalCategoryButton
                       conlangId={props.word.conlangId}
                     />
-                  </>
+                  </div>
                 )}
                 {section.type === "custom" && (
                   <>
@@ -264,7 +265,9 @@ function Definitions(props: {
   return (
     <div>
       <h3 className="mb-2 text-lg font-bold">
-        {s?.lexicalCategory?.category ?? ""}
+        {s?.lexicalCategory?.category
+          ? capitalize(s.lexicalCategory.category)
+          : ""}
       </h3>
       <h4 className="text-sm font-bold">{w.text}</h4>
       <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">

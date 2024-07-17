@@ -30,6 +30,7 @@ export interface CreateLexicalCategory {
   category: string;
 }
 export async function createLexicalCategory(lc: CreateLexicalCategory) {
+  lc.category = lc.category.trim().toLocaleLowerCase();
   await insertLexicalCategory(lc);
 }
 

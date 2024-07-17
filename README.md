@@ -46,7 +46,12 @@ _Read more about conlangs at [conlang.org](https://conlang.org)._
 - [x] Add ability to edit word
 - [ ] Add ability to delete word
 - [x] Users can tag words with custom tags
-- [ ] User can add multiple sections and definitions to a word
+- [x] User can add multiple sections and definitions to a word
+  - [ ] custom sections
+  - [ ] nested sections
+- [ ] Word Sections can be reordered
+- [ ] Sections can be edited
+- [ ] Sections can be deleted
 - [ ] User can customize their own lexical categories
   - [ ] Add other field types to lexical categories (e.g., noun classes)
 
