@@ -26,7 +26,12 @@ import {
 import { ordinal } from "~/lib/numbers";
 import { cn } from "~/lib/utils";
 import { type DefinitionUpdate } from "~/server/queries";
-import { type Section, type SectionType, type Word } from "~/types/word";
+import {
+  type LexicalCategory,
+  type Section,
+  type SectionType,
+  type Word,
+} from "~/types/word";
 import {
   createDefinition,
   createSection,
@@ -34,6 +39,7 @@ import {
   removeDefinition,
   type CreateSection,
 } from "../_actions/word";
+import { AddLexicalCategoryButton } from "./forms/add-lexical-category-button";
 import { EditWordForm } from "./forms/edit-word-form";
 import { TagsForWord } from "./tags-for-word";
 
@@ -45,33 +51,22 @@ const sectionTypes: { value: SectionType; label: string }[] = [
 ];
 
 function LexicalCategorySelect(props: {
+  options: LexicalCategory[];
   conlangId: number;
   defaultValue?: number | null;
   onChange: (value: string) => void;
   className?: string;
 }) {
-  // TODO: get lexical categories from server
-  const lexicalCategories = {
-    isLoading: false,
-    data: ["noun", "verb", "adjective", "adverb"].map((category, idx) => ({
-      id: idx + 1,
-      category,
-    })),
-  };
   return (
     <Select
       onValueChange={props.onChange}
-      defaultValue={String(props.defaultValue)}
+      defaultValue={props.defaultValue ? String(props.defaultValue) : ""}
     >
-      <SelectTrigger
-        disabled={lexicalCategories.isLoading}
-        className={props.className}
-      >
+      <SelectTrigger className={props.className}>
         <SelectValue placeholder="Part of speech..." />
       </SelectTrigger>
       <SelectContent>
-        {lexicalCategories.isLoading && <div>Loading...</div>}
-        {lexicalCategories.data?.map((category) => (
+        {props.options.map((category) => (
           <SelectItem key={category.id} value={String(category.id)}>
             {category.category}
           </SelectItem>
@@ -81,7 +76,10 @@ function LexicalCategorySelect(props: {
   );
 }
 
-function AddSection(props: { word: Word }) {
+function AddSection(props: {
+  word: Word;
+  lexicalCategories: LexicalCategory[];
+}) {
   const [isAdding, setIsAdding] = useState(false);
   // TODO: change to useform and zod schema
   const [section, setSection] = useState<CreateSection | null>(null);
@@ -130,6 +128,7 @@ function AddSection(props: { word: Word }) {
                   <>
                     {/* TODO: Make input into custom combobox pulled from db with extra actions */}
                     <LexicalCategorySelect
+                      options={props.lexicalCategories}
                       conlangId={props.word.conlangId}
                       defaultValue={section.lexicalCategoryId}
                       onChange={(value) =>
@@ -138,6 +137,9 @@ function AddSection(props: { word: Word }) {
                           lexicalCategoryId: Number(value),
                         })
                       }
+                    />
+                    <AddLexicalCategoryButton
+                      conlangId={props.word.conlangId}
                     />
                   </>
                 )}
@@ -356,6 +358,7 @@ function Definitions(props: {
 
 function WordDetails(props: {
   word: Word;
+  lexicalCategories: LexicalCategory[];
   conlangName: string;
   isConlangOwner: boolean;
 }) {
@@ -406,7 +409,9 @@ function WordDetails(props: {
           ))}
         </div>
       )}
-      {props.isConlangOwner && <AddSection word={w} />}
+      {props.isConlangOwner && (
+        <AddSection word={w} lexicalCategories={props.lexicalCategories} />
+      )}
     </div>
   );
 }
@@ -429,6 +434,7 @@ function EditWordButton(props: {
 
 export function WordView(props: {
   word: Word | null;
+  lexicalCategories: LexicalCategory[];
   conlangName: string;
   setSelectedWord: Dispatch<SetStateAction<Word | null>>;
   isConlangOwner: boolean;
@@ -444,6 +450,7 @@ export function WordView(props: {
           <div className="flex w-full max-w-[600px] flex-col gap-4">
             <WordDetails
               word={props.word}
+              lexicalCategories={props.lexicalCategories}
               conlangName={props.conlangName}
               isConlangOwner={props.isConlangOwner}
             />
@@ -478,6 +485,7 @@ export function WordView(props: {
           {props.word ? (
             <WordDetails
               word={props.word}
+              lexicalCategories={props.lexicalCategories}
               conlangName={props.conlangName}
               isConlangOwner={props.isConlangOwner}
             />

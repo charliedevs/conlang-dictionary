@@ -1,6 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
 
-import { getConlangById, getWordsByConlangId } from "~/server/queries";
+import {
+  getConlangById,
+  getLexicalCategoriesForConlang,
+  getWordsByConlangId,
+} from "~/server/queries";
 import { Breadcrumbs } from "./_components/breadcrumbs";
 import { AddWordButton } from "./_components/forms/add-word-button";
 import { Lexicon } from "./_components/lexicon";
@@ -19,6 +23,7 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
     return <div className="py-5 text-center">Language not found.</div>;
   }
   const words = await getWordsByConlangId(conlang.id);
+  const lexicalCategories = await getLexicalCategoriesForConlang(conlang.id);
   const isConlangOwner = conlang.ownerId === auth().userId;
   return (
     <div className="container flex flex-col gap-4 px-5 pb-1 pt-5">
@@ -31,6 +36,7 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
       <Lexicon
         conlang={conlang}
         words={words}
+        lexicalCategories={lexicalCategories}
         isConlangOwner={isConlangOwner}
       />
     </div>

@@ -11,7 +11,7 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { useKeyboardNavigation } from "~/hooks/accessibility/useKeyboardNavigation";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
-import { type Word } from "~/types/word";
+import { type LexicalCategory, type Word } from "~/types/word";
 import { WordView } from "./word-view";
 
 function WordList(props: {
@@ -78,6 +78,7 @@ function WordList(props: {
 export function Lexicon(props: {
   conlang: Conlang;
   words: Word[];
+  lexicalCategories: LexicalCategory[];
   isConlangOwner: boolean;
 }) {
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
@@ -101,6 +102,7 @@ export function Lexicon(props: {
       <WordView
         key={selectedWord?.id ?? 0}
         word={selectedWord}
+        lexicalCategories={props.lexicalCategories}
         conlangName={props.conlang.name}
         isConlangOwner={props.isConlangOwner}
         setSelectedWord={setSelectedWord}

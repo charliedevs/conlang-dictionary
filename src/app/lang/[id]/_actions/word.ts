@@ -6,6 +6,7 @@ import {
   getSectionsByWordId,
   insertWord as insert,
   insertDefinition,
+  insertLexicalCategory,
   insertSection,
   updateWord as update,
   updateDefinition,
@@ -22,6 +23,14 @@ export async function createWord(word: WordInsert) {
 
 export async function updateWord(word: WordUpdate) {
   await update(word);
+}
+
+export interface CreateLexicalCategory {
+  conlangId: number;
+  category: string;
+}
+export async function createLexicalCategory(lc: CreateLexicalCategory) {
+  await insertLexicalCategory(lc);
 }
 
 export interface CreateSection {
