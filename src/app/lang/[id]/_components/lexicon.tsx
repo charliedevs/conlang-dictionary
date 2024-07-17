@@ -30,7 +30,7 @@ function WordList(props: {
     return <div className="py-5 text-center">No words added yet.</div>;
   return (
     <ScrollArea className="max-h-[max(calc(95vh-325px),_700px)] min-h-0 min-w-[min(500px,_40vw)] flex-grow overflow-auto rounded-md border bg-card/90 p-3 [&>div]:max-h-[max(calc(95vh-325px),_700px)]">
-      <ul className="flex flex-grow flex-col gap-3" tabIndex={0} ref={listRef}>
+      <ul className="flex flex-grow flex-col gap-1" tabIndex={0} ref={listRef}>
         {props.words.map((word, idx) => (
           <li
             id={`word-${idx}`}
@@ -58,12 +58,9 @@ function WordList(props: {
                 : "",
             )}
           >
-            <div className="flex items-baseline gap-5">
-              <div className="text-md font-bold">{word.text}</div>
-              <div className="text-xs">{word.pronunciation}</div>
+            <div className="flex h-8 items-center gap-3">
+              <span className="text-md font-bold">{word.text}</span>
             </div>
-            <div className="text-xs">{word.gloss}</div>
-            <div className="whitespace-pre-wrap text-sm">{word.definition}</div>
           </li>
         ))}
       </ul>
