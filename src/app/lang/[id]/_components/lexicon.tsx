@@ -58,8 +58,15 @@ function WordList(props: {
                 : "",
             )}
           >
-            <div className="flex h-8 items-center gap-3">
+            <div className="flex h-8 items-center gap-5">
               <span className="text-md font-bold">{word.text}</span>
+              <span className="text-[0.7rem] text-muted-foreground">
+                {word.sections && word.sections.length > 0
+                  ? word.sections
+                      .map((s) => s.lexicalCategory?.category)
+                      .join(", ")
+                  : ""}
+              </span>
             </div>
           </li>
         ))}
