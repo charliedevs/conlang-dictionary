@@ -1,7 +1,7 @@
 "use client";
 
 import parseHtml from "html-react-parser";
-import { PlusIcon, XIcon } from "lucide-react";
+import { EditIcon, PlusIcon, SaveIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { useMediaQuery } from "usehooks-ts";
@@ -25,12 +25,19 @@ import {
 } from "~/components/ui/sheet";
 import { ordinal } from "~/lib/numbers";
 import { cn } from "~/lib/utils";
-import { type Section, type SectionType, type Word } from "~/types/word";
+import {
+  type Definition,
+  type Section,
+  type SectionType,
+  type Word,
+} from "~/types/word";
 import {
   createDefinition,
   createSection,
+  editDefinition,
+  removeDefinition,
   type CreateSection,
-} from "../_actions/section";
+} from "../_actions/word";
 import { EditWordForm } from "./forms/edit-word-form";
 import { TagsForWord } from "./tags-for-word";
 
@@ -203,68 +210,150 @@ function AddDefinition(props: { section: Section; className?: string }) {
       </Button>
     );
   return (
-    <div className="my-4 flex flex-col gap-2">
-      <TextEditor
-        value={definition.text}
-        onChange={(value) => setDefinition({ ...definition, text: value })}
-        className="bg-background"
-      />
-      <Button
-        onClick={async () => {
-          await createDefinition(definition);
-          setIsAdding(false);
-          setDefinition({ sectionId: props.section.id, text: "" });
-          router.refresh();
-        }}
-      >
-        Add Definition
-      </Button>
-      <Button
-        onClick={() => {
-          setIsAdding(false);
-          setDefinition({ sectionId: props.section.id, text: "" });
-        }}
-        variant="ghost"
-        className="w-full"
-        title="Cancel"
-      >
-        Cancel
-      </Button>
-    </div>
+    <li>
+      <div className="my-4 flex flex-col gap-2">
+        <TextEditor
+          value={definition.text}
+          onChange={(value) => setDefinition({ ...definition, text: value })}
+          className="bg-background"
+        />
+        <Button
+          onClick={async () => {
+            await createDefinition(definition);
+            setIsAdding(false);
+            setDefinition({ sectionId: props.section.id, text: "" });
+            router.refresh();
+          }}
+        >
+          Add Definition
+        </Button>
+        <Button
+          onClick={() => {
+            setIsAdding(false);
+            setDefinition({ sectionId: props.section.id, text: "" });
+          }}
+          variant="ghost"
+          className="w-full"
+          title="Cancel"
+        >
+          Cancel
+        </Button>
+      </div>
+    </li>
   );
 }
 
-function DefinitionView(props: {
+function Definitions(props: {
   word: Word;
   section: Section;
   isConlangOwner: boolean;
 }) {
   const { word: w, section: s } = props;
+  const [editingDefinition, setEditingDefinition] = useState<
+    Definition | undefined
+  >();
+  const router = useRouter();
+  const handleSave = async (d: Definition) => {
+    await editDefinition(d);
+    setEditingDefinition(undefined);
+    router.refresh();
+  };
+  const handleDelete = async (d: Definition) => {
+    await removeDefinition(d);
+    setEditingDefinition(undefined);
+    router.refresh();
+  };
   return (
     <div>
       <h3 className="mb-2 text-lg font-bold">
         {s?.lexicalCategory?.category ?? ""}
       </h3>
       <h4 className="text-sm font-bold">{w.text}</h4>
-      <ol className="m-4 list-decimal pl-4 text-sm text-primary/80">
+      <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
         {s.definitions
           ?.sort((a, b) => a.order - b.order)
           .map((d) => (
-            <li key={d.id} className="pb-1">
-              {parseHtml(d.text)}
+            <li
+              key={d.id}
+              className={cn(
+                "pb-2 transition-all",
+                props.isConlangOwner &&
+                  "group/def pb-6 md:pb-2 md:group-hover/section:pb-2.5",
+              )}
+            >
+              {editingDefinition?.id === d.id ? (
+                <div className="">
+                  <TextEditor
+                    value={editingDefinition.text}
+                    onChange={(value) =>
+                      setEditingDefinition({
+                        ...editingDefinition,
+                        text: value,
+                      })
+                    }
+                    customToolbarActions={
+                      <>
+                        <Button
+                          onClick={() => setEditingDefinition(undefined)}
+                          variant="outline"
+                          size="sm"
+                          title="Cancel"
+                          className="h-9 bg-transparent px-2.5 ring-offset-background transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          <XIcon className="size-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleSave(editingDefinition)}
+                          variant="outline"
+                          size="sm"
+                          title="Save"
+                          className="h-9 bg-transparent px-2.5 text-blue-700 ring-offset-background transition-colors hover:bg-blue-700/10 hover:text-blue-700/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          <SaveIcon className="size-4" />
+                        </Button>
+                      </>
+                    }
+                    className="min-h-[30px]"
+                  />
+                </div>
+              ) : (
+                <div className="flex w-full items-start justify-between gap-2">
+                  <div className="">{parseHtml(d.text)}</div>
+                  {props.isConlangOwner && (
+                    <div className="flex gap-2 transition-all md:gap-1 md:opacity-0 md:group-hover/def:opacity-100">
+                      <Button
+                        onClick={() => setEditingDefinition(d)}
+                        size="icon"
+                        variant="ghost"
+                        className="size-6 md:size-5"
+                      >
+                        <EditIcon className="-mb-0.5 size-5 md:size-4" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDelete(d)}
+                        size="icon"
+                        variant="ghost"
+                        className="size-6 hover:bg-red-800/10 md:size-5"
+                      >
+                        <Trash2Icon className="size-5 text-red-800 md:size-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
             </li>
           ))}
+        {props.isConlangOwner && (
+          <AddDefinition
+            section={s}
+            className={
+              !s.definitions?.length
+                ? ""
+                : "transition-all md:opacity-0 md:group-hover/section:opacity-100"
+            }
+          />
+        )}
       </ol>
-      {props.isConlangOwner && (
-        <AddDefinition
-          section={s}
-          className={
-            !s.definitions?.length
-              ? ""
-              : "transition-all md:opacity-0 md:group-hover/section:opacity-100"
-          }
-        />
-      )}
     </div>
   );
 }
@@ -283,9 +372,6 @@ function WordDetails(props: {
         conlangName={props.conlangName}
         isConlangOwner={props.isConlangOwner}
       />
-      <p className="my-6 whitespace-pre-wrap text-sm text-muted-foreground">
-        {w.definition}
-      </p>
       <div className="flex flex-col gap-2">
         {w.pronunciation && (
           <div className="flex items-center gap-2">
@@ -301,11 +387,14 @@ function WordDetails(props: {
         )}
       </div>
       {w.sections.length > 0 && (
-        <div className="mb-4 flex flex-col gap-4">
+        <div className="mb-4 flex flex-col gap-1">
           {w.sections.map((s) => (
-            <div key={s.id} className="group/section flex flex-col gap-1">
+            <div
+              key={s.id}
+              className="group/section flex flex-col gap-1 rounded-md p-2 transition-all focus-within:bg-card/50 hover:bg-card/50"
+            >
               {s.type === "definition" && (
-                <DefinitionView
+                <Definitions
                   word={w}
                   section={s}
                   isConlangOwner={props.isConlangOwner}
@@ -386,7 +475,7 @@ export function WordView(props: {
         open={Boolean(props.word)}
         onOpenChange={() => props.setSelectedWord(null)}
       >
-        <SheetContent className="flex w-[80vw] flex-col gap-6">
+        <SheetContent className="flex w-[80vw] flex-col gap-6 px-2">
           <SheetHeader>
             <SheetTitle>Word Details</SheetTitle>
           </SheetHeader>
@@ -409,7 +498,7 @@ export function WordView(props: {
       open={Boolean(props.word)}
       onOpenChange={() => props.setSelectedWord(null)}
     >
-      <SheetContent className="flex w-[80vw] flex-col gap-6">
+      <SheetContent className="flex w-[80vw] flex-col gap-6 px-2">
         <SheetHeader>
           <SheetTitle>Edit Word</SheetTitle>
           <SheetDescription>Change or add word details.</SheetDescription>

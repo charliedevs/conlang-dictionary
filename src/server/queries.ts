@@ -371,4 +371,33 @@ export async function insertDefinition(d: DefinitionInsert) {
 
   return definition[0];
 }
+
+export interface DefinitionUpdate {
+  id: number;
+  text: string;
+}
+
+export async function updateDefinition(d: DefinitionUpdate) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const definition = await db
+    .update(definitions)
+    .set(d)
+    .where(eq(definitions.id, d.id))
+    .returning();
+
+  if (!definition[0]) throw new Error("Definition not updated");
+}
+
+export interface DefinitionDelete {
+  id: number;
+}
+
+export async function deleteDefinition(d: DefinitionDelete) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  await db.delete(definitions).where(eq(definitions.id, d.id));
+}
 // #endregion

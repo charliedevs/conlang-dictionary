@@ -7,6 +7,7 @@ import {
   ListOrderedIcon,
   StrikethroughIcon,
 } from "lucide-react";
+import { type ReactNode } from "react";
 import { cn } from "~/lib/utils";
 import { Separator } from "./ui/separator";
 import { Toggle } from "./ui/toggle";
@@ -15,6 +16,7 @@ interface TextEditorProps {
   value: string;
   onChange: (value: string) => void;
   showOrderedList?: boolean;
+  customToolbarActions?: ReactNode;
   className?: string;
 }
 
@@ -22,6 +24,7 @@ export function TextEditor({
   value,
   onChange,
   showOrderedList = false,
+  customToolbarActions,
   className,
 }: TextEditorProps) {
   const editor = useEditor({
@@ -58,7 +61,12 @@ export function TextEditor({
   return (
     <div id="textEditor">
       <EditorContent editor={editor} />
-      {editor ? <RichTextEditorToolbar editor={editor} /> : null}
+      {editor ? (
+        <RichTextEditorToolbar
+          editor={editor}
+          customToolbarActions={customToolbarActions}
+        />
+      ) : null}
     </div>
   );
 }
@@ -66,54 +74,63 @@ export function TextEditor({
 interface RichTextEditorToolbarProps {
   editor: Editor;
   showOrderedList?: boolean;
+  customToolbarActions?: ReactNode;
 }
 
 const RichTextEditorToolbar = ({
   editor,
   showOrderedList = false,
+  customToolbarActions,
 }: RichTextEditorToolbarProps) => {
   return (
-    <div className="flex flex-row items-center gap-1 rounded-bl-md rounded-br-md border border-input bg-transparent p-1 dark:bg-background">
-      <Toggle
-        size="sm"
-        pressed={editor.isActive("bold")}
-        onPressedChange={() => editor.chain().focus().toggleBold().run()}
-      >
-        <BoldIcon className="h-4 w-4" />
-      </Toggle>
-      <Toggle
-        size="sm"
-        pressed={editor.isActive("italic")}
-        onPressedChange={() => editor.chain().focus().toggleItalic().run()}
-      >
-        <ItalicIcon className="h-4 w-4" />
-      </Toggle>
-      <Toggle
-        size="sm"
-        pressed={editor.isActive("strike")}
-        onPressedChange={() => editor.chain().focus().toggleStrike().run()}
-      >
-        <StrikethroughIcon className="h-4 w-4" />
-      </Toggle>
-      <Separator orientation="vertical" className="h-8 w-[1px]" />
-      <Toggle
-        size="sm"
-        pressed={editor.isActive("bulletList")}
-        onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
-      >
-        <ListIcon className="h-4 w-4" />
-      </Toggle>
-      {showOrderedList && (
+    <div className="flex flex-row items-center justify-between gap-1 rounded-bl-md rounded-br-md border border-input bg-transparent p-1 dark:bg-background">
+      <div className="flex flex-row items-center gap-1">
         <Toggle
           size="sm"
-          pressed={editor.isActive("orderedList")}
+          pressed={editor.isActive("bold")}
+          onPressedChange={() => editor.chain().focus().toggleBold().run()}
+        >
+          <BoldIcon className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          size="sm"
+          pressed={editor.isActive("italic")}
+          onPressedChange={() => editor.chain().focus().toggleItalic().run()}
+        >
+          <ItalicIcon className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          size="sm"
+          pressed={editor.isActive("strike")}
+          onPressedChange={() => editor.chain().focus().toggleStrike().run()}
+        >
+          <StrikethroughIcon className="h-4 w-4" />
+        </Toggle>
+        <Separator orientation="vertical" className="h-8 w-[1px]" />
+        <Toggle
+          size="sm"
+          pressed={editor.isActive("bulletList")}
           onPressedChange={() =>
-            editor.chain().focus().toggleOrderedList().run()
+            editor.chain().focus().toggleBulletList().run()
           }
         >
-          <ListOrderedIcon className="h-4 w-4" />
+          <ListIcon className="h-4 w-4" />
         </Toggle>
-      )}
+        {showOrderedList && (
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("orderedList")}
+            onPressedChange={() =>
+              editor.chain().focus().toggleOrderedList().run()
+            }
+          >
+            <ListOrderedIcon className="h-4 w-4" />
+          </Toggle>
+        )}
+      </div>
+      <div className="flex flex-row items-center gap-1">
+        {customToolbarActions}
+      </div>
     </div>
   );
 };
