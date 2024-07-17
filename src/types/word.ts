@@ -1,38 +1,22 @@
 import { type sectionType } from "~/server/db/schema";
-import { type Tag } from "./tag";
+import {
+  type getDefinitionsBySectionId,
+  type getLexicalCategoriesForConlang,
+  type getSectionsByWordId,
+  type getWordsByConlangId,
+} from "~/server/queries";
 
-export type Word = {
-  id: number;
-  conlangId: number;
-  text: string;
-  pronunciation: string | null;
-  gloss: string | null;
-  definition: string | null;
-  tags: Tag[];
-  sections: Section[];
-  createdAt: Date;
-  updatedAt: Date | null;
-};
+type Words = Awaited<ReturnType<typeof getWordsByConlangId>>;
+export type Word = Words[number];
 
+type Sections = Awaited<ReturnType<typeof getSectionsByWordId>>;
+export type Section = Sections[number];
 export type SectionType = (typeof sectionType.enumValues)[number];
-export type Section = {
-  id: number;
-  wordId: number;
-  order: number;
-  type: SectionType;
-  lexicalCategory?: LexicalCategory | null;
-  definitions?: Definition[] | null;
-  customTitle?: string | null;
-  customText?: string | null;
-};
 
-export type LexicalCategory = {
-  id: number;
-  category: string;
-};
+type LexicalCategories = Awaited<
+  ReturnType<typeof getLexicalCategoriesForConlang>
+>;
+export type LexicalCategory = LexicalCategories[number];
 
-export type Definition = {
-  id: number;
-  order: number;
-  text: string;
-};
+type Definitions = Awaited<ReturnType<typeof getDefinitionsBySectionId>>;
+export type Definition = Definitions[number];

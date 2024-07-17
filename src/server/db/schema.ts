@@ -167,7 +167,7 @@ export const definitions = createTable("definitions", {
   id: serial("id").primaryKey(),
   sectionId: integer("sectionId").notNull(),
   order: integer("order").notNull(),
-  text: text("text"),
+  text: text("text").notNull().default(""),
 });
 
 export const definitionsRelations = relations(definitions, ({ one }) => ({

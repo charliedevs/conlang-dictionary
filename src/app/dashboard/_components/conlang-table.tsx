@@ -29,7 +29,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/data/useUsers";
 import { cn } from "~/lib/utils";
-import type { Conlang } from "~/types/conlang";
+import { type Conlang } from "~/types/conlang";
 
 export const dynamic = "force-dynamic";
 

@@ -158,7 +158,10 @@ export async function getWordsByConlangId(conlangId: number) {
 export async function getWordById(id: number) {
   const word = await db.query.words.findFirst({
     where: (model, { eq }) => eq(model.id, id),
-    with: { tags: { with: { tag: true } } },
+    with: {
+      tags: { with: { tag: true } },
+      sections: { with: { lexicalCategory: true, definitions: true } },
+    },
   });
   if (!word) throw new Error(`Word with id ${id} not found`);
   const wordWithTags = { ...word, tags: word.tags.map((t) => t.tag) };
@@ -294,6 +297,7 @@ export async function getSectionsByWordId(wordId: number) {
   const sections = await db.query.sections.findMany({
     where: (model, { eq }) => eq(model.wordId, wordId),
     orderBy: (model, { asc }) => [asc(model.customTitle)],
+    with: { lexicalCategory: true, definitions: true },
   });
 
   return sections;

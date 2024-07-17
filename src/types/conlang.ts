@@ -1,10 +1,4 @@
-export type Conlang = {
-  id: number;
-  name: string;
-  description: string | null;
-  emoji: string | null;
-  isPublic: boolean;
-  ownerId: string;
-  createdAt: Date;
-  updatedAt: Date | null;
-};
+import { type getMyConlangs } from "~/server/queries";
+
+type Conlangs = Awaited<ReturnType<typeof getMyConlangs>>;
+export type Conlang = Conlangs[number];

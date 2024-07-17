@@ -39,16 +39,16 @@ export async function createSection(section: CreateSection) {
   await insertSection(section as CreateSection & { order: number });
 }
 
-interface DefinitionInsert {
+interface CreateDefinition {
   sectionId: number;
   order?: number;
   text: string;
 }
-export async function createDefinition(definition: DefinitionInsert) {
+export async function createDefinition(definition: CreateDefinition) {
   const definitions = await getDefinitionsBySectionId(definition.sectionId);
   const maxOrder = definitions.reduce((max, d) => Math.max(max, d.order), 0);
   definition.order = maxOrder + 1;
-  await insertDefinition(definition as DefinitionInsert & { order: number });
+  await insertDefinition(definition as CreateDefinition & { order: number });
 }
 
 export async function editDefinition(definition: DefinitionUpdate) {

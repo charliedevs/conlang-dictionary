@@ -25,12 +25,8 @@ import {
 } from "~/components/ui/sheet";
 import { ordinal } from "~/lib/numbers";
 import { cn } from "~/lib/utils";
-import {
-  type Definition,
-  type Section,
-  type SectionType,
-  type Word,
-} from "~/types/word";
+import { type DefinitionUpdate } from "~/server/queries";
+import { type Section, type SectionType, type Word } from "~/types/word";
 import {
   createDefinition,
   createSection,
@@ -250,15 +246,15 @@ function Definitions(props: {
 }) {
   const { word: w, section: s } = props;
   const [editingDefinition, setEditingDefinition] = useState<
-    Definition | undefined
+    DefinitionUpdate | undefined
   >();
   const router = useRouter();
-  const handleSave = async (d: Definition) => {
+  const handleSave = async (d: DefinitionUpdate) => {
     await editDefinition(d);
     setEditingDefinition(undefined);
     router.refresh();
   };
-  const handleDelete = async (d: Definition) => {
+  const handleDelete = async (d: DefinitionUpdate) => {
     await removeDefinition(d);
     setEditingDefinition(undefined);
     router.refresh();
@@ -386,7 +382,7 @@ function WordDetails(props: {
           </div>
         )}
       </div>
-      {w.sections.length > 0 && (
+      {w.sections && w.sections.length > 0 && (
         <div className="mb-4 flex flex-col gap-1">
           {w.sections.map((s) => (
             <div
