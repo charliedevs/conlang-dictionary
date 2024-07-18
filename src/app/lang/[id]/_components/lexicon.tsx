@@ -9,6 +9,7 @@ import {
 } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { useKeyboardNavigation } from "~/hooks/accessibility/useKeyboardNavigation";
+import { unique } from "~/lib/arrays";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { type LexicalCategory, type Word } from "~/types/word";
@@ -26,6 +27,7 @@ function WordList(props: {
     "word",
     listRef,
   );
+
   if (props.words.length < 1)
     return <div className="py-5 text-center">No words added yet.</div>;
   return (
@@ -63,7 +65,9 @@ function WordList(props: {
               <span className="text-[0.7rem] text-muted-foreground">
                 {word.sections && word.sections.length > 0
                   ? word.sections
+                      .filter((s) => Boolean(s.lexicalCategory))
                       .map((s) => s.lexicalCategory?.category)
+                      .filter(unique)
                       .join(", ")
                   : ""}
               </span>
