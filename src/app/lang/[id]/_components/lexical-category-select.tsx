@@ -43,7 +43,7 @@ export function LexicalCategorySelect(props: {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("Failed to add lexical category. Please try again.");
+        toast.error("Failed to add part of speech. Please try again.");
       }
     }
   };
@@ -89,7 +89,7 @@ export function LexicalCategorySelect(props: {
           setIsAdding(false);
           props.onChange("");
         }}
-        title="Add Lexical Category"
+        title="Add Part of Speech"
         content={
           <>
             <Input
