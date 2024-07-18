@@ -10,13 +10,6 @@ import { Button } from "~/components/ui/button";
 import { Combobox } from "~/components/ui/combobox";
 import { Input } from "~/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -27,21 +20,14 @@ import { ordinal } from "~/lib/numbers";
 import { capitalize } from "~/lib/strings";
 import { cn } from "~/lib/utils";
 import { type DefinitionUpdate } from "~/server/queries";
-import {
-  type LexicalCategory,
-  type Section,
-  type SectionType,
-  type Word,
-} from "~/types/word";
+import { type Section, type SectionType, type Word } from "~/types/word";
 import {
   createDefinition,
-  createSection,
   editDefinition,
   removeDefinition,
-  type CreateSection,
 } from "../_actions/word";
-import { AddLexicalCategoryButton } from "./add-lexical-category-button";
 import { EditWordForm } from "./forms/edit-word-form";
+import { NewDefinitionSectionForm } from "./forms/new-section-forms";
 import { TagsForWord } from "./tags-for-word";
 
 const sectionTypes: { value: SectionType; label: string }[] = [
@@ -51,40 +37,11 @@ const sectionTypes: { value: SectionType; label: string }[] = [
   { value: "custom", label: "Custom" },
 ];
 
-function LexicalCategorySelect(props: {
-  options: LexicalCategory[];
-  conlangId: number;
-  defaultValue?: number | null;
-  onChange: (value: string) => void;
-  className?: string;
-}) {
-  return (
-    <Select
-      onValueChange={props.onChange}
-      defaultValue={props.defaultValue ? String(props.defaultValue) : ""}
-    >
-      <SelectTrigger className={props.className}>
-        <SelectValue placeholder="Part of speech..." />
-      </SelectTrigger>
-      <SelectContent>
-        {props.options.map((category) => (
-          <SelectItem key={category.id} value={String(category.id)}>
-            {category.category}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function AddSection(props: {
-  word: Word;
-  lexicalCategories: LexicalCategory[];
-}) {
+function AddSection(props: { word: Word }) {
   const [isAdding, setIsAdding] = useState(false);
   // TODO: change to useform and zod schema
-  const [section, setSection] = useState<CreateSection | null>(null);
-  const router = useRouter();
+  const [sectionType, setSectionType] = useState<SectionType | null>(null);
+
   return (
     <div className="min-h-6 rounded-md bg-accent transition-all">
       {isAdding ? (
@@ -96,7 +53,7 @@ function AddSection(props: {
             <Button
               onClick={() => {
                 setIsAdding(false);
-                setSection(null);
+                setSectionType(null);
               }}
               variant="ghost"
               size="icon"
@@ -109,43 +66,29 @@ function AddSection(props: {
             {/* TODO: Just change to select? combobox is weird on mobile */}
             <Combobox
               options={sectionTypes}
-              value={section?.type ?? ""}
+              value={sectionType ?? ""}
               onChange={(value) => {
                 if (value) {
-                  setSection({
-                    wordId: props.word.id,
-                    type: value as SectionType,
-                  });
+                  setSectionType(value as SectionType);
                 } else {
-                  setSection(null);
+                  setSectionType(null);
                 }
               }}
               placeholder="Select a section type..."
               className="w-full font-semibold"
             />
-            {section && (
+            {sectionType && (
               <>
-                {section.type === "definition" && (
-                  <div className="flex gap-1">
-                    {/* TODO: Make input into custom combobox pulled from db with extra actions */}
-                    <LexicalCategorySelect
-                      options={props.lexicalCategories}
-                      conlangId={props.word.conlangId}
-                      defaultValue={section.lexicalCategoryId}
-                      onChange={(value) =>
-                        setSection({
-                          ...section,
-                          lexicalCategoryId: Number(value),
-                        })
-                      }
-                    />
-                    <AddLexicalCategoryButton
-                      conlangId={props.word.conlangId}
-                    />
-                  </div>
+                {sectionType === "definition" && (
+                  <NewDefinitionSectionForm
+                    conlangId={props.word.conlangId}
+                    wordId={props.word.id}
+                    afterSubmit={() => setIsAdding(false)}
+                  />
                 )}
-                {section.type === "custom" && (
+                {sectionType === "custom" && (
                   <>
+                    WORK IN PROGRESS
                     <Input placeholder="Section title..." />
                     <TextEditor
                       value=""
@@ -154,18 +97,6 @@ function AddSection(props: {
                     />
                   </>
                 )}
-                <Button
-                  // disabled={!definition.lexicalCategoryId || !definition.text}
-                  onClick={async () => {
-                    await createSection(section);
-                    setIsAdding(false);
-                    router.refresh();
-                  }}
-                >
-                  {section.type === "definition"
-                    ? "Add Definition Section"
-                    : "Add Section"}
-                </Button>
               </>
             )}
           </div>
@@ -361,7 +292,6 @@ function Definitions(props: {
 
 function WordDetails(props: {
   word: Word;
-  lexicalCategories: LexicalCategory[];
   conlangName: string;
   isConlangOwner: boolean;
 }) {
@@ -412,9 +342,7 @@ function WordDetails(props: {
           ))}
         </div>
       )}
-      {props.isConlangOwner && (
-        <AddSection word={w} lexicalCategories={props.lexicalCategories} />
-      )}
+      {props.isConlangOwner && <AddSection word={w} />}
     </div>
   );
 }
@@ -437,7 +365,6 @@ function EditWordButton(props: {
 
 export function WordView(props: {
   word: Word | null;
-  lexicalCategories: LexicalCategory[];
   conlangName: string;
   setSelectedWord: Dispatch<SetStateAction<Word | null>>;
   isConlangOwner: boolean;
@@ -453,7 +380,6 @@ export function WordView(props: {
           <div className="flex w-full max-w-[600px] flex-col gap-4">
             <WordDetails
               word={props.word}
-              lexicalCategories={props.lexicalCategories}
               conlangName={props.conlangName}
               isConlangOwner={props.isConlangOwner}
             />
@@ -488,7 +414,6 @@ export function WordView(props: {
           {props.word ? (
             <WordDetails
               word={props.word}
-              lexicalCategories={props.lexicalCategories}
               conlangName={props.conlangName}
               isConlangOwner={props.isConlangOwner}
             />
