@@ -347,7 +347,11 @@ function AddTagMenu(props: { word: Word; conlangName: string }) {
   );
 }
 
-function ExistingTags(props: { tags: Tag[]; wordId: number }) {
+function ExistingTags(props: {
+  tags: Tag[];
+  wordId: number;
+  isConlangOwner: boolean;
+}) {
   const [isDeletingTag, setIsDeletingTag] = useState(0);
   useEffect(() => {
     setIsDeletingTag(0);
@@ -374,7 +378,8 @@ function ExistingTags(props: { tags: Tag[]; wordId: number }) {
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="mx-0.5 h-6 p-0 focus-visible:ring-offset-0"
+              className="mx-0.5 h-6 p-0 focus-visible:ring-offset-0 disabled:opacity-100"
+              disabled={!props.isConlangOwner}
             >
               <Tag
                 text={tag.text}
@@ -414,7 +419,11 @@ export function TagsForWord(props: {
       id="tagsForWord"
       className="group/tags flex min-h-8 flex-wrap items-center justify-start gap-2 md:gap-0.5"
     >
-      <ExistingTags tags={props.word.tags} wordId={props.word.id} />
+      <ExistingTags
+        tags={props.word.tags}
+        wordId={props.word.id}
+        isConlangOwner={props.isConlangOwner}
+      />
       {props.isConlangOwner && (
         <AddTagMenu word={props.word} conlangName={props.conlangName} />
       )}
