@@ -27,7 +27,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {hasEndContent && (
-          <div className="absolute right-1 top-0 flex h-full items-center justify-center gap-1">
+          <div className="absolute right-2 top-0 flex h-full items-center justify-center gap-1">
             {endAdornment && (
               <div className="w-8 p-1 text-muted-foreground">
                 {endAdornment}

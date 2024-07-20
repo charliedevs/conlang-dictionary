@@ -30,6 +30,18 @@ export async function getMyConlangs() {
   return conlangs;
 }
 
+export async function getPublicConlangs() {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const conlangs = await db.query.conlangs.findMany({
+    where: (c, { eq }) => eq(c.isPublic, true),
+    orderBy: (c, { asc }) => asc(c.name),
+  });
+
+  return conlangs;
+}
+
 export async function getConlangById(id: number) {
   const { userId } = auth();
 
