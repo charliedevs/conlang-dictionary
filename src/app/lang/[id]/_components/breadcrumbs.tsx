@@ -2,14 +2,14 @@ import { SignedIn } from "@clerk/nextjs";
 import Link from "next/link";
 import {
   Breadcrumb,
-  BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
+  BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 
-export function Breadcrumbs(props: { name: string }) {
+export function Breadcrumbs(props: { name: string; isConlangOwner: boolean }) {
   return (
     <SignedIn>
       <div className="flex w-full justify-start">
@@ -17,7 +17,11 @@ export function Breadcrumbs(props: { name: string }) {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/dashboard">Dashboard</Link>
+                {props.isConlangOwner ? (
+                  <Link href="/dashboard">Dashboard</Link>
+                ) : (
+                  <Link href="/lang">Languages</Link>
+                )}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

@@ -22,7 +22,7 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
   const isConlangOwner = conlang.ownerId === auth().userId;
   return (
     <div className="container flex flex-col gap-4 px-5 pb-1 pt-5">
-      <Breadcrumbs name={conlang.name} />
+      <Breadcrumbs name={conlang.name} isConlangOwner={isConlangOwner} />
       <div id="conlangInfo" className="flex flex-col gap-1">
         <h1 className="text-start text-2xl font-medium">{conlang.name}</h1>
         <p>{conlang.description}</p>
