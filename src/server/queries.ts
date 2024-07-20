@@ -321,6 +321,19 @@ export async function insertSection(s: SectionInsert) {
   if (!section[0]) throw new Error("Section not created");
 }
 
+export interface SectionDelete {
+  id: number;
+}
+
+export async function deleteSection(s: SectionDelete) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  await db.delete(definitions).where(eq(definitions.sectionId, s.id));
+
+  await db.delete(sections).where(eq(sections.id, s.id));
+}
+
 export async function getLexicalCategoriesForConlang(conlangId: number) {
   const lexicalCategories = await db.query.lexicalCategories.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),

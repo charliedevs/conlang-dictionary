@@ -2,6 +2,7 @@
 
 import {
   deleteDefinition,
+  deleteSection,
   getDefinitionsBySectionId,
   getLexicalCategoriesForConlang,
   getSectionsByWordId,
@@ -13,6 +14,7 @@ import {
   updateDefinition,
   type DefinitionDelete,
   type DefinitionUpdate,
+  type SectionDelete,
   type WordInsert,
   type WordUpdate,
 } from "~/server/queries";
@@ -60,6 +62,10 @@ export async function createSection(section: CreateSection) {
   const maxOrder = sections.reduce((max, s) => Math.max(max, s.order), 0);
   section.order = maxOrder + 1;
   await insertSection(section as CreateSection & { order: number });
+}
+
+export async function removeSection(section: SectionDelete) {
+  await deleteSection(section);
 }
 
 interface CreateDefinition {

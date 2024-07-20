@@ -25,6 +25,7 @@ import {
   createDefinition,
   editDefinition,
   removeDefinition,
+  removeSection,
 } from "../_actions/word";
 import { EditWordForm } from "./forms/edit-word-form";
 import { NewDefinitionSectionForm } from "./forms/new-section-forms";
@@ -290,6 +291,54 @@ function Definitions(props: {
   );
 }
 
+function Section(props: {
+  word: Word;
+  section: Section;
+  isConlangOwner: boolean;
+}) {
+  const { word: w, section: s } = props;
+  const router = useRouter();
+  const handleDelete = async (sectionId: number) => {
+    // TODO: add confirmation dialog and toast
+    await removeSection({ id: sectionId });
+    router.refresh();
+  };
+  return (
+    <div
+      key={s.id}
+      className="group/section flex flex-col gap-1 rounded-md p-2 transition-all focus-within:bg-card/50 hover:bg-card/50"
+    >
+      {props.isConlangOwner && (
+        <div className="flex justify-between gap-1">
+          <div></div>
+          <div>
+            <Button
+              onClick={() => handleDelete(s.id)}
+              variant="ghost"
+              className="h-5 p-0.5 text-red-800 transition-all hover:bg-red-800/10 hover:text-red-700"
+            >
+              <Trash2Icon className="size-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+      {s.type === "definition" && (
+        <Definitions
+          word={w}
+          section={s}
+          isConlangOwner={props.isConlangOwner}
+        />
+      )}
+      {s.customTitle && (
+        <div className="flex items-center gap-2">
+          <div className="text-xs font-medium">{s.customTitle}</div>
+          <div className="text-xs">{s.customText}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function WordDetails(props: {
   word: Word;
   conlangName: string;
@@ -321,24 +370,12 @@ function WordDetails(props: {
       {w.sections && w.sections.length > 0 && (
         <div className="mb-4 flex flex-col gap-1">
           {w.sections.map((s) => (
-            <div
+            <Section
               key={s.id}
-              className="group/section flex flex-col gap-1 rounded-md p-2 transition-all focus-within:bg-card/50 hover:bg-card/50"
-            >
-              {s.type === "definition" && (
-                <Definitions
-                  word={w}
-                  section={s}
-                  isConlangOwner={props.isConlangOwner}
-                />
-              )}
-              {s.customTitle && (
-                <div className="flex items-center gap-2">
-                  <div className="text-xs font-medium">{s.customTitle}</div>
-                  <div className="text-xs">{s.customText}</div>
-                </div>
-              )}
-            </div>
+              word={w}
+              section={s}
+              isConlangOwner={props.isConlangOwner}
+            />
           ))}
         </div>
       )}
