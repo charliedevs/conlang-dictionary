@@ -180,9 +180,6 @@ export async function getWordById(id: number) {
 export interface WordInsert {
   conlangId: number;
   text: string;
-  pronunciation?: string;
-  gloss?: string;
-  definition?: string;
 }
 
 export async function insertWord(w: WordInsert) {
@@ -204,9 +201,6 @@ export async function insertWord(w: WordInsert) {
 export interface WordUpdate {
   id: number;
   text: string;
-  pronunciation?: string;
-  gloss?: string;
-  definition?: string;
 }
 
 export async function updateWord(w: WordUpdate) {

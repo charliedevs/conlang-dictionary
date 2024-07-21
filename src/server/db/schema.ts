@@ -54,9 +54,6 @@ export const words = createTable(
       .notNull()
       .references(() => conlangs.id),
     text: varchar("text", { length: 512 }).notNull(),
-    pronunciation: varchar("pronunciation", { length: 512 }),
-    gloss: varchar("gloss", { length: 512 }),
-    definition: varchar("definition", { length: 1024 }),
     createdAt: timestamp("createdAt")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
