@@ -18,7 +18,7 @@ const newWordSchema = z.object({
 
 export const AddWordForm = (props: {
   conlangId: number;
-  afterSubmit?: () => void;
+  afterSubmit?: (newWordId: number) => void;
 }) => {
   const form = useForm<z.infer<typeof newWordSchema>>({
     resolver: zodResolver(newWordSchema),
@@ -31,11 +31,11 @@ export const AddWordForm = (props: {
   const router = useRouter();
   async function onSubmit(values: z.infer<typeof newWordSchema>) {
     try {
-      await createWord(values);
-      props.afterSubmit?.();
+      const word = await createWord(values);
+      props.afterSubmit?.(word.id);
       form.reset();
       router.refresh();
-      toast.success("Word added.");
+      toast.success(`Word "${word.text}" added.`);
     } catch (error) {
       console.error("Error:", error);
       if (error instanceof Error) {
@@ -51,7 +51,7 @@ export const AddWordForm = (props: {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mb-2 mt-1.5 flex items-center gap-1"
+        className="flex items-center gap-1"
       >
         <FormField
           control={form.control}
@@ -70,12 +70,10 @@ export const AddWordForm = (props: {
             </FormItem>
           )}
         />
-
         {/* <Button
           type="submit"
           disabled={form.formState.isSubmitting}
           size="icon"
-          variant="ghost"
         >
           <PlusIcon className="size-5" />
         </Button> */}

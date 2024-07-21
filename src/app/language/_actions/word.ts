@@ -3,5 +3,6 @@
 import { insertWord, type WordInsert } from "~/server/queries";
 
 export async function createWord(word: WordInsert) {
-  await insertWord(word);
+  const newWord = await insertWord(word);
+  return newWord;
 }

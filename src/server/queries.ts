@@ -196,6 +196,8 @@ export async function insertWord(w: WordInsert) {
     .returning();
 
   if (!word[0]) throw new Error("Word not created");
+
+  return word[0];
 }
 
 export interface WordUpdate {
