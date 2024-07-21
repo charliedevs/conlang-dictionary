@@ -353,20 +353,6 @@ function WordDetails(props: {
         conlangName={props.conlangName}
         isConlangOwner={props.isConlangOwner}
       />
-      <div className="flex flex-col gap-2">
-        {w.pronunciation && (
-          <div className="flex items-center gap-2">
-            <div className="text-xs font-medium">Pronunciation</div>
-            <div className="text-xs">{w.pronunciation}</div>
-          </div>
-        )}
-        {w.gloss && (
-          <div className="flex items-center gap-2">
-            <div className="text-xs font-medium">Gloss</div>
-            <div className="text-xs">{w.gloss}</div>
-          </div>
-        )}
-      </div>
       {w.sections && w.sections.length > 0 && (
         <div className="mb-4 flex flex-col gap-1">
           {w.sections.map((s) => (

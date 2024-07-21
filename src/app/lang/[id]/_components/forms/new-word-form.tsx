@@ -17,15 +17,11 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Textarea } from "~/components/ui/textarea";
 import { createWord } from "../../_actions/word";
 
 const newWordSchema = z.object({
   conlangId: z.number(),
   text: z.string().min(1, "Word text required."),
-  pronunciation: z.string().optional(),
-  gloss: z.string().optional(),
-  definition: z.string().optional(),
 });
 
 export const NewWordForm = (props: {
@@ -37,8 +33,6 @@ export const NewWordForm = (props: {
     defaultValues: {
       conlangId: props.conlangId,
       text: "",
-      pronunciation: "",
-      definition: "",
     },
   });
 
@@ -78,48 +72,6 @@ export const NewWordForm = (props: {
                 <FormLabel>Word</FormLabel>
                 <FormControl>
                   <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="pronunciation"
-            render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Pronunciation</FormLabel>
-                <FormControl>
-                  <Input placeholder="IPA (optional)" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="gloss"
-            render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Gloss</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., BOOK (optional)" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="definition"
-            render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Definition</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Add as much info as you want (optional)"
-                    {...field}
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

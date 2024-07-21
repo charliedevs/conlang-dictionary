@@ -15,16 +15,12 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Textarea } from "~/components/ui/textarea";
 import { type Word } from "~/types/word";
 import { updateWord } from "../../_actions/word";
 
 const editWordSchema = z.object({
   id: z.number(),
   text: z.string().min(1, "Word text required."),
-  pronunciation: z.string().optional(),
-  gloss: z.string().optional(),
-  definition: z.string().optional(),
 });
 
 interface EditWordFormProps {
@@ -36,8 +32,6 @@ export function EditWordForm(props: EditWordFormProps) {
   const defaultValues = {
     id: props.word.id,
     text: props.word.text,
-    pronunciation: props.word.pronunciation ?? "",
-    definition: props.word.definition ?? "",
   };
   const form = useForm<z.infer<typeof editWordSchema>>({
     resolver: zodResolver(editWordSchema),
@@ -88,48 +82,6 @@ export function EditWordForm(props: EditWordFormProps) {
                 <FormLabel>Word</FormLabel>
                 <FormControl>
                   <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="pronunciation"
-            render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Pronunciation</FormLabel>
-                <FormControl>
-                  <Input placeholder="IPA (optional)" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="gloss"
-            render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Gloss</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., BOOK (optional)" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="definition"
-            render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Definition</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Add as much info as you want (optional)"
-                    {...field}
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
