@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { ChevronLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -73,16 +73,24 @@ export function Lexicon(props: { conlang: Conlang; wordId?: number }) {
               <WordView wordId={props.wordId} isConlangOwner={isConlangOwner} />
             </Suspense>
           ) : (
-            <div className="not-sr-only w-full max-w-[220px] md:sr-only">
-              <Suspense
-                fallback={<div className="py-5 text-center">Loading...</div>}
-              >
-                <WordList
-                  conlang={props.conlang}
-                  selectedWordId={props.wordId}
-                />
-              </Suspense>
-            </div>
+            <>
+              <div className="not-sr-only w-full max-w-[220px] md:sr-only">
+                <Suspense
+                  fallback={<div className="py-5 text-center">Loading...</div>}
+                >
+                  <WordList
+                    conlang={props.conlang}
+                    selectedWordId={props.wordId}
+                  />
+                </Suspense>
+              </div>
+              <div className="sr-only md:not-sr-only">
+                <div className="flex items-center justify-center rounded-md bg-accent p-8 text-muted-foreground">
+                  <ArrowLeftIcon className="mr-2 size-5 opacity-50" />
+                  Select a word to view.
+                </div>
+              </div>
+            </>
           )}
         </article>
       </div>

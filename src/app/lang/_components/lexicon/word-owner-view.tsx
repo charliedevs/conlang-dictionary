@@ -84,13 +84,16 @@ function AddSection(props: { word: Word }) {
     );
   }
   return (
-    <div id="add-section-button" className="flex items-center justify-end">
+    <div
+      id="add-section-button"
+      className="mt-1 flex items-center justify-end md:mt-0"
+    >
       <Button
         onClick={() => setIsAdding(true)}
-        variant="outline"
-        className="w-full md:w-auto"
+        variant="ghost"
+        className="md:h-8"
       >
-        <PlusIcon className="mr-1 size-4" />
+        <PlusIcon className="mr-1 size-4 text-green-600" />
         Add Section
       </Button>
     </div>
