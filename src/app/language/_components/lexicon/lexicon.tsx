@@ -4,8 +4,8 @@ import { Suspense } from "react";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { AddWordForm } from "./add-word";
-import { Word } from "./word";
 import { WordList } from "./word-list";
+import { WordView } from "./word-view";
 
 export function Lexicon(props: { conlang: Conlang; wordId?: number }) {
   const isConlangOwner = props.conlang.ownerId === auth().userId;
@@ -40,7 +40,7 @@ export function Lexicon(props: { conlang: Conlang; wordId?: number }) {
             <Suspense
               fallback={<div className="py-5 text-center">Loading...</div>}
             >
-              <Word wordId={props.wordId} />
+              <WordView wordId={props.wordId} isConlangOwner={isConlangOwner} />
             </Suspense>
           ) : null}
         </article>
