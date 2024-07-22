@@ -137,6 +137,7 @@ export const AddDefinitionSectionForm = (props: {
   word: Word;
   afterSubmit?: () => void;
 }) => {
+  const { lexicalCategories } = useLexicalCategories(props.word.conlangId);
   const form = useForm<z.infer<typeof newDefinitionSectionSchema>>({
     resolver: zodResolver(newDefinitionSectionSchema),
     defaultValues: {
@@ -147,11 +148,13 @@ export const AddDefinitionSectionForm = (props: {
     },
   });
 
+  const router = useRouter();
   async function onSubmit(values: z.infer<typeof newDefinitionSectionSchema>) {
     try {
       await createDefinitionSection(values);
       props.afterSubmit?.();
       form.reset();
+      router.refresh();
       toast.success("Definition section added.");
     } catch (error) {
       console.error("Error:", error);
@@ -179,7 +182,14 @@ export const AddDefinitionSectionForm = (props: {
                 <LexicalCategorySelect
                   {...field}
                   conlangId={props.word.conlangId}
-                  onChange={(val) => field.onChange(Number(val))}
+                  onChange={(val) => {
+                    form.setValue(
+                      "title",
+                      lexicalCategories.data?.find((c) => c.id === Number(val))
+                        ?.category ?? "",
+                    );
+                    field.onChange(Number(val));
+                  }}
                 />
               </FormControl>
             </FormItem>
