@@ -67,6 +67,7 @@ export const words = createTable(
 export const wordsRelations = relations(words, ({ many }) => ({
   tags: many(wordsToTags),
   sections: many(sections),
+  wordSections: many(wordSections),
 }));
 
 // Tags
@@ -109,7 +110,6 @@ export const wordsToTags = createTable(
     pk: primaryKey({ columns: [t.wordId, t.tagId] }),
   }),
 );
-
 export const wordsToTagsRelations = relations(wordsToTags, ({ one }) => ({
   tag: one(tags, {
     fields: [wordsToTags.tagId],
@@ -121,7 +121,24 @@ export const wordsToTagsRelations = relations(wordsToTags, ({ one }) => ({
   }),
 }));
 
-// Lexical Categories
+// Word Sections //
+export const wordSections = createTable("wordSections", {
+  id: serial("id").primaryKey(),
+  wordId: integer("wordId").notNull(),
+  title: text("title"),
+});
+export const wordSectionsRelations = relations(wordSections, ({ one }) => ({
+  word: one(words, {
+    fields: [wordSections.wordId],
+    references: [words.id],
+  }),
+  definitionSection: one(definitionSections, {
+    fields: [wordSections.wordId],
+    references: [definitionSections.id],
+  }),
+}));
+
+// Definition Sections
 export const lexicalCategories = createTable("lexicalCategories", {
   id: serial("id").primaryKey(),
   category: text("category").notNull(),
@@ -131,6 +148,39 @@ export const lexicalCategories = createTable("lexicalCategories", {
   ownerId: varchar("ownerId", { length: 256 }).notNull(),
 });
 
+export const definitionSections = createTable("definitionSections", {
+  id: serial("id").primaryKey(),
+  wordSectionId: integer("wordSectionId").notNull(),
+  lexicalCategoryId: integer("lexicalCategoryId").notNull(),
+});
+export const definitionSectionsRelations = relations(
+  definitionSections,
+  ({ one, many }) => ({
+    wordSection: one(wordSections, {
+      fields: [definitionSections.wordSectionId],
+      references: [wordSections.id],
+    }),
+    lexicalCategory: one(lexicalCategories, {
+      fields: [definitionSections.lexicalCategoryId],
+      references: [lexicalCategories.id],
+    }),
+    definitions: many(definitions),
+  }),
+);
+
+export const definitions = createTable("definitions", {
+  id: serial("id").primaryKey(),
+  definitionSectionId: integer("sectionId").notNull(),
+  text: text("text").notNull().default(""),
+});
+export const definitionsRelations = relations(definitions, ({ one }) => ({
+  definitionSection: one(definitionSections, {
+    fields: [definitions.definitionSectionId],
+    references: [definitionSections.id],
+  }),
+}));
+
+// TODO: Remove
 // Sections
 export const sectionType = pgEnum("sectionType", ["definition", "custom"]);
 export const sections = createTable("sections", {
@@ -157,20 +207,6 @@ export const sectionsRelations = relations(sections, ({ one, many }) => ({
   lexicalCategory: one(lexicalCategories, {
     fields: [sections.lexicalCategoryId],
     references: [lexicalCategories.id],
-  }),
-}));
-
-export const definitions = createTable("definitions", {
-  id: serial("id").primaryKey(),
-  sectionId: integer("sectionId").notNull(),
-  order: integer("order").notNull(),
-  text: text("text").notNull().default(""),
-});
-
-export const definitionsRelations = relations(definitions, ({ one }) => ({
-  section: one(sections, {
-    fields: [definitions.sectionId],
-    references: [sections.id],
   }),
 }));
 

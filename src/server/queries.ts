@@ -4,15 +4,15 @@ import { auth } from "@clerk/nextjs/server";
 
 import { and, eq } from "drizzle-orm";
 import { type TagColor, type TagType } from "~/types/tag";
-import { type SectionType } from "~/types/word";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
 import {
   conlangs,
+  definitionSections,
   definitions,
   lexicalCategories,
-  sections,
   tags,
+  wordSections,
   words,
   wordsToTags,
 } from "./db/schema";
@@ -154,7 +154,13 @@ export async function getWordsByConlangId(conlangId: number) {
     orderBy: (model, { asc }) => [asc(model.text)],
     with: {
       tags: { with: { tag: true } },
-      sections: { with: { lexicalCategory: true, definitions: true } },
+      wordSections: {
+        with: {
+          definitionSection: {
+            with: { definitions: true, lexicalCategory: true },
+          },
+        },
+      },
     },
   });
   const wordsWithTags = words.map((w) => ({
@@ -169,7 +175,13 @@ export async function getWordById(id: number) {
     where: (model, { eq }) => eq(model.id, id),
     with: {
       tags: { with: { tag: true } },
-      sections: { with: { lexicalCategory: true, definitions: true } },
+      wordSections: {
+        with: {
+          definitionSection: {
+            with: { definitions: true, lexicalCategory: true },
+          },
+        },
+      },
     },
   });
   if (!word) throw new Error(`Word with id ${id} not found`);
@@ -305,47 +317,161 @@ export async function removeWordTagRelation(wordId: number, tagId: number) {
 // #endregion
 
 // #region SECTIONS
-export async function getSectionsByWordId(wordId: number) {
-  const sections = await db.query.sections.findMany({
+export async function getWordSections(wordId: number) {
+  const wordSections = await db.query.wordSections.findMany({
     where: (model, { eq }) => eq(model.wordId, wordId),
-    orderBy: (model, { asc }) => [asc(model.customTitle)],
-    with: { lexicalCategory: true, definitions: true },
+    orderBy: (model, { asc }) => [asc(model.title)],
+    with: {
+      definitionSection: {
+        with: { definitions: true, lexicalCategory: true },
+      },
+    },
+  });
+  return wordSections;
+}
+
+export interface WordSectionInsert {
+  wordId: number;
+  title?: string;
+}
+export async function insertWordSection(s: WordSectionInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const wordSection = await db
+    .insert(wordSections)
+    .values({
+      ...s,
+    })
+    .returning();
+
+  if (!wordSection[0]) throw new Error("Word section not created");
+
+  return wordSection[0];
+}
+
+export interface WordSectionUpdate {
+  id: number;
+  title?: string;
+}
+export async function updateWordSection(s: WordSectionUpdate) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const wordSection = await db
+    .update(wordSections)
+    .set({
+      title: s.title,
+    })
+    .where(eq(wordSections.id, s.id))
+    .returning();
+
+  if (!wordSection[0]) throw new Error("Word section not updated");
+
+  return wordSection[0];
+}
+
+export async function getDefinitionSections(wordSectionId: number) {
+  const definitionSections = await db.query.definitionSections.findMany({
+    where: (model, { eq }) => eq(model.wordSectionId, wordSectionId),
+    orderBy: (model, { asc }) => [asc(model.lexicalCategoryId)],
+    with: { lexicalCategory: true },
   });
 
-  return sections;
+  return definitionSections;
 }
 
-export interface SectionInsert {
-  wordId: number;
-  order: number;
-  type: SectionType;
-  lexicalCategoryId?: number;
-  customTitle?: string;
-  customText?: string;
+export interface DefinitionSectionInsert {
+  wordSectionId: number;
+  lexicalCategoryId: number;
 }
-
-export async function insertSection(s: SectionInsert) {
+export async function insertDefinitionSection(s: DefinitionSectionInsert) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const section = await db.insert(sections).values(s).returning();
+  const definitionSection = await db
+    .insert(definitionSections)
+    .values({
+      ...s,
+    })
+    .returning();
 
-  if (!section[0]) throw new Error("Section not created");
+  if (!definitionSection[0]) throw new Error("Definition section not created");
+
+  return definitionSection[0];
 }
 
-export interface SectionDelete {
+export interface DefinitionSectionUpdate {
   id: number;
+  lexicalCategoryId: number;
 }
-
-export async function deleteSection(s: SectionDelete) {
+export async function updateDefinitionSection(s: DefinitionSectionUpdate) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
-  await db.delete(definitions).where(eq(definitions.sectionId, s.id));
+  const definitionSection = await db
+    .update(definitionSections)
+    .set({
+      lexicalCategoryId: s.lexicalCategoryId,
+    })
+    .where(eq(definitionSections.id, s.id))
+    .returning();
 
-  await db.delete(sections).where(eq(sections.id, s.id));
+  if (!definitionSection[0]) throw new Error("Definition section not updated");
+
+  return definitionSection[0];
 }
 
+export async function getDefinitions(definitionSectionId: number) {
+  const definitions = await db.query.definitions.findMany({
+    where: (model, { eq }) =>
+      eq(model.definitionSectionId, definitionSectionId),
+    orderBy: (model, { asc }) => [asc(model.text)],
+  });
+  return definitions;
+}
+
+export interface DefinitionInsert {
+  definitionSectionId: number;
+  text: string;
+}
+export async function insertDefinition(d: DefinitionInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const definition = await db
+    .insert(definitions)
+    .values({
+      ...d,
+    })
+    .returning();
+
+  if (!definition[0]) throw new Error("Definition not created");
+
+  return definition[0];
+}
+
+export interface DefinitionUpdate {
+  id: number;
+  text: string;
+}
+export async function updateDefinition(d: DefinitionUpdate) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const definition = await db
+    .update(definitions)
+    .set({
+      text: d.text,
+    })
+    .where(eq(definitions.id, d.id))
+    .returning();
+
+  if (!definition[0]) throw new Error("Definition not updated");
+}
+// #endregion
+
+// #region Lexical Categories
 export async function getLexicalCategoriesForConlang(conlangId: number) {
   const lexicalCategories = await db.query.lexicalCategories.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),
@@ -359,7 +485,6 @@ export interface LexicalCategoryInsert {
   category: string;
   conlangId: number;
 }
-
 export async function insertLexicalCategory(l: LexicalCategoryInsert) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
@@ -373,60 +498,5 @@ export async function insertLexicalCategory(l: LexicalCategoryInsert) {
     .returning();
 
   if (!lexicalCategory[0]) throw new Error("Lexical category not created");
-}
-
-export async function getDefinitionsBySectionId(sectionId: number) {
-  const definitions = await db.query.definitions.findMany({
-    where: (model, { eq }) => eq(model.sectionId, sectionId),
-    orderBy: (model, { asc }) => [asc(model.order)],
-  });
-
-  return definitions;
-}
-
-export interface DefinitionInsert {
-  sectionId: number;
-  order: number;
-  text: string;
-}
-
-export async function insertDefinition(d: DefinitionInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const definition = await db.insert(definitions).values(d).returning();
-
-  if (!definition[0]) throw new Error("Definition not created");
-
-  return definition[0];
-}
-
-export interface DefinitionUpdate {
-  id: number;
-  text: string;
-}
-
-export async function updateDefinition(d: DefinitionUpdate) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const definition = await db
-    .update(definitions)
-    .set(d)
-    .where(eq(definitions.id, d.id))
-    .returning();
-
-  if (!definition[0]) throw new Error("Definition not updated");
-}
-
-export interface DefinitionDelete {
-  id: number;
-}
-
-export async function deleteDefinition(d: DefinitionDelete) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  await db.delete(definitions).where(eq(definitions.id, d.id));
 }
 // #endregion
