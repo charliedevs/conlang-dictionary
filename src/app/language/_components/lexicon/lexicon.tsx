@@ -1,29 +1,61 @@
 import { auth } from "@clerk/nextjs/server";
+import { ChevronLeftIcon } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { AddWordForm } from "./add-word";
 import { WordList } from "./word-list";
 import { WordView } from "./word-view";
 
+function ViewAllWordsButton() {
+  return (
+    <Button variant="ghost" className="not-sr-only md:sr-only">
+      <ChevronLeftIcon className="mr-1 size-4" /> All Words
+    </Button>
+  );
+}
+
+function AddWord(props: { conlangId: number; wordId?: number }) {
+  return (
+    <div
+      className={cn(
+        "not-sr-only flex w-full justify-center md:block",
+        props.wordId && "sr-only md:not-sr-only",
+      )}
+    >
+      <AddWordForm
+        conlangId={props.conlangId}
+        afterSubmit={async (newWordId) => {
+          "use server";
+          redirect(
+            `/language/${props.conlangId}/?view=lexicon&word=${newWordId}`,
+          );
+        }}
+      />
+    </div>
+  );
+}
+
 export function Lexicon(props: { conlang: Conlang; wordId?: number }) {
   const isConlangOwner = props.conlang.ownerId === auth().userId;
   return (
     <div id="lexicon" className="flex flex-col">
-      {isConlangOwner && (
-        <div className="flex gap-2 p-1">
-          <AddWordForm
-            conlangId={props.conlang.id}
-            afterSubmit={async (newWordId) => {
-              "use server";
-              redirect(
-                `/language/${props.conlang.id}/?view=lexicon&word=${newWordId}`,
-              );
-            }}
-          />
-        </div>
-      )}
+      <div
+        id="actions"
+        className="mt-3 flex items-center justify-between gap-2 p-1 md:mt-0"
+      >
+        {isConlangOwner && (
+          <AddWord conlangId={props.conlang.id} wordId={props.wordId} />
+        )}
+        {Boolean(props.wordId) && (
+          <Link href={`/language/${props.conlang.id}/?view=lexicon`}>
+            <ViewAllWordsButton />
+          </Link>
+        )}
+      </div>
       <div className="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
         <aside
           className={cn(
@@ -42,7 +74,18 @@ export function Lexicon(props: { conlang: Conlang; wordId?: number }) {
             >
               <WordView wordId={props.wordId} isConlangOwner={isConlangOwner} />
             </Suspense>
-          ) : null}
+          ) : (
+            <div className="not-sr-only w-full max-w-[220px] md:sr-only">
+              <Suspense
+                fallback={<div className="py-5 text-center">Loading...</div>}
+              >
+                <WordList
+                  conlang={props.conlang}
+                  selectedWordId={props.wordId}
+                />
+              </Suspense>
+            </div>
+          )}
         </article>
       </div>
     </div>

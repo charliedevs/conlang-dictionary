@@ -25,9 +25,9 @@ export async function WordList(props: {
           key={word.id}
           href={`/language/${props.conlang.id}/?view=lexicon&word=${word.id}`}
           className={cn(
-            "inline-block w-full max-w-[200px] items-center overflow-x-hidden text-ellipsis rounded-md border border-transparent py-1 text-muted-foreground hover:underline",
+            "inline-block w-full max-w-[200px] items-center overflow-x-hidden text-ellipsis rounded-md border border-transparent py-3 text-lg hover:underline md:py-1 md:text-base md:text-muted-foreground",
             props.selectedWordId === word.id
-              ? "font-semibold text-primary"
+              ? "font-semibold md:text-primary"
               : "",
           )}
         >

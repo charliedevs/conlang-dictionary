@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { CornerDownLeftIcon } from "lucide-react";
+import { CornerDownLeftIcon, PlusIcon } from "lucide-react";
+import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { createWord } from "../../_actions/word";
@@ -70,13 +71,13 @@ export const AddWordForm = (props: {
             </FormItem>
           )}
         />
-        {/* <Button
+        <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          size="icon"
+          className="not-sr-only ml-1 flex h-10 items-center gap-1 md:sr-only"
         >
-          <PlusIcon className="size-5" />
-        </Button> */}
+          <PlusIcon className="size-4" /> Add
+        </Button>
       </form>
     </Form>
   );
