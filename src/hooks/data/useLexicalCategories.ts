@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createLexicalCategory,
   type CreateLexicalCategory,
-} from "~/app/lang/[id]/_actions/word";
+} from "~/app/lang_old/[id]/_actions/word";
 import { type LexicalCategory } from "~/types/word";
 
 function getLexicalCategories(conlangId: number) {

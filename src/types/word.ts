@@ -1,4 +1,3 @@
-import { type sectionType } from "~/server/db/schema";
 import {
   type getDefinitionSections,
   type getDefinitions,
@@ -12,7 +11,6 @@ export type Word = Words[number];
 
 type WordSections = Awaited<ReturnType<typeof getWordSections>>;
 export type WordSection = WordSections[number];
-export type SectionType = (typeof sectionType.enumValues)[number];
 
 type LexicalCategories = Awaited<
   ReturnType<typeof getLexicalCategoriesForConlang>

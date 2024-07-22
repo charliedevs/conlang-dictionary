@@ -66,7 +66,6 @@ export const words = createTable(
 
 export const wordsRelations = relations(words, ({ many }) => ({
   tags: many(wordsToTags),
-  sections: many(sections),
   wordSections: many(wordSections),
 }));
 
@@ -133,8 +132,8 @@ export const wordSectionsRelations = relations(wordSections, ({ one }) => ({
     references: [words.id],
   }),
   definitionSection: one(definitionSections, {
-    fields: [wordSections.wordId],
-    references: [definitionSections.id],
+    fields: [wordSections.id],
+    references: [definitionSections.wordSectionId],
   }),
 }));
 
@@ -170,43 +169,13 @@ export const definitionSectionsRelations = relations(
 
 export const definitions = createTable("definitions", {
   id: serial("id").primaryKey(),
-  definitionSectionId: integer("sectionId").notNull(),
+  definitionSectionId: integer("definitionSectionId").notNull(),
   text: text("text").notNull().default(""),
 });
 export const definitionsRelations = relations(definitions, ({ one }) => ({
   definitionSection: one(definitionSections, {
     fields: [definitions.definitionSectionId],
     references: [definitionSections.id],
-  }),
-}));
-
-// TODO: Remove
-// Sections
-export const sectionType = pgEnum("sectionType", ["definition", "custom"]);
-export const sections = createTable("sections", {
-  id: serial("id").primaryKey(),
-  wordId: integer("wordId").notNull(),
-  order: integer("order").notNull(),
-  type: sectionType("type").notNull(),
-  lexicalCategoryId: integer("lexicalCategoryId").references(
-    () => lexicalCategories.id,
-  ),
-  // pronunciationId: integer("pronunciationId")
-  //   .references(() => pronunciations.id),
-  customTitle: text("customTitle"),
-  customText: text("customText"),
-  //parentSectionId: integer("parentSectionId"),
-});
-
-export const sectionsRelations = relations(sections, ({ one, many }) => ({
-  word: one(words, {
-    fields: [sections.wordId],
-    references: [words.id],
-  }),
-  definitions: many(definitions),
-  lexicalCategory: one(lexicalCategories, {
-    fields: [sections.lexicalCategoryId],
-    references: [lexicalCategories.id],
   }),
 }));
 

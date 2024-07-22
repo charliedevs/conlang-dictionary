@@ -30,9 +30,7 @@ function AddWord(props: { conlangId: number; wordId?: number }) {
         conlangId={props.conlangId}
         afterSubmit={async (newWordId) => {
           "use server";
-          redirect(
-            `/language/${props.conlangId}/?view=lexicon&word=${newWordId}`,
-          );
+          redirect(`/lang/${props.conlangId}/?view=lexicon&word=${newWordId}`);
         }}
       />
     </div>
@@ -51,7 +49,7 @@ export function Lexicon(props: { conlang: Conlang; wordId?: number }) {
           <AddWord conlangId={props.conlang.id} wordId={props.wordId} />
         )}
         {Boolean(props.wordId) && (
-          <Link href={`/language/${props.conlang.id}/?view=lexicon`}>
+          <Link href={`/lang/${props.conlang.id}/?view=lexicon`}>
             <ViewAllWordsButton />
           </Link>
         )}

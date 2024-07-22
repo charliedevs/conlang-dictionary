@@ -1,15 +1,85 @@
-import { auth } from "@clerk/nextjs/server";
+import { TabsContent } from "@radix-ui/react-tabs";
+import Link from "next/link";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { getConlangById, getPublicConlangs } from "~/server/queries";
+import { type Conlang } from "~/types/conlang";
+import { Lexicon } from "../_components/lexicon/lexicon";
 
-import { getConlangById, getWordsByConlangId } from "~/server/queries";
-import { Breadcrumbs } from "./_components/breadcrumbs";
-import { AddWordButton } from "./_components/forms/add-word-button";
-import { Lexicon } from "./_components/lexicon";
-
-interface ConlangPageProps {
-  params: { id: string };
+interface LanguageTabsProps {
+  conlang: Conlang;
+  selectedTab?: string;
+  wordId?: number;
 }
 
-export default async function ConlangPage({ params }: ConlangPageProps) {
+function LanguageTabs({
+  conlang,
+  selectedTab = "lexicon",
+  wordId,
+}: LanguageTabsProps) {
+  return (
+    <Tabs value={selectedTab}>
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="lexicon" className="p-0">
+          <Link
+            href={
+              wordId
+                ? `/lang/${conlang.id}/?view=lexicon&word=${wordId}`
+                : `/lang/${conlang.id}/?view=lexicon`
+            }
+            className="h-full w-full px-3 py-1.5"
+          >
+            Lexicon
+          </Link>
+        </TabsTrigger>
+        <TabsTrigger value="phonology" className="p-0">
+          <Link
+            href={
+              wordId
+                ? `/lang/${conlang.id}/?view=phonology&word=${wordId}`
+                : `/lang/${conlang.id}/?view=phonology`
+            }
+            className="h-full w-full px-3 py-1.5"
+          >
+            Phonology
+          </Link>
+        </TabsTrigger>
+        <TabsTrigger value="grammar" className="p-0">
+          <Link
+            href={
+              wordId
+                ? `/lang/${conlang.id}/?view=grammar&word=${wordId}`
+                : `/lang/${conlang.id}/?view=grammar`
+            }
+            className="h-full w-full px-3 py-1.5"
+          >
+            Grammar
+          </Link>
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="lexicon">
+        <div className="my-2">
+          <Lexicon conlang={conlang} wordId={wordId} />
+        </div>
+      </TabsContent>
+      <TabsContent value="phonology">
+        <div className="my-2">Phonology (coming soon)</div>
+      </TabsContent>
+      <TabsContent value="grammar">
+        <div className="my-2">Grammar (coming soon)</div>
+      </TabsContent>
+    </Tabs>
+  );
+}
+
+interface LanguagePageProps {
+  params: { id: string };
+  searchParams: { view?: string; word?: string };
+}
+
+export default async function LanguagePage({
+  params,
+  searchParams,
+}: LanguagePageProps) {
   const conlangId = Number(params.id);
   let conlang;
   try {
@@ -18,21 +88,25 @@ export default async function ConlangPage({ params }: ConlangPageProps) {
     console.error("Error:", error);
     return <div className="py-5 text-center">Language not found.</div>;
   }
-  const words = await getWordsByConlangId(conlang.id);
-  const isConlangOwner = conlang.ownerId === auth().userId;
   return (
-    <div className="container flex flex-col gap-4 px-5 pb-1 pt-5">
-      <Breadcrumbs name={conlang.name} isConlangOwner={isConlangOwner} />
-      <div id="conlangInfo" className="flex flex-col gap-1">
-        <h1 className="text-start text-2xl font-medium">{conlang.name}</h1>
-        <p>{conlang.description}</p>
+    <div className="flex flex-col">
+      <div className="my-3 flex items-center gap-4 font-semibold">
+        <h1 className="text-2xl md:text-3xl">{conlang.name}</h1>
       </div>
-      {isConlangOwner && <AddWordButton conlangId={conlang.id} />}
-      <Lexicon
-        conlang={conlang}
-        words={words}
-        isConlangOwner={isConlangOwner}
-      />
+      <div className="my-1">
+        <LanguageTabs
+          conlang={conlang}
+          selectedTab={searchParams.view}
+          wordId={Number(searchParams.word) ?? undefined}
+        />
+      </div>
     </div>
   );
+}
+
+export async function generateStaticParams() {
+  const conlangs = await getPublicConlangs();
+  return conlangs.map((conlang) => ({
+    id: conlang.id.toString(),
+  }));
 }

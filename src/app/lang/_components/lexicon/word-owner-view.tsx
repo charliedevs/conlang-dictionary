@@ -1,5 +1,6 @@
 "use client";
 
+import parseHtml from "html-react-parser";
 import { ChevronsUpDownIcon, PlusIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type Dispatch, type SetStateAction } from "react";
@@ -99,6 +100,7 @@ function AddSection(props: { word: Word }) {
 export function WordOwnerView(props: { word: Word }) {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
+
   return (
     <div id="word" className="flex flex-col gap-1">
       {isEditing ? (
@@ -119,7 +121,7 @@ export function WordOwnerView(props: { word: Word }) {
           <DeleteWord
             word={props.word}
             afterDelete={() =>
-              router.push(`/language/${props.word.conlangId}/?view=lexicon`)
+              router.push(`/lang/${props.word.conlangId}/?view=lexicon`)
             }
           />
         </div>
@@ -130,11 +132,25 @@ export function WordOwnerView(props: { word: Word }) {
           <AddSection word={props.word} />
         </div>
         {/* TODO: Add sections (And also to word view component) */}
-        {props.word.wordSections.map((section) => (
-          <div key={section.id}>
-            {section.definitionSection?.definitions.toString()}
-          </div>
-        ))}
+        <div className="my-2 flex flex-col gap-1">
+          {props.word.wordSections.map((section) => (
+            <div key={section.id}>
+              <h3 className="mb-2 text-lg font-bold">
+                {section.title ??
+                  section?.definitionSection.lexicalCategory.category ??
+                  ""}
+              </h3>
+              <h4 className="text-sm font-bold">{props.word.text}</h4>
+              <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
+                {section.definitionSection?.definitions?.map((d) => (
+                  <li key={d.id} className="pb-2">
+                    <div>{parseHtml(d.text)}</div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
