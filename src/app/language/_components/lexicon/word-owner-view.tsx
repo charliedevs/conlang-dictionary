@@ -73,7 +73,10 @@ function AddSection(props: { word: Word }) {
         />
         <div className="flex flex-col gap-1">
           {sectionType === "definition" && (
-            <AddDefinitionSectionForm word={props.word} />
+            <AddDefinitionSectionForm
+              word={props.word}
+              afterSubmit={() => setIsAdding(false)}
+            />
           )}
         </div>
       </div>
@@ -126,6 +129,12 @@ export function WordOwnerView(props: { word: Word }) {
         <div id="add-new-section">
           <AddSection word={props.word} />
         </div>
+        {/* TODO: Add sections (And also to word view component) */}
+        {props.word.wordSections.map((section) => (
+          <div key={section.id}>
+            {section.definitionSection?.definitions.toString()}
+          </div>
+        ))}
       </div>
     </div>
   );
