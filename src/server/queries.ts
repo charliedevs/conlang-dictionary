@@ -220,6 +220,13 @@ export async function updateWord(w: WordUpdate) {
 
   if (!word[0]) throw new Error("Word not updated");
 }
+
+export async function deleteWord(id: number) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  await db.delete(words).where(eq(words.id, id));
+}
 // #endregion
 
 // #region TAGS
