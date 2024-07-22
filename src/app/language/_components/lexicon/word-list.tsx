@@ -20,7 +20,7 @@ export async function WordList(props: {
       {words.length < 1 && (
         <div className="italic text-muted-foreground">No words added yet.</div>
       )}
-      {[...words, ...words].map((word) => (
+      {words.map((word) => (
         <Link
           key={word.id}
           href={`/language/${props.conlang.id}/?view=lexicon&word=${word.id}`}
