@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  deleteDefinition,
   deleteWord,
   insertDefinition,
   insertDefinitionSection,
@@ -57,4 +58,8 @@ export async function addDefinition(d: DefinitionInsert) {
 export async function editDefinition(d: DefinitionUpdate) {
   const definition = await updateDefinition(d);
   return definition;
+}
+
+export async function removeDefinition(definitionId: number) {
+  await deleteDefinition(definitionId);
 }

@@ -469,6 +469,13 @@ export async function updateDefinition(d: DefinitionUpdate) {
 
   if (!definition[0]) throw new Error("Definition not updated");
 }
+
+export async function deleteDefinition(id: number) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  await db.delete(definitions).where(eq(definitions.id, id));
+}
 // #endregion
 
 // #region Lexical Categories

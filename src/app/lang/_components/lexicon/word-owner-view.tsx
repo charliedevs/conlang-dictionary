@@ -17,6 +17,7 @@ import { capitalize } from "~/lib/strings";
 import { type Definition, type Word, type WordSection } from "~/types/word";
 import { AddDefinitionButton, AddDefinitionForm } from "./add-definition";
 import { AddDefinitionSectionForm } from "./add-definition-section";
+import { DeleteDefinition } from "./delete-definition";
 import { DeleteWord } from "./delete-word";
 import { EditDefinitionButton, EditDefinitionForm } from "./edit-definition";
 import { EditWordButton, EditWordForm } from "./edit-word";
@@ -104,12 +105,19 @@ function AddSection(props: { word: Word }) {
 
 function Definition(props: { definition: Definition }) {
   const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
 
   if (!isEditing) {
     return (
       <div className="group/definition flex items-start justify-between gap-1">
         {parseHtml(props.definition.text)}
-        <EditDefinitionButton onClick={() => setIsEditing(true)} />
+        <div className="-mt-1 flex items-center gap-3 md:gap-1">
+          <EditDefinitionButton onClick={() => setIsEditing(true)} />
+          <DeleteDefinition
+            definition={props.definition}
+            afterDelete={() => router.refresh()}
+          />
+        </div>
       </div>
     );
   }
