@@ -14,9 +14,10 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Separator } from "~/components/ui/separator";
 import { capitalize } from "~/lib/strings";
-import { type Word } from "~/types/word";
+import { type Definition, type Word } from "~/types/word";
 import { AddDefinitionSectionForm } from "./add-definition-section";
 import { DeleteWord } from "./delete-word";
+import { EditDefinitionButton, EditDefinitionForm } from "./edit-definition";
 import { EditWordButton, EditWordForm } from "./edit-word";
 
 function SectionTypeSelect(props: {
@@ -100,6 +101,29 @@ function AddSection(props: { word: Word }) {
   );
 }
 
+function Definition(props: { definition: Definition }) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  if (!isEditing) {
+    return (
+      <div className="group/definition flex items-start justify-between gap-1">
+        {parseHtml(props.definition.text)}
+        <EditDefinitionButton onClick={() => setIsEditing(true)} />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <EditDefinitionForm
+        definition={props.definition}
+        afterSubmit={() => setIsEditing(false)}
+        onCancel={() => setIsEditing(false)}
+      />
+    </div>
+  );
+}
+
 export function WordOwnerView(props: { word: Word }) {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
@@ -147,7 +171,7 @@ export function WordOwnerView(props: { word: Word }) {
               <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
                 {section.definitionSection?.definitions?.map((d) => (
                   <li key={d.id} className="pb-2">
-                    <div>{parseHtml(d.text)}</div>
+                    <Definition definition={d} />
                   </li>
                 ))}
               </ol>

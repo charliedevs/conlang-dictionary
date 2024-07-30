@@ -6,7 +6,9 @@ import {
   insertDefinitionSection,
   insertWord,
   insertWordSection,
+  updateDefinition,
   updateWord,
+  type DefinitionUpdate,
   type WordInsert,
   type WordUpdate,
 } from "~/server/queries";
@@ -44,4 +46,9 @@ export async function createDefinitionSection(ds: DefinitionSectionCreate) {
     text: ds.text,
   });
   return newDefinition;
+}
+
+export async function editDefinition(d: DefinitionUpdate) {
+  const definition = await updateDefinition(d);
+  return definition;
 }
