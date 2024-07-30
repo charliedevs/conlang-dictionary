@@ -8,6 +8,7 @@ import {
   insertWordSection,
   updateDefinition,
   updateWord,
+  type DefinitionInsert,
   type DefinitionUpdate,
   type WordInsert,
   type WordUpdate,
@@ -45,6 +46,11 @@ export async function createDefinitionSection(ds: DefinitionSectionCreate) {
     definitionSectionId: newDefinitionSection.id,
     text: ds.text,
   });
+  return newDefinition;
+}
+
+export async function addDefinition(d: DefinitionInsert) {
+  const newDefinition = await insertDefinition(d);
   return newDefinition;
 }
 

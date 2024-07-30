@@ -14,7 +14,8 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Separator } from "~/components/ui/separator";
 import { capitalize } from "~/lib/strings";
-import { type Definition, type Word } from "~/types/word";
+import { type Definition, type Word, type WordSection } from "~/types/word";
+import { AddDefinitionButton, AddDefinitionForm } from "./add-definition";
 import { AddDefinitionSectionForm } from "./add-definition-section";
 import { DeleteWord } from "./delete-word";
 import { EditDefinitionButton, EditDefinitionForm } from "./edit-definition";
@@ -124,6 +125,41 @@ function Definition(props: { definition: Definition }) {
   );
 }
 
+function Section(props: { section: WordSection; word: Word }) {
+  const [isAddingDefinition, setIsAddingDefinition] = useState(false);
+
+  return (
+    <div className="group/section">
+      <h3 className="mb-2 text-lg font-bold">
+        {props.section.title ??
+          props.section?.definitionSection.lexicalCategory.category ??
+          ""}
+      </h3>
+      <h4 className="text-sm font-bold">{props.word.text}</h4>
+      <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
+        {props.section.definitionSection?.definitions?.map((d) => (
+          <li key={d.id} className="pb-2">
+            <Definition definition={d} />
+          </li>
+        ))}
+        {isAddingDefinition ? (
+          <li>
+            <AddDefinitionForm
+              definitionSectionId={props.section.id}
+              afterSubmit={() => setIsAddingDefinition(false)}
+              onCancel={() => setIsAddingDefinition(false)}
+            />
+          </li>
+        ) : (
+          <li className="list-none">
+            <AddDefinitionButton onClick={() => setIsAddingDefinition(true)} />
+          </li>
+        )}
+      </ol>
+    </div>
+  );
+}
+
 export function WordOwnerView(props: { word: Word }) {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
@@ -158,24 +194,9 @@ export function WordOwnerView(props: { word: Word }) {
         <div id="add-new-section">
           <AddSection word={props.word} />
         </div>
-        {/* TODO: Add sections (And also to word view component) */}
         <div className="my-2 flex flex-col gap-1">
           {props.word.wordSections.map((section) => (
-            <div key={section.id}>
-              <h3 className="mb-2 text-lg font-bold">
-                {section.title ??
-                  section?.definitionSection.lexicalCategory.category ??
-                  ""}
-              </h3>
-              <h4 className="text-sm font-bold">{props.word.text}</h4>
-              <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
-                {section.definitionSection?.definitions?.map((d) => (
-                  <li key={d.id} className="pb-2">
-                    <Definition definition={d} />
-                  </li>
-                ))}
-              </ol>
-            </div>
+            <Section key={section.id} section={section} word={props.word} />
           ))}
         </div>
       </div>
