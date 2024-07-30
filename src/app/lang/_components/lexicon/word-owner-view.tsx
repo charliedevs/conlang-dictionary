@@ -138,7 +138,7 @@ function Section(props: { section: WordSection; word: Word }) {
       <h4 className="text-sm font-bold">{props.word.text}</h4>
       <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
         {props.section.definitionSection?.definitions?.map((d) => (
-          <li key={d.id} className="pb-2">
+          <li key={d.id} className="pb-4 md:pb-2">
             <Definition definition={d} />
           </li>
         ))}

@@ -17,7 +17,7 @@ export const EditDefinitionButton = (props: { onClick: () => void }) => {
       onClick={props.onClick}
       variant="ghost"
       size="sm"
-      className="size-6 p-1 transition-all md:opacity-0 md:group-hover/definition:opacity-100"
+      className="-mt-1 size-6 p-1 opacity-0 transition-all group-hover/definition:opacity-100"
     >
       <Edit2Icon className="size-5" />
     </Button>
