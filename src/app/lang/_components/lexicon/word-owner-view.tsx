@@ -15,6 +15,7 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { capitalize } from "~/lib/strings";
 import { type Definition, type Word, type WordSection } from "~/types/word";
+import { AddCustomSectionForm } from "./add-custom-section";
 import { AddDefinitionButton, AddDefinitionForm } from "./add-definition";
 import { AddDefinitionSectionForm } from "./add-definition-section";
 import { DeleteDefinition } from "./delete-definition";
@@ -76,6 +77,12 @@ function AddSection(props: { word: Word }) {
           setSectionType={setSectionType}
         />
         <div className="flex flex-col gap-1">
+          {sectionType === "custom" && (
+            <AddCustomSectionForm
+              word={props.word}
+              afterSubmit={() => setIsAdding(false)}
+            />
+          )}
           {sectionType === "definition" && (
             <AddDefinitionSectionForm
               word={props.word}
@@ -133,15 +140,14 @@ function Definition(props: { definition: Definition }) {
   );
 }
 
-function Section(props: { section: WordSection; word: Word }) {
+function DefinitionSection(props: { section: WordSection; word: Word }) {
   const [isAddingDefinition, setIsAddingDefinition] = useState(false);
 
+  // TODO: User can change title (and/or lexical category)
   return (
     <div className="group/section">
       <h3 className="mb-2 text-lg font-bold">
-        {props.section.title ??
-          props.section?.definitionSection.lexicalCategory.category ??
-          ""}
+        {props.section?.definitionSection.lexicalCategory.category ?? ""}
       </h3>
       <h4 className="text-sm font-bold">{props.word.text}</h4>
       <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
@@ -164,6 +170,18 @@ function Section(props: { section: WordSection; word: Word }) {
           </li>
         )}
       </ol>
+    </div>
+  );
+}
+
+function Section(props: { section: WordSection; word: Word }) {
+  if (props.section?.definitionSection) {
+    return <DefinitionSection section={props.section} word={props.word} />;
+  }
+  return (
+    <div className="group/section">
+      <h3 className="mb-2 text-lg font-bold">{props.section.title ?? ""}</h3>
+      <p className="text-sm">{parseHtml(props.section.customSection?.text)}</p>
     </div>
   );
 }

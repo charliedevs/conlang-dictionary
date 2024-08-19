@@ -1,0 +1,102 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { TextEditor } from "~/components/text-editor";
+import { Button } from "~/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { type Word } from "~/types/word";
+import { createCustomSection } from "../../_actions/word";
+
+const newCustomSectionSchema = z.object({
+  wordId: z.number(),
+  title: z.string().min(1, "Custom section title required."),
+  text: z.string(),
+});
+
+export const AddCustomSectionForm = (props: {
+  word: Word;
+  afterSubmit?: () => void;
+}) => {
+  const form = useForm<z.infer<typeof newCustomSectionSchema>>({
+    resolver: zodResolver(newCustomSectionSchema),
+    defaultValues: {
+      wordId: props.word.id,
+      title: undefined,
+      text: "",
+    },
+  });
+
+  const router = useRouter();
+  async function onSubmit(values: z.infer<typeof newCustomSectionSchema>) {
+    try {
+      await createCustomSection(values);
+      props.afterSubmit?.();
+      form.reset();
+      router.refresh();
+      toast.success("Custom section added.");
+    } catch (error) {
+      console.error("Error:", error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to add custom section. Please try again.");
+      }
+      return;
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex w-full flex-col gap-1"
+      >
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem className="mt-4">
+              <FormControl>
+                <Input placeholder="e.g., Etymology 1" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="text"
+          render={({ field }) => (
+            <FormItem className="mt-4">
+              <FormDescription className="text-xs">
+                Add section text (children sections can be added later):
+              </FormDescription>
+              <FormControl>
+                <TextEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                  className="bg-background"
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          disabled={form.formState.isSubmitting}
+          className="mt-2"
+        >
+          Save
+        </Button>
+      </form>
+    </Form>
+  );
+};

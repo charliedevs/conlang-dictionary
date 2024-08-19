@@ -3,6 +3,7 @@
 import {
   deleteDefinition,
   deleteWord,
+  insertCustomSection,
   insertDefinition,
   insertDefinitionSection,
   insertWord,
@@ -26,6 +27,24 @@ export async function editWord(word: WordUpdate) {
 
 export async function removeWord(wordId: number) {
   await deleteWord(wordId);
+}
+
+// Sections
+export interface CustomSectionCreate {
+  wordId: number;
+  title: string;
+  text: string;
+}
+export async function createCustomSection(cs: CustomSectionCreate) {
+  const newWordSection = await insertWordSection({
+    wordId: cs.wordId,
+    title: cs.title,
+  });
+  const newCustomSection = await insertCustomSection({
+    wordSectionId: newWordSection.id,
+    text: cs.text,
+  });
+  return newCustomSection;
 }
 
 export interface DefinitionSectionCreate {

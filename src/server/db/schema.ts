@@ -135,6 +135,23 @@ export const wordSectionsRelations = relations(wordSections, ({ one }) => ({
     fields: [wordSections.id],
     references: [definitionSections.wordSectionId],
   }),
+  customSection: one(customSections, {
+    fields: [wordSections.id],
+    references: [customSections.wordSectionId],
+  }),
+}));
+
+// Custom Sections
+export const customSections = createTable("customSections", {
+  id: serial("id").primaryKey(),
+  wordSectionId: integer("wordSectionId").notNull(),
+  text: text("text").notNull().default(""),
+});
+export const customSectionsRelations = relations(customSections, ({ one }) => ({
+  wordSection: one(wordSections, {
+    fields: [customSections.wordSectionId],
+    references: [wordSections.id],
+  }),
 }));
 
 // Definition Sections

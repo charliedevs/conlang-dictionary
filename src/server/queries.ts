@@ -8,6 +8,7 @@ import analyticsServerClient from "./analytics";
 import { db } from "./db";
 import {
   conlangs,
+  customSections,
   definitionSections,
   definitions,
   lexicalCategories,
@@ -156,6 +157,7 @@ export async function getWordsByConlangId(conlangId: number) {
       tags: { with: { tag: true } },
       wordSections: {
         with: {
+          customSection: true,
           definitionSection: {
             with: { definitions: true, lexicalCategory: true },
           },
@@ -177,6 +179,7 @@ export async function getWordById(id: number) {
       tags: { with: { tag: true } },
       wordSections: {
         with: {
+          customSection: true,
           definitionSection: {
             with: { definitions: true, lexicalCategory: true },
           },
@@ -325,6 +328,7 @@ export async function getWordSections(wordId: number) {
       definitionSection: {
         with: { definitions: true, lexicalCategory: true },
       },
+      customSection: true,
     },
   });
   return wordSections;
@@ -369,6 +373,53 @@ export async function updateWordSection(s: WordSectionUpdate) {
   if (!wordSection[0]) throw new Error("Word section not updated");
 
   return wordSection[0];
+}
+
+export async function getCustomSections(wordSectionId: number) {
+  const customSections = await db.query.customSections.findMany({
+    where: (model, { eq }) => eq(model.wordSectionId, wordSectionId),
+  });
+
+  return customSections;
+}
+
+export interface CustomSectionInsert {
+  wordSectionId: number;
+  text: string;
+}
+export async function insertCustomSection(s: CustomSectionInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const customSection = await db
+    .insert(customSections)
+    .values({
+      ...s,
+    })
+    .returning();
+
+  if (!customSection[0]) throw new Error("Custom section not created");
+
+  return customSection[0];
+}
+
+export interface CustomSectionUpdate {
+  id: number;
+  text: string;
+}
+export async function updateCustomSection(s: CustomSectionUpdate) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const customSection = await db
+    .update(customSections)
+    .set({
+      text: s.text,
+    })
+    .where(eq(customSections.id, s.id))
+    .returning();
+
+  if (!customSection[0]) throw new Error("Custom section not updated");
 }
 
 export async function getDefinitionSections(wordSectionId: number) {
