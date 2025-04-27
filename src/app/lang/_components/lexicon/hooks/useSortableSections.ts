@@ -6,7 +6,7 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { updateSectionOrders } from "~/app/lang/_actions/word";
 import { type Word, type WordSection } from "~/types/word";
@@ -15,6 +15,11 @@ export function useSortableSections(word: Word) {
   const [sections, setSections] = useState<WordSection[]>(word.wordSections);
   const [isUpdating, setIsUpdating] = useState(false);
   const router = useRouter();
+
+  // Update sections when word changes
+  useEffect(() => {
+    setSections(word.wordSections);
+  }, [word.wordSections]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
