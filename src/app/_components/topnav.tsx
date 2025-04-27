@@ -34,8 +34,13 @@ export function TopNav() {
         </Link>
       </div>
       <div id="header-right" className="flex items-center gap-4">
-        <SearchForm />
         <div className="flex flex-grow flex-row items-center justify-end gap-4">
+          <div className="hidden md:block">
+            <SearchForm className="w-full max-w-sm" />
+          </div>
+          <div className="md:hidden">
+            <SearchForm variant="button" />
+          </div>
           <SignedOut>
             <SignInButton>
               <Button variant="outline">Sign in</Button>

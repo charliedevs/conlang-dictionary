@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { SearchForm } from "~/app/_components/search-form";
 import { ConlangTable } from "~/app/dashboard/_components/conlang-table";
 import { Button } from "~/components/ui/button";
 import { getPublicConlangs } from "~/server/queries";
@@ -19,7 +20,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   );
 
   return (
-    <div className="container mx-auto flex flex-col gap-8 p-4 md:p-8">
+    <div className="container mx-auto flex flex-col gap-4 p-4 md:p-8">
       <h1 className="text-3xl font-medium">
         {query ? "Search Results" : "All Conlangs"}
       </h1>
@@ -36,6 +37,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </form>
         </div>
       )}
+      <div className="w-full max-w-md">
+        <SearchForm className="w-full" />
+      </div>
       <div className="w-full">
         <ConlangTable
           conlangs={filteredConlangs}
