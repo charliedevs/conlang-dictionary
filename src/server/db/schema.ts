@@ -125,6 +125,7 @@ export const wordSections = createTable("wordSections", {
   id: serial("id").primaryKey(),
   wordId: integer("wordId").notNull(),
   title: text("title"),
+  order: integer("order").notNull().default(0),
 });
 export const wordSectionsRelations = relations(wordSections, ({ one }) => ({
   word: one(words, {

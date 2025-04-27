@@ -1,7 +1,19 @@
 "use client";
 
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import parseHtml from "html-react-parser";
-import { ChevronsUpDownIcon, PlusIcon, XIcon } from "lucide-react";
+import {
+  ChevronsUpDownIcon,
+  GripVerticalIcon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { Button } from "~/components/ui/button";
@@ -14,7 +26,9 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Separator } from "~/components/ui/separator";
 import { capitalize } from "~/lib/strings";
+import { cn } from "~/lib/utils";
 import { type Definition, type Word, type WordSection } from "~/types/word";
+import { useSortableSections } from "./_hooks/useSortableSections";
 import { AddCustomSectionForm } from "./add-custom-section";
 import { AddDefinitionButton, AddDefinitionForm } from "./add-definition";
 import { AddDefinitionSectionForm } from "./add-definition-section";
@@ -117,7 +131,7 @@ function Definition(props: { definition: Definition }) {
   if (!isEditing) {
     return (
       <div className="group/definition flex items-start justify-between gap-1">
-        {parseHtml(props.definition.text)}
+        <div className="flex-1">{parseHtml(props.definition.text)}</div>
         <div className="-mt-1 flex items-center gap-3 md:gap-1">
           <EditDefinitionButton onClick={() => setIsEditing(true)} />
           <DeleteDefinition
@@ -174,14 +188,62 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
   );
 }
 
-function Section(props: { section: WordSection; word: Word }) {
-  if (props.section?.definitionSection) {
-    return <DefinitionSection section={props.section} word={props.word} />;
-  }
+function SortableSection(props: {
+  section: WordSection;
+  word: Word;
+  isUpdating: boolean;
+  totalSections: number;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: props.section.id, disabled: props.isUpdating });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : props.isUpdating ? 0.7 : 1,
+  };
+
   return (
-    <div className="group/section">
-      <h3 className="mb-2 text-lg font-bold">{props.section.title ?? ""}</h3>
-      <p className="text-sm">{parseHtml(props.section.customSection?.text)}</p>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group/section relative flex items-start gap-2",
+        props.isUpdating ? "cursor-wait" : "cursor-grab",
+      )}
+    >
+      {props.totalSections > 1 && (
+        <div
+          {...attributes}
+          {...listeners}
+          className={cn(
+            "flex h-full items-center p-2 text-muted-foreground hover:text-foreground",
+            props.isUpdating ? "cursor-wait" : "cursor-grab",
+          )}
+        >
+          <GripVerticalIcon className="size-4" />
+        </div>
+      )}
+      <div className="flex-1">
+        {props.section?.definitionSection ? (
+          <DefinitionSection section={props.section} word={props.word} />
+        ) : (
+          <div>
+            <h3 className="mb-2 text-lg font-bold">
+              {props.section.title ?? ""}
+            </h3>
+            <div className="text-sm">
+              {parseHtml(props.section.customSection?.text)}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -189,6 +251,12 @@ function Section(props: { section: WordSection; word: Word }) {
 export function WordOwnerView(props: { word: Word }) {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
+  const {
+    sections,
+    isUpdating: isUpdatingOrder,
+    sensors,
+    handleDragEnd,
+  } = useSortableSections(props.word);
 
   return (
     <div id="word" className="flex flex-col gap-1">
@@ -220,11 +288,28 @@ export function WordOwnerView(props: { word: Word }) {
         <div id="add-new-section">
           <AddSection word={props.word} />
         </div>
-        <div className="my-2 flex flex-col gap-1">
-          {props.word.wordSections.map((section) => (
-            <Section key={section.id} section={section} word={props.word} />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={sections.map((section) => section.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="my-2 flex flex-col gap-1">
+              {sections.map((section) => (
+                <SortableSection
+                  key={section.id}
+                  section={section}
+                  word={props.word}
+                  isUpdating={isUpdatingOrder}
+                  totalSections={sections.length}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );

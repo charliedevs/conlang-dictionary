@@ -323,7 +323,7 @@ export async function removeWordTagRelation(wordId: number, tagId: number) {
 export async function getWordSections(wordId: number) {
   const wordSections = await db.query.wordSections.findMany({
     where: (model, { eq }) => eq(model.wordId, wordId),
-    orderBy: (model, { asc }) => [asc(model.title)],
+    orderBy: (model, { asc }) => [asc(model.order)],
     with: {
       definitionSection: {
         with: { definitions: true, lexicalCategory: true },
@@ -373,6 +373,32 @@ export async function updateWordSection(s: WordSectionUpdate) {
   if (!wordSection[0]) throw new Error("Word section not updated");
 
   return wordSection[0];
+}
+
+export interface WordSectionOrderUpdate {
+  id: number;
+  order: number;
+}
+
+export async function updateWordSectionOrders(
+  updates: WordSectionOrderUpdate[],
+) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  // Update all sections in a transaction
+  const results = await db.transaction(async (tx) => {
+    const updatesPromises = updates.map((update) =>
+      tx
+        .update(wordSections)
+        .set({ order: update.order })
+        .where(eq(wordSections.id, update.id))
+        .returning(),
+    );
+    return Promise.all(updatesPromises);
+  });
+
+  return results.flat();
 }
 
 export async function getCustomSections(wordSectionId: number) {

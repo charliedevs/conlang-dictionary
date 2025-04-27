@@ -10,6 +10,7 @@ import {
   insertWordSection,
   updateDefinition,
   updateWord,
+  updateWordSectionOrders,
   type DefinitionInsert,
   type DefinitionUpdate,
   type WordInsert,
@@ -81,4 +82,20 @@ export async function editDefinition(d: DefinitionUpdate) {
 
 export async function removeDefinition(definitionId: number) {
   await deleteDefinition(definitionId);
+}
+
+export interface SectionOrderUpdate {
+  id: number;
+  order: number;
+}
+
+export async function updateSectionOrders(updates: SectionOrderUpdate[]) {
+  try {
+    const results = await updateWordSectionOrders(updates);
+    console.log("Updated section orders:", results);
+    return results;
+  } catch (error) {
+    console.error("Error updating section orders:", error);
+    throw error;
+  }
 }
