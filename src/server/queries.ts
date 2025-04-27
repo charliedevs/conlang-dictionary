@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 
 import { and, eq } from "drizzle-orm";
 import { type TagColor, type TagType } from "~/types/tag";
+import { type WordSection } from "~/types/word";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
 import {
@@ -178,6 +179,7 @@ export async function getWordById(id: number) {
     with: {
       tags: { with: { tag: true } },
       wordSections: {
+        orderBy: (model, { asc }) => [asc(model.order)],
         with: {
           customSection: true,
           definitionSection: {
@@ -386,19 +388,21 @@ export async function updateWordSectionOrders(
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
-  // Update all sections in a transaction
-  const results = await db.transaction(async (tx) => {
-    const updatesPromises = updates.map((update) =>
-      tx
+  const results: Partial<WordSection>[] = [];
+
+  await db.transaction(async (tx) => {
+    for (const update of updates) {
+      const [updated] = await tx
         .update(wordSections)
         .set({ order: update.order })
         .where(eq(wordSections.id, update.id))
-        .returning(),
-    );
-    return Promise.all(updatesPromises);
+        .returning();
+
+      if (updated) results.push(updated);
+    }
   });
 
-  return results.flat();
+  return results;
 }
 
 export async function getCustomSections(wordSectionId: number) {
