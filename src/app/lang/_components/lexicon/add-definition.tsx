@@ -8,6 +8,7 @@ import { PlusIcon, SaveIcon, XIcon } from "lucide-react";
 import { TextEditor } from "~/components/text-editor";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
+import { type Definition } from "~/types/word";
 import { addDefinition } from "../../_actions/word";
 
 export const AddDefinitionButton = (props: { onClick: () => void }) => {
@@ -30,7 +31,7 @@ const addDefinitionSchema = z.object({
 
 export const AddDefinitionForm = (props: {
   definitionSectionId: number;
-  afterSubmit?: () => void;
+  afterSubmit?: (newDefinition: Definition) => void;
   onCancel?: () => void;
 }) => {
   const form = useForm<z.infer<typeof addDefinitionSchema>>({
@@ -41,8 +42,8 @@ export const AddDefinitionForm = (props: {
   const router = useRouter();
   async function onSubmit(values: z.infer<typeof addDefinitionSchema>) {
     try {
-      await addDefinition(values);
-      props.afterSubmit?.();
+      const newDefinition = await addDefinition(values);
+      props.afterSubmit?.(newDefinition);
       router.refresh();
     } catch (error) {
       console.error("Error:", error);

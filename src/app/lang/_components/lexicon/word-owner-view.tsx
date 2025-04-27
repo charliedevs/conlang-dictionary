@@ -15,7 +15,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -156,8 +156,20 @@ function Definition(props: { definition: Definition }) {
 
 function DefinitionSection(props: { section: WordSection; word: Word }) {
   const [isAddingDefinition, setIsAddingDefinition] = useState(false);
+  const [definitions, setDefinitions] = useState(
+    props.section.definitionSection?.definitions ?? [],
+  );
 
-  // TODO: User can change title (and/or lexical category)
+  // Update local state when props change
+  useEffect(() => {
+    setDefinitions(props.section.definitionSection?.definitions ?? []);
+  }, [props.section.definitionSection?.definitions]);
+
+  const handleAddDefinition = (newDefinition: Definition) => {
+    setDefinitions((prev) => [...prev, newDefinition]);
+    setIsAddingDefinition(false);
+  };
+
   return (
     <div className="group/section">
       <h3 className="mb-2 text-lg font-bold">
@@ -165,7 +177,7 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
       </h3>
       <h4 className="text-sm font-bold">{props.word.text}</h4>
       <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
-        {props.section.definitionSection?.definitions?.map((d) => (
+        {definitions.map((d) => (
           <li key={d.id} className="pb-4 md:pb-2">
             <Definition definition={d} />
           </li>
@@ -174,7 +186,7 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
           <li>
             <AddDefinitionForm
               definitionSectionId={props.section.id}
-              afterSubmit={() => setIsAddingDefinition(false)}
+              afterSubmit={handleAddDefinition}
               onCancel={() => setIsAddingDefinition(false)}
             />
           </li>

@@ -7,7 +7,7 @@ import {
   ListOrderedIcon,
   StrikethroughIcon,
 } from "lucide-react";
-import { type ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 import { cn } from "~/lib/utils";
 import { Separator } from "./ui/separator";
 import { Toggle } from "./ui/toggle";
@@ -20,56 +20,63 @@ interface TextEditorProps {
   className?: string;
 }
 
-export function TextEditor({
-  value,
-  onChange,
-  showOrderedList = false,
-  customToolbarActions,
-  className,
-}: TextEditorProps) {
-  const editor = useEditor({
-    editorProps: {
-      attributes: {
-        class: cn(
-          "min-h-[150px] max-h-[300px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-transparent px-3 py-2 border-b-0 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
-          className,
-        ),
-      },
+export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
+  (
+    {
+      value,
+      onChange,
+      showOrderedList = false,
+      customToolbarActions,
+      className,
     },
-    extensions: [
-      StarterKit.configure({
-        ...(showOrderedList && {
-          orderedList: {
+    ref,
+  ) => {
+    const editor = useEditor({
+      editorProps: {
+        attributes: {
+          class: cn(
+            "min-h-[150px] max-h-[300px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-transparent px-3 py-2 border-b-0 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
+            className,
+          ),
+        },
+      },
+      extensions: [
+        StarterKit.configure({
+          ...(showOrderedList && {
+            orderedList: {
+              HTMLAttributes: {
+                class: "list-decimal pl-4",
+              },
+            },
+          }),
+          bulletList: {
             HTMLAttributes: {
-              class: "list-decimal pl-4",
+              class: "list-disc pl-4",
             },
           },
         }),
-        bulletList: {
-          HTMLAttributes: {
-            class: "list-disc pl-4",
-          },
-        },
-      }),
-    ],
-    content: value, // Set the initial content with the provided value
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML()); // Call the onChange callback with the updated HTML content
-    },
-  });
+      ],
+      content: value,
+      onUpdate: ({ editor }) => {
+        onChange(editor.getHTML());
+      },
+    });
 
-  return (
-    <div id="textEditor">
-      <EditorContent editor={editor} />
-      {editor ? (
-        <RichTextEditorToolbar
-          editor={editor}
-          customToolbarActions={customToolbarActions}
-        />
-      ) : null}
-    </div>
-  );
-}
+    return (
+      <div id="textEditor" ref={ref}>
+        <EditorContent editor={editor} />
+        {editor ? (
+          <RichTextEditorToolbar
+            editor={editor}
+            customToolbarActions={customToolbarActions}
+          />
+        ) : null}
+      </div>
+    );
+  },
+);
+
+TextEditor.displayName = "TextEditor";
 
 interface RichTextEditorToolbarProps {
   editor: Editor;
