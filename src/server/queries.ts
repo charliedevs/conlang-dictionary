@@ -557,6 +557,35 @@ export async function deleteDefinition(id: number) {
 
   await db.delete(definitions).where(eq(definitions.id, id));
 }
+
+export async function deleteWordSection(id: number) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  // First delete any related definition sections and their definitions
+  const definitionSectionsToDelete = await db.query.definitionSections.findMany(
+    {
+      where: eq(definitionSections.wordSectionId, id),
+    },
+  );
+
+  for (const definitionSection of definitionSectionsToDelete) {
+    // Delete all definitions in this section
+    await db
+      .delete(definitions)
+      .where(eq(definitions.definitionSectionId, definitionSection.id));
+    // Delete the definition section
+    await db
+      .delete(definitionSections)
+      .where(eq(definitionSections.id, definitionSection.id));
+  }
+
+  // Delete any related custom sections
+  await db.delete(customSections).where(eq(customSections.wordSectionId, id));
+
+  // Finally delete the word section itself
+  await db.delete(wordSections).where(eq(wordSections.id, id));
+}
 // #endregion
 
 // #region Lexical Categories

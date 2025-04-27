@@ -3,6 +3,7 @@
 import {
   deleteDefinition,
   deleteWord,
+  deleteWordSection,
   insertCustomSection,
   insertDefinition,
   insertDefinitionSection,
@@ -70,6 +71,20 @@ export async function createDefinitionSection(ds: DefinitionSectionCreate) {
   return newDefinition;
 }
 
+export interface SectionOrderUpdate {
+  id: number;
+  order: number;
+}
+
+export async function updateSectionOrders(updates: SectionOrderUpdate[]) {
+  const results = await updateWordSectionOrders(updates);
+  return results;
+}
+
+export async function removeWordSection(sectionId: number) {
+  await deleteWordSection(sectionId);
+}
+
 export async function addDefinition(d: DefinitionInsert) {
   const newDefinition = await insertDefinition(d);
   return newDefinition;
@@ -82,14 +97,4 @@ export async function editDefinition(d: DefinitionUpdate) {
 
 export async function removeDefinition(definitionId: number) {
   await deleteDefinition(definitionId);
-}
-
-export interface SectionOrderUpdate {
-  id: number;
-  order: number;
-}
-
-export async function updateSectionOrders(updates: SectionOrderUpdate[]) {
-  const results = await updateWordSectionOrders(updates);
-  return results;
 }

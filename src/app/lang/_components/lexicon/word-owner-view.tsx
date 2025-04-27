@@ -34,6 +34,7 @@ import { AddCustomSectionForm } from "./add-custom-section";
 import { AddDefinitionButton, AddDefinitionForm } from "./add-definition";
 import { AddDefinitionSectionForm } from "./add-definition-section";
 import { DeleteDefinition } from "./delete-definition";
+import { DeleteSection } from "./delete-section";
 import { DeleteWord } from "./delete-word";
 import { EditDefinitionButton, EditDefinitionForm } from "./edit-definition";
 import { EditWordButton, EditWordForm } from "./edit-word";
@@ -294,6 +295,9 @@ function SortableSection(props: {
             </div>
           </div>
         )}
+      </div>
+      <div className="absolute right-2 top-2">
+        <DeleteSection sectionId={props.section.id} />
       </div>
     </div>
   );
