@@ -30,7 +30,7 @@ export const AddCustomSectionForm = (props: {
     resolver: zodResolver(newCustomSectionSchema),
     defaultValues: {
       wordId: props.word.id,
-      title: undefined,
+      title: "",
       text: "",
     },
   });
