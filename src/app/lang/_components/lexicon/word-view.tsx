@@ -24,23 +24,28 @@ export async function WordView(props: {
       </div>
       <Separator />
       <div className="my-2 flex flex-col gap-1">
-        {word.wordSections.map((section) => (
-          <div key={section.id}>
-            <h3 className="mb-2 text-lg font-bold">
-              {section.title ??
-                section?.definitionSection.lexicalCategory.category ??
-                ""}
-            </h3>
-            <h4 className="text-sm font-bold">{word.text}</h4>
-            <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
-              {section.definitionSection?.definitions?.map((d) => (
-                <li key={d.id} className="pb-2">
-                  <div>{parseHtml(d.text)}</div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        ))}
+        {word.wordSections.map((section) => {
+          const category = section?.definitionSection?.lexicalCategory.category;
+          const sectionTitle = section.title
+            ? category && category !== section.title
+              ? `${section.title} (${category})`
+              : section.title
+            : (category ?? "");
+
+          return (
+            <div key={section.id}>
+              <h3 className="mb-2 text-lg font-bold">{sectionTitle}</h3>
+              <h4 className="text-sm font-bold">{word.text}</h4>
+              <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
+                {section.definitionSection?.definitions?.map((d) => (
+                  <li key={d.id} className="pb-2">
+                    <div>{parseHtml(d.text)}</div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

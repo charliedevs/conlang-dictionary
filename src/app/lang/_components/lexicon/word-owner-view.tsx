@@ -172,11 +172,16 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
     setIsAddingDefinition(false);
   };
 
+  const category = props.section?.definitionSection?.lexicalCategory.category;
+  const sectionTitle = props.section.title
+    ? category && category !== props.section.title
+      ? `${props.section.title} (${category})`
+      : props.section.title
+    : (category ?? "");
+
   return (
     <div className="group/section">
-      <h3 className="mb-2 text-lg font-bold">
-        {props.section?.definitionSection.lexicalCategory.category ?? ""}
-      </h3>
+      <h3 className="mb-2 text-lg font-bold">{sectionTitle}</h3>
       <h4 className="text-sm font-bold">{props.word.text}</h4>
       <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
         {definitions.map((d) => (
