@@ -90,12 +90,6 @@ export interface SectionOrderUpdate {
 }
 
 export async function updateSectionOrders(updates: SectionOrderUpdate[]) {
-  try {
-    const results = await updateWordSectionOrders(updates);
-    console.log("Updated section orders:", results);
-    return results;
-  } catch (error) {
-    console.error("Error updating section orders:", error);
-    throw error;
-  }
+  const results = await updateWordSectionOrders(updates);
+  return results;
 }

@@ -9,6 +9,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import parseHtml from "html-react-parser";
 import {
+  ChevronDownIcon,
+  ChevronUpIcon,
   ChevronsUpDownIcon,
   GripVerticalIcon,
   PlusIcon,
@@ -28,7 +30,6 @@ import { Separator } from "~/components/ui/separator";
 import { capitalize } from "~/lib/strings";
 import { cn } from "~/lib/utils";
 import { type Definition, type Word, type WordSection } from "~/types/word";
-import { useSortableSections } from "./_hooks/useSortableSections";
 import { AddCustomSectionForm } from "./add-custom-section";
 import { AddDefinitionButton, AddDefinitionForm } from "./add-definition";
 import { AddDefinitionSectionForm } from "./add-definition-section";
@@ -36,6 +37,7 @@ import { DeleteDefinition } from "./delete-definition";
 import { DeleteWord } from "./delete-word";
 import { EditDefinitionButton, EditDefinitionForm } from "./edit-definition";
 import { EditWordButton, EditWordForm } from "./edit-word";
+import { useSortableSections } from "./hooks/useSortableSections";
 
 function SectionTypeSelect(props: {
   sectionType: string;
@@ -205,6 +207,9 @@ function SortableSection(props: {
   word: Word;
   isUpdating: boolean;
   totalSections: number;
+  index: number;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }) {
   const {
     attributes,
@@ -221,6 +226,8 @@ function SortableSection(props: {
     opacity: isDragging ? 0.5 : props.isUpdating ? 0.7 : 1,
   };
 
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
   return (
     <div
       ref={setNodeRef}
@@ -231,15 +238,42 @@ function SortableSection(props: {
       )}
     >
       {props.totalSections > 1 && (
-        <div
-          {...attributes}
-          {...listeners}
-          className={cn(
-            "flex h-full items-center p-2 text-muted-foreground hover:text-foreground",
-            props.isUpdating ? "cursor-wait" : "cursor-grab",
+        <div className="flex h-full items-center gap-1">
+          {isMobile ? (
+            <div className="flex h-full flex-col items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="size-8 p-1"
+                onClick={props.onMoveUp}
+                disabled={props.index === 0 || props.isUpdating}
+              >
+                <ChevronUpIcon className="size-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="size-8 p-1"
+                onClick={props.onMoveDown}
+                disabled={
+                  props.index === props.totalSections - 1 || props.isUpdating
+                }
+              >
+                <ChevronDownIcon className="size-5" />
+              </Button>
+            </div>
+          ) : (
+            <div
+              {...attributes}
+              {...listeners}
+              className={cn(
+                "flex h-full items-center p-2 text-muted-foreground hover:text-foreground",
+                props.isUpdating ? "cursor-wait" : "cursor-grab",
+              )}
+            >
+              <GripVerticalIcon className="size-4" />
+            </div>
           )}
-        >
-          <GripVerticalIcon className="size-4" />
         </div>
       )}
       <div className="flex-1">
@@ -263,12 +297,8 @@ function SortableSection(props: {
 export function WordOwnerView(props: { word: Word }) {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
-  const {
-    sections,
-    isUpdating: isUpdatingOrder,
-    sensors,
-    handleDragEnd,
-  } = useSortableSections(props.word);
+  const { sections, isUpdating, sensors, handleDragEnd, handleMove } =
+    useSortableSections(props.word);
 
   return (
     <div id="word" className="flex flex-col gap-1">
@@ -310,13 +340,16 @@ export function WordOwnerView(props: { word: Word }) {
             strategy={verticalListSortingStrategy}
           >
             <div className="my-2 flex flex-col gap-1">
-              {sections.map((section) => (
+              {sections.map((section, index) => (
                 <SortableSection
                   key={section.id}
                   section={section}
                   word={props.word}
-                  isUpdating={isUpdatingOrder}
+                  isUpdating={isUpdating}
                   totalSections={sections.length}
+                  index={index}
+                  onMoveUp={() => handleMove(index, "up")}
+                  onMoveDown={() => handleMove(index, "down")}
                 />
               ))}
             </div>
