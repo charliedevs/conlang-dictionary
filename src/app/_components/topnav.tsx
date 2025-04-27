@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { DarkModeToggle } from "./dark-mode-toggle";
 import { DashboardButton } from "./dashboard-button";
+import { SearchForm } from "./search-form";
 
 export function TopNav() {
   return (
@@ -33,6 +34,7 @@ export function TopNav() {
         </Link>
       </div>
       <div id="header-right" className="flex items-center gap-4">
+        <SearchForm />
         <div className="flex flex-grow flex-row items-center justify-end gap-4">
           <SignedOut>
             <SignInButton>
