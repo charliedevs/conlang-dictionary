@@ -227,7 +227,7 @@ function SortableSection(props: {
       style={style}
       className={cn(
         "group/section relative flex items-start gap-2",
-        props.isUpdating ? "cursor-wait" : "cursor-grab",
+        props.isUpdating ? "cursor-wait" : "",
       )}
     >
       {props.totalSections > 1 && (
