@@ -29,7 +29,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/data/useUsers";
 import { cn } from "~/lib/utils";
-import type { Conlang } from "~/types/conlang";
+import { type Conlang } from "~/types/conlang";
 
 export const dynamic = "force-dynamic";
 
@@ -188,7 +188,7 @@ export function ConlangTable(props: {
         cell: ({ row }) => {
           const conlangName = row.original.name;
           return (
-            <Link href={`/lang/${conlangName}`}>
+            <Link href={`/lang/${row.original.id}`}>
               <Button
                 variant="ghost"
                 className="h-8 w-8 rounded-full p-0 text-slate-400 transition-colors ease-in hover:bg-slate-500/10 hover:text-slate-700 group-hover:text-slate-700"
@@ -205,7 +205,7 @@ export function ConlangTable(props: {
   );
 
   const handleRowClick = (row: RowType<Conlang>) => {
-    router.push(`/lang/${row.original.name}`);
+    router.push(`/lang/${row.original.id}`);
   };
 
   return (

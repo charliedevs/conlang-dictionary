@@ -1,13 +1,24 @@
-import { type Tag } from "./tag";
+import {
+  type getDefinitionSections,
+  type getDefinitions,
+  type getLexicalCategoriesForConlang,
+  type getWordSections,
+  type getWordsByConlangId,
+} from "~/server/queries";
 
-export type Word = {
-  id: number;
-  conlangId: number;
-  text: string;
-  pronunciation: string | null;
-  gloss: string | null;
-  definition: string | null;
-  tags: Tag[];
-  createdAt: Date;
-  updatedAt: Date | null;
-};
+type Words = Awaited<ReturnType<typeof getWordsByConlangId>>;
+export type Word = Words[number];
+
+type WordSections = Awaited<ReturnType<typeof getWordSections>>;
+export type WordSection = WordSections[number];
+
+type LexicalCategories = Awaited<
+  ReturnType<typeof getLexicalCategoriesForConlang>
+>;
+export type LexicalCategory = LexicalCategories[number];
+
+type DefinitionSections = Awaited<ReturnType<typeof getDefinitionSections>>;
+export type DefinitionSection = DefinitionSections[number];
+
+type Definitions = Awaited<ReturnType<typeof getDefinitions>>;
+export type Definition = Definitions[number];

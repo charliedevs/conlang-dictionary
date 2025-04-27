@@ -6,7 +6,7 @@ A web app to store and share your constructed languages.
 
 <br>
 
-*Read more about conlangs at [conlang.org](https://conlang.org).*
+_Read more about conlangs at [conlang.org](https://conlang.org)._
 
 ## Table of Contents
 
@@ -46,8 +46,14 @@ A web app to store and share your constructed languages.
 - [x] Add ability to edit word
 - [ ] Add ability to delete word
 - [x] Users can tag words with custom tags
-- [ ] User can add multiple sections and definitions to a word
-- [ ] Signed-in user view vs owner view vs public view
+- [x] User can add multiple sections and definitions to a word
+  - [ ] custom sections
+  - [ ] nested sections
+- [ ] Word Sections can be reordered
+- [ ] Sections can be edited
+- [ ] Sections can be deleted
+- [ ] User can customize their own lexical categories
+  - [ ] Add other field types to lexical categories (e.g., noun classes)
 
 #### Inflections & Derivations
 
@@ -71,6 +77,7 @@ A web app to store and share your constructed languages.
 
 - [ ] Use server actions instead of API requests
   - see createWord
+- [ ] Use zod for insert/update and infer types where possible instead of declaring types manually
 - [ ] Create a custom 404/not found page
 - [ ] Update afterSignInUrl to fallbackUrl and forceUrl
 - [ ] Maybe create users table with data from clerk and tie it to the conlang table

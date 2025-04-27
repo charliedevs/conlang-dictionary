@@ -1,7 +1,7 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 
-import { Earth } from "lucide-react";
+import { Earth, MessageCircleWarningIcon } from "lucide-react";
 import { Suspense } from "react";
 import { AdjustmentsHorizontal } from "~/components/icons/adjustments-horizontal";
 import { Bolt } from "~/components/icons/bolt";
@@ -44,6 +44,16 @@ export default function HomePage() {
         refine, and harness your conlanging creativity with a suite of versatile
         tools.
       </p>
+      <div
+        id="alphaWarning"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-dictionary/10 p-4 text-lg text-accent-foreground"
+      >
+        <MessageCircleWarningIcon className="size-6 flex-shrink-0 text-accent-foreground" />
+        <p className="max-w-lg text-center md:max-w-5xl">
+          This website is currently in early development. Please be patient with
+          any issues or bugs you encounter.
+        </p>
+      </div>
       <div
         id="features"
         className="flex flex-col items-center text-pretty text-left"
