@@ -11,10 +11,12 @@ import {
   insertWordSection,
   updateDefinition,
   updateWord,
+  updateWordSection,
   updateWordSectionOrders,
   type DefinitionInsert,
   type DefinitionUpdate,
   type WordInsert,
+  type WordSectionUpdate,
   type WordUpdate,
 } from "~/server/queries";
 
@@ -97,4 +99,8 @@ export async function editDefinition(d: DefinitionUpdate) {
 
 export async function removeDefinition(definitionId: number) {
   await deleteDefinition(definitionId);
+}
+
+export async function editWordSection(section: WordSectionUpdate) {
+  await updateWordSection(section);
 }

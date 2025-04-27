@@ -37,6 +37,7 @@ import { DeleteDefinition } from "./delete-definition";
 import { DeleteSection } from "./delete-section";
 import { DeleteWord } from "./delete-word";
 import { EditDefinitionButton, EditDefinitionForm } from "./edit-definition";
+import { EditSectionButton, EditSectionForm } from "./edit-section";
 import { EditWordButton, EditWordForm } from "./edit-word";
 import { useSortableSections } from "./hooks/useSortableSections";
 
@@ -159,6 +160,7 @@ function Definition(props: { definition: Definition }) {
 
 function DefinitionSection(props: { section: WordSection; word: Word }) {
   const [isAddingDefinition, setIsAddingDefinition] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [definitions, setDefinitions] = useState(
     props.section.definitionSection?.definitions ?? [],
   );
@@ -180,9 +182,50 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
       : props.section.title
     : (category ?? "");
 
+  if (isEditing) {
+    return (
+      <div className="group/section">
+        <EditSectionForm
+          section={props.section}
+          afterSubmit={() => setIsEditing(false)}
+          onCancel={() => setIsEditing(false)}
+        />
+        <h4 className="text-sm font-bold">{props.word.text}</h4>
+        <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
+          {definitions.map((d) => (
+            <li key={d.id} className="pb-4 md:pb-2">
+              <Definition definition={d} />
+            </li>
+          ))}
+          {isAddingDefinition ? (
+            <li>
+              <AddDefinitionForm
+                definitionSectionId={props.section.id}
+                afterSubmit={handleAddDefinition}
+                onCancel={() => setIsAddingDefinition(false)}
+              />
+            </li>
+          ) : (
+            <li className="list-none">
+              <AddDefinitionButton
+                onClick={() => setIsAddingDefinition(true)}
+              />
+            </li>
+          )}
+        </ol>
+      </div>
+    );
+  }
+
   return (
     <div className="group/section">
-      <h3 className="mb-2 text-lg font-bold">{sectionTitle}</h3>
+      <div className="mb-2 flex items-center gap-2">
+        <h3 className="text-lg font-bold">{sectionTitle}</h3>
+        <div className="flex items-center gap-1">
+          <EditSectionButton onClick={() => setIsEditing(true)} />
+          <DeleteSection sectionId={props.section.id} />
+        </div>
+      </div>
       <h4 className="text-sm font-bold">{props.word.text}</h4>
       <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
         {definitions.map((d) => (
@@ -225,6 +268,8 @@ function SortableSection(props: {
     transition,
     isDragging,
   } = useSortable({ id: props.section.id, disabled: props.isUpdating });
+
+  const [isEditing, setIsEditing] = useState(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -283,21 +328,34 @@ function SortableSection(props: {
         </div>
       )}
       <div className="flex-1">
-        {props.section?.definitionSection ? (
-          <DefinitionSection section={props.section} word={props.word} />
+        {isEditing ? (
+          <EditSectionForm
+            section={props.section}
+            afterSubmit={() => setIsEditing(false)}
+            onCancel={() => setIsEditing(false)}
+          />
         ) : (
-          <div>
-            <h3 className="mb-2 text-lg font-bold">
-              {props.section.title ?? ""}
-            </h3>
-            <div className="text-sm">
-              {parseHtml(props.section.customSection?.text)}
-            </div>
-          </div>
+          <>
+            {props.section?.definitionSection ? (
+              <DefinitionSection section={props.section} word={props.word} />
+            ) : (
+              <div>
+                <div className="mb-2 flex items-center gap-2">
+                  <h3 className="text-lg font-bold">
+                    {props.section.title ?? ""}
+                  </h3>
+                  <div className="flex items-center gap-1">
+                    <EditSectionButton onClick={() => setIsEditing(true)} />
+                    <DeleteSection sectionId={props.section.id} />
+                  </div>
+                </div>
+                <div className="text-sm">
+                  {parseHtml(props.section.customSection?.text)}
+                </div>
+              </div>
+            )}
+          </>
         )}
-      </div>
-      <div className="absolute right-2 top-2">
-        <DeleteSection sectionId={props.section.id} />
       </div>
     </div>
   );
