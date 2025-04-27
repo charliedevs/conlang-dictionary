@@ -49,7 +49,7 @@ function SectionTypeSelect(props: {
           className="w-fit justify-start pl-1 pr-2 text-lg"
         >
           <ChevronsUpDownIcon className="mr-1 size-4" />
-          {capitalize(props.sectionType)}
+          {capitalize(props.sectionType)} Section
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
@@ -74,7 +74,7 @@ function AddSection(props: { word: Word }) {
     return (
       <div
         id="add-section"
-        className="relative flex max-w-lg flex-col gap-2 rounded-md bg-card px-5 py-4 dark:bg-accent"
+        className="relative flex min-h-80 max-w-lg flex-col gap-2 rounded-md bg-card px-5 py-4 transition-all dark:bg-accent"
       >
         <div className="absolute right-2 top-2">
           <Button

@@ -77,7 +77,7 @@ export const AddCustomSectionForm = (props: {
           render={({ field }) => (
             <FormItem className="mt-4">
               <FormDescription className="text-xs">
-                Add section text (children sections can be added later):
+                Add section text:
               </FormDescription>
               <FormControl>
                 <TextEditor
