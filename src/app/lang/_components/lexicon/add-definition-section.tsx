@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -27,13 +27,15 @@ import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
 import { type Word } from "~/types/word";
 import { createDefinitionSection } from "../../_actions/word";
 
-//TODO: GET NAME OUT OF LEXICAL CATEGORY SELECT FOR SECTION TITLE
-export function LexicalCategorySelect(props: {
-  conlangId: number;
-  defaultValue?: number | null;
-  onChange: (value: string) => void;
-  className?: string;
-}) {
+export const LexicalCategorySelect = forwardRef<
+  HTMLButtonElement,
+  {
+    conlangId: number;
+    defaultValue?: number | null;
+    onChange: (value: string) => void;
+    className?: string;
+  }
+>((props, ref) => {
   const { lexicalCategories, addLexicalCategory } = useLexicalCategories(
     props.conlangId,
   );
@@ -68,7 +70,7 @@ export function LexicalCategorySelect(props: {
         onValueChange={props.onChange}
         defaultValue={props.defaultValue ? String(props.defaultValue) : ""}
       >
-        <SelectTrigger className={props.className}>
+        <SelectTrigger className={props.className} ref={ref}>
           <SelectValue placeholder="Choose part of speech..." />
         </SelectTrigger>
         <SelectContent>
@@ -124,7 +126,9 @@ export function LexicalCategorySelect(props: {
       />
     </>
   );
-}
+});
+
+LexicalCategorySelect.displayName = "LexicalCategorySelect";
 
 const newDefinitionSectionSchema = z.object({
   wordId: z.number(),
