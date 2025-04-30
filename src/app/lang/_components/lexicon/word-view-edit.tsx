@@ -405,7 +405,7 @@ export function WordViewEdit(props: { word: Word }) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8"
+              className="hidden h-8 md:flex"
               onClick={handleExitEditMode}
             >
               <ArrowTurnLeft className="mr-2 size-4" /> Return
@@ -444,6 +444,16 @@ export function WordViewEdit(props: { word: Word }) {
           </SortableContext>
         </DndContext>
       </div>
+      {props.word.wordSections.length > 0 && (
+        <Button
+          variant="outline"
+          size="lg"
+          className="mb-4 flex h-8 md:mb-0 md:hidden"
+          onClick={handleExitEditMode}
+        >
+          <ArrowTurnLeft className="mr-2 size-4" /> Return
+        </Button>
+      )}
     </div>
   );
 }
