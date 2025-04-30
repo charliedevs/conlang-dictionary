@@ -16,8 +16,9 @@ import {
   PlusIcon,
   XIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { ArrowTurnLeft } from "~/components/icons/arrow-turn-left";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -182,6 +183,8 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
       : props.section.title
     : (category ?? "");
 
+  const definitionSectionId = props.section.definitionSection?.id;
+
   if (isEditing) {
     return (
       <div className="group/section">
@@ -197,10 +200,10 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
               <Definition definition={d} />
             </li>
           ))}
-          {isAddingDefinition ? (
+          {isAddingDefinition && definitionSectionId ? (
             <li>
               <AddDefinitionForm
-                definitionSectionId={props.section.id}
+                definitionSectionId={definitionSectionId}
                 afterSubmit={handleAddDefinition}
                 onCancel={() => setIsAddingDefinition(false)}
               />
@@ -233,17 +236,21 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
             <Definition definition={d} />
           </li>
         ))}
-        {isAddingDefinition ? (
+        {isAddingDefinition && definitionSectionId ? (
           <li>
             <AddDefinitionForm
-              definitionSectionId={props.section.id}
+              definitionSectionId={definitionSectionId}
               afterSubmit={handleAddDefinition}
               onCancel={() => setIsAddingDefinition(false)}
             />
           </li>
         ) : (
           <li className="list-none">
-            <AddDefinitionButton onClick={() => setIsAddingDefinition(true)} />
+            {definitionSectionId && (
+              <AddDefinitionButton
+                onClick={() => setIsAddingDefinition(true)}
+              />
+            )}
           </li>
         )}
       </ol>
@@ -361,11 +368,21 @@ function SortableSection(props: {
   );
 }
 
-export function WordOwnerView(props: { word: Word }) {
+export function WordViewEdit(props: { word: Word }) {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { sections, isUpdating, sensors, handleDragEnd, handleMove } =
     useSortableSections(props.word);
+
+  function handleExitEditMode() {
+    // Create new URLSearchParams object from the current params
+    const newParams = new URLSearchParams(searchParams.toString());
+    // Remove the edit param
+    newParams.delete("edit");
+    // Push the new URL
+    router.push(`?${newParams.toString()}`);
+  }
 
   return (
     <div id="word" className="flex flex-col gap-1">
@@ -383,13 +400,23 @@ export function WordOwnerView(props: { word: Word }) {
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-medium">{props.word.text}</h2>
             <EditWordButton onClick={() => setIsEditing(true)} />
+            <DeleteWord
+              word={props.word}
+              afterDelete={() =>
+                router.push(`/lang/${props.word.conlangId}/?view=lexicon`)
+              }
+            />
           </div>
-          <DeleteWord
-            word={props.word}
-            afterDelete={() =>
-              router.push(`/lang/${props.word.conlangId}/?view=lexicon`)
-            }
-          />
+          {props.word.wordSections.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden h-8 md:flex"
+              onClick={handleExitEditMode}
+            >
+              <ArrowTurnLeft className="mr-2 size-4" /> Return
+            </Button>
+          )}
         </div>
       )}
       <Separator />
@@ -423,6 +450,16 @@ export function WordOwnerView(props: { word: Word }) {
           </SortableContext>
         </DndContext>
       </div>
+      {props.word.wordSections.length > 0 && (
+        <Button
+          variant="outline"
+          size="lg"
+          className="mb-4 flex h-8 md:mb-0 md:hidden"
+          onClick={handleExitEditMode}
+        >
+          <ArrowTurnLeft className="mr-2 size-4" /> Return
+        </Button>
+      )}
     </div>
   );
 }

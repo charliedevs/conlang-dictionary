@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
+import { type LanguagePageSearchParams } from "../../[id]/page";
 import { AddWordForm } from "./add-word";
 import { WordList } from "./word-list";
 import { WordView } from "./word-view";
@@ -37,7 +38,11 @@ function AddWord(props: { conlangId: number; wordId?: number }) {
   );
 }
 
-export function Lexicon(props: { conlang: Conlang; wordId?: number }) {
+export function Lexicon(props: {
+  conlang: Conlang;
+  wordId?: number;
+  searchParams: LanguagePageSearchParams;
+}) {
   const isConlangOwner = props.conlang.ownerId === auth().userId;
   return (
     <div id="lexicon" className="flex flex-col">
@@ -70,7 +75,11 @@ export function Lexicon(props: { conlang: Conlang; wordId?: number }) {
             <Suspense
               fallback={<div className="py-5 text-center">Loading...</div>}
             >
-              <WordView wordId={props.wordId} isConlangOwner={isConlangOwner} />
+              <WordView
+                wordId={props.wordId}
+                isConlangOwner={isConlangOwner}
+                searchParams={props.searchParams}
+              />
             </Suspense>
           ) : (
             <>
