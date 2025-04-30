@@ -25,6 +25,18 @@ export const createTable = pgTableCreator(
   (name) => `conlang-dictionary_${name}`,
 );
 
+// Users table
+export const users = createTable("user", {
+  id: serial("id").primaryKey(),
+  clerkId: varchar("clerkId", { length: 256 }).notNull().unique(),
+  email: varchar("email", { length: 256 }).notNull(),
+  displayName: varchar("displayName", { length: 256 }).notNull(),
+  createdAt: timestamp("createdAt")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updatedAt"),
+});
+
 // Main conlang table
 export const conlangs = createTable(
   "conlang",
@@ -32,6 +44,7 @@ export const conlangs = createTable(
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 256 }).notNull().unique(),
     ownerId: varchar("ownerId", { length: 256 }).notNull(),
+    userId: integer("userId").references(() => users.id),
     isPublic: boolean("isPublic").notNull().default(false),
     description: varchar("description", { length: 1024 }).notNull().default(""),
     emoji: text("emoji"),
@@ -44,6 +57,13 @@ export const conlangs = createTable(
     conlangNameIndex: index("conlang_name_idx").on(conlang.name),
   }),
 );
+
+export const conlangsRelations = relations(conlangs, ({ one }) => ({
+  owner: one(users, {
+    fields: [conlangs.userId],
+    references: [users.id],
+  }),
+}));
 
 // Words
 export const words = createTable(
@@ -86,12 +106,17 @@ export const tags = createTable("tag", {
   type: tagType("type").notNull(),
   color: tagColor("color"),
   createdBy: varchar("createdBy", { length: 256 }),
+  userId: integer("userId").references(() => users.id),
   createdAt: timestamp("createdAt"),
   updatedAt: timestamp("updatedAt"),
 });
 
-export const tagsRelations = relations(tags, ({ many }) => ({
+export const tagsRelations = relations(tags, ({ many, one }) => ({
   words: many(wordsToTags),
+  creator: one(users, {
+    fields: [tags.userId],
+    references: [users.id],
+  }),
 }));
 
 // Table for many-to-many relationship between words and tags
@@ -163,7 +188,22 @@ export const lexicalCategories = createTable("lexicalCategories", {
     .notNull()
     .references(() => conlangs.id),
   ownerId: varchar("ownerId", { length: 256 }).notNull(),
+  userId: integer("userId").references(() => users.id),
 });
+
+export const lexicalCategoriesRelations = relations(
+  lexicalCategories,
+  ({ one }) => ({
+    owner: one(users, {
+      fields: [lexicalCategories.userId],
+      references: [users.id],
+    }),
+    conlang: one(conlangs, {
+      fields: [lexicalCategories.conlangId],
+      references: [conlangs.id],
+    }),
+  }),
+);
 
 export const definitionSections = createTable("definitionSections", {
   id: serial("id").primaryKey(),

@@ -1,16 +1,27 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-const isDashboardRoute = createRouteMatcher(["/dashboard(.*)"]);
-const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
+export default clerkMiddleware(async (auth, req) => {
+  // Public routes that don't require authentication
+  if (
+    req.nextUrl.pathname === "/" ||
+    req.nextUrl.pathname.startsWith("/sign-in") ||
+    req.nextUrl.pathname.startsWith("/sign-up")
+  ) {
+    return NextResponse.next();
+  }
 
-export default clerkMiddleware((auth, req) => {
-  // Restrict admin route to users with specific role
-  if (isAdminRoute(req)) auth().protect({ role: "org:admin" });
+  // Routes that can be accessed by authenticated users who haven't completed onboarding
+  if (req.nextUrl.pathname.startsWith("/onboarding")) {
+    auth().protect();
+    return NextResponse.next();
+  }
 
-  // Restrict dashboard routes to signed in users
-  if (isDashboardRoute(req)) auth().protect();
+  // Protect all other routes
+  auth().protect();
+  return NextResponse.next();
 });
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
