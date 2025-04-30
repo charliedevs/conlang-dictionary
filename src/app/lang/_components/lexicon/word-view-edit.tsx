@@ -16,8 +16,9 @@ import {
   PlusIcon,
   XIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { ArrowTurnLeft } from "~/components/icons/arrow-turn-left";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -361,11 +362,21 @@ function SortableSection(props: {
   );
 }
 
-export function WordOwnerView(props: { word: Word }) {
+export function WordViewEdit(props: { word: Word }) {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { sections, isUpdating, sensors, handleDragEnd, handleMove } =
     useSortableSections(props.word);
+
+  function handleExitEditMode() {
+    // Create new URLSearchParams object from the current params
+    const newParams = new URLSearchParams(searchParams.toString());
+    // Remove the edit param
+    newParams.delete("edit");
+    // Push the new URL
+    router.push(`?${newParams.toString()}`);
+  }
 
   return (
     <div id="word" className="flex flex-col gap-1">
@@ -383,13 +394,23 @@ export function WordOwnerView(props: { word: Word }) {
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-medium">{props.word.text}</h2>
             <EditWordButton onClick={() => setIsEditing(true)} />
+            <DeleteWord
+              word={props.word}
+              afterDelete={() =>
+                router.push(`/lang/${props.word.conlangId}/?view=lexicon`)
+              }
+            />
           </div>
-          <DeleteWord
-            word={props.word}
-            afterDelete={() =>
-              router.push(`/lang/${props.word.conlangId}/?view=lexicon`)
-            }
-          />
+          {props.word.wordSections.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8"
+              onClick={handleExitEditMode}
+            >
+              <ArrowTurnLeft className="mr-2 size-4" /> Return
+            </Button>
+          )}
         </div>
       )}
       <Separator />

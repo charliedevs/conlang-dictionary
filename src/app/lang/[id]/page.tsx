@@ -5,16 +5,24 @@ import { getConlangById, getPublicConlangs } from "~/server/queries";
 import { type Conlang } from "~/types/conlang";
 import { Lexicon } from "../_components/lexicon/lexicon";
 
+export type LanguagePageSearchParams = {
+  view?: string;
+  word?: string;
+  edit?: string;
+};
+
 interface LanguageTabsProps {
   conlang: Conlang;
   selectedTab?: string;
   wordId?: number;
+  searchParams: LanguagePageSearchParams;
 }
 
 function LanguageTabs({
   conlang,
   selectedTab = "lexicon",
   wordId,
+  searchParams,
 }: LanguageTabsProps) {
   return (
     <Tabs value={selectedTab}>
@@ -58,7 +66,11 @@ function LanguageTabs({
       </TabsList>
       <TabsContent value="lexicon">
         <div className="my-2">
-          <Lexicon conlang={conlang} wordId={wordId} />
+          <Lexicon
+            conlang={conlang}
+            wordId={wordId}
+            searchParams={searchParams}
+          />
         </div>
       </TabsContent>
       <TabsContent value="phonology">
@@ -73,7 +85,7 @@ function LanguageTabs({
 
 interface LanguagePageProps {
   params: { id: string };
-  searchParams: { view?: string; word?: string };
+  searchParams: LanguagePageSearchParams;
 }
 
 export default async function LanguagePage({
@@ -98,6 +110,7 @@ export default async function LanguagePage({
           conlang={conlang}
           selectedTab={searchParams.view}
           wordId={Number(searchParams.word) ?? undefined}
+          searchParams={searchParams}
         />
       </div>
     </div>
