@@ -183,6 +183,8 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
       : props.section.title
     : (category ?? "");
 
+  const definitionSectionId = props.section.definitionSection?.id;
+
   if (isEditing) {
     return (
       <div className="group/section">
@@ -198,10 +200,10 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
               <Definition definition={d} />
             </li>
           ))}
-          {isAddingDefinition ? (
+          {isAddingDefinition && definitionSectionId ? (
             <li>
               <AddDefinitionForm
-                definitionSectionId={props.section.id}
+                definitionSectionId={definitionSectionId}
                 afterSubmit={handleAddDefinition}
                 onCancel={() => setIsAddingDefinition(false)}
               />
@@ -234,17 +236,21 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
             <Definition definition={d} />
           </li>
         ))}
-        {isAddingDefinition ? (
+        {isAddingDefinition && definitionSectionId ? (
           <li>
             <AddDefinitionForm
-              definitionSectionId={props.section.id}
+              definitionSectionId={definitionSectionId}
               afterSubmit={handleAddDefinition}
               onCancel={() => setIsAddingDefinition(false)}
             />
           </li>
         ) : (
           <li className="list-none">
-            <AddDefinitionButton onClick={() => setIsAddingDefinition(true)} />
+            {definitionSectionId && (
+              <AddDefinitionButton
+                onClick={() => setIsAddingDefinition(true)}
+              />
+            )}
           </li>
         )}
       </ol>

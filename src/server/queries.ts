@@ -450,6 +450,8 @@ export async function updateCustomSection(s: CustomSectionUpdate) {
     .returning();
 
   if (!customSection[0]) throw new Error("Custom section not updated");
+
+  return customSection[0];
 }
 
 export async function getDefinitionSections(wordSectionId: number) {
@@ -549,6 +551,7 @@ export async function updateDefinition(d: DefinitionUpdate) {
     .returning();
 
   if (!definition[0]) throw new Error("Definition not updated");
+  return definition[0];
 }
 
 export async function deleteDefinition(id: number) {
