@@ -258,6 +258,18 @@ function DefinitionSection(props: { section: WordSection; word: Word }) {
   );
 }
 
+function CustomSection(props: { word: Word; section: WordSection }) {
+  const { section } = props;
+  return (
+    <div>
+      <h3 className="mb-2 text-lg font-bold">{section.title}</h3>
+      <div className="text-pretty text-sm">
+        {parseHtml(section.customSection?.text ?? "")}
+      </div>
+    </div>
+  );
+}
+
 function SortableSection(props: {
   section: WordSection;
   word: Word;
@@ -346,20 +358,7 @@ function SortableSection(props: {
             {props.section?.definitionSection ? (
               <DefinitionSection section={props.section} word={props.word} />
             ) : (
-              <div>
-                <div className="mb-2 flex items-center gap-2">
-                  <h3 className="text-lg font-bold">
-                    {props.section.title ?? ""}
-                  </h3>
-                  <div className="flex items-center gap-1">
-                    <EditSectionButton onClick={() => setIsEditing(true)} />
-                    <DeleteSection sectionId={props.section.id} />
-                  </div>
-                </div>
-                <div className="text-sm">
-                  {parseHtml(props.section.customSection?.text)}
-                </div>
-              </div>
+              <CustomSection section={props.section} word={props.word} />
             )}
           </>
         )}
@@ -433,7 +432,7 @@ export function WordViewEdit(props: { word: Word }) {
             items={sections.map((section) => section.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="my-2 flex flex-col gap-1">
+            <div className="my-2 flex flex-col gap-2">
               {sections.map((section, index) => (
                 <SortableSection
                   key={section.id}
