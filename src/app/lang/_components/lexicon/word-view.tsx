@@ -3,9 +3,47 @@ import { Edit2Icon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { cn } from "~/lib/utils";
 import { getWordById } from "~/server/queries";
+import type { Word, WordSection } from "~/types/word";
 import { type LanguagePageSearchParams } from "../../[id]/page";
 import { WordViewEdit } from "./word-view-edit";
+
+function CustomSection(props: { word: Word; section: WordSection }) {
+  const { section } = props;
+  return (
+    <div>
+      <h3 className="mb-2 text-lg font-bold">{section.title}</h3>
+      <div className="text-pretty text-sm">
+        {parseHtml(section.customSection?.text ?? "")}
+      </div>
+    </div>
+  );
+}
+
+function DefinitionSection(props: { word: Word; section: WordSection }) {
+  const { word, section } = props;
+  const category = section?.definitionSection?.lexicalCategory.category;
+  const sectionTitle = section.title
+    ? category && category !== section.title
+      ? `${section.title} (${category})`
+      : section.title
+    : (category ?? "");
+
+  return (
+    <div>
+      <h3 className="mb-2 text-lg font-bold">{sectionTitle}</h3>
+      <h4 className="text-sm font-bold">{word.text}</h4>
+      <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
+        {section.definitionSection?.definitions?.map((d) => (
+          <li key={d.id} className="pb-2">
+            <div>{parseHtml(d.text)}</div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
 
 export async function WordView(props: {
   wordId: number;
@@ -45,26 +83,24 @@ export async function WordView(props: {
         </div>
       </div>
       <Separator />
-      <div className="my-2 flex flex-col gap-1">
-        {word.wordSections.map((section) => {
-          const category = section?.definitionSection?.lexicalCategory.category;
-          const sectionTitle = section.title
-            ? category && category !== section.title
-              ? `${section.title} (${category})`
-              : section.title
-            : (category ?? "");
+      <div className="my-2 flex flex-col gap-2">
+        {word.wordSections.map((section, index) => {
+          const isDefinitionSection = Boolean(section.definitionSection);
+
+          if (isDefinitionSection) {
+            return (
+              <div key={section.id} className="my-2">
+                <DefinitionSection word={word} section={section} />
+              </div>
+            );
+          }
 
           return (
-            <div key={section.id}>
-              <h3 className="mb-2 text-lg font-bold">{sectionTitle}</h3>
-              <h4 className="text-sm font-bold">{word.text}</h4>
-              <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
-                {section.definitionSection?.definitions?.map((d) => (
-                  <li key={d.id} className="pb-2">
-                    <div>{parseHtml(d.text)}</div>
-                  </li>
-                ))}
-              </ol>
+            <div
+              key={section.id}
+              className={cn("mb-1", index > 0 ? "mt-2" : "")}
+            >
+              <CustomSection word={word} section={section} />
             </div>
           );
         })}
