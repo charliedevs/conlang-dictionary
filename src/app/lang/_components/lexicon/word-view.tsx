@@ -35,11 +35,13 @@ function DefinitionSection(props: { word: Word; section: WordSection }) {
       <h3 className="mb-2 text-lg font-bold">{sectionTitle}</h3>
       <h4 className="text-sm font-bold">{word.text}</h4>
       <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
-        {section.definitionSection?.definitions?.map((d) => (
-          <li key={d.id} className="pb-2">
-            <div>{parseHtml(d.text)}</div>
-          </li>
-        ))}
+        {section.definitionSection?.definitions?.map((d) => {
+          return (
+            <li key={d.id} className="pb-2">
+              <div className="[&_ol]:mt-2 [&_ol]:pl-4">{parseHtml(d.text)}</div>
+            </li>
+          );
+        })}
       </ol>
     </div>
   );
