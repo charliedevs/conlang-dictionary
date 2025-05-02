@@ -23,67 +23,10 @@ _Read more about conlangs at [conlang.org](https://conlang.org)._
 
 ## TODO
 
-### Conlang Dictionary MVP
+Track current priorities for work.
 
-#### Create & Edit Conlangs
-
-- [x] Add ability for users to create conlangs
-- [ ] Add simple dashboard to view and manage conlangs
-  - [x] Dashboard shows create form if none created, otherwise shows a button to create a new conlang
-  - [x] Add description to conlang data
-  - [x] Users can edit conlang to change name, description, and public status
-- [x] Change public column to eye and eye-slash icons
-- [x] Add view conlang page (placeholder, just shows name and description)
-- [x] Add open conlang page button on conlang table
-- [ ] User can add tags to conlang
-- [ ] Move edit and delete buttons to individual conlang pages
-- [ ] Add ability to delete conlang
-- [ ] Instead of conditionally rendering form on dashboard, redirect to new conlang page if none created
-
-#### Basic Lexicon & Grammar
-
-- [x] Users can add words
-- [x] Add ability to edit word
-- [ ] Add ability to delete word
-- [x] Users can tag words with custom tags
-- [x] User can add multiple sections and definitions to a word
-  - [ ] custom sections
-  - [ ] nested sections
-- [ ] Word Sections can be reordered
-- [ ] Sections can be edited
-- [ ] Sections can be deleted
-- [ ] User can customize their own lexical categories
-  - [ ] Add other field types to lexical categories (e.g., noun classes)
-
-#### Inflections & Derivations
-
-- [ ] Users can create patterns for inflections
-- [ ] tree visualization of different possible inflections based on lexical category, class, etc.
-
-#### Landing Page
-
-- [x] Landing page shows a list of recent public conlangs
-  - [x] New query to get most recent public conlangs
-  - [x] Use react table visibility to hide unwanted columns from conlang table
-- [x] Update landing page copy with features and a blurb
-- [ ] Add 'coming soon' indicators to unimplemented features
-
-### Production Environment
-
-- [ ] Create separate db/tagged tables for production
-- [ ] Set up clerk auth for production
-
-### Misc Details
-
-- [ ] Use server actions instead of API requests
-  - see createWord
-- [ ] Use zod for insert/update and infer types where possible instead of declaring types manually
-- [ ] Create a custom 404/not found page
-- [ ] Update afterSignInUrl to fallbackUrl and forceUrl
-- [ ] Maybe create users table with data from clerk and tie it to the conlang table
-  - [ ] Then pull user info from conlang table join instead of react query
-- [x] dark mode
-- [ ] custom user primary colors
+- [ ] Edit Custom Sections
+- [ ] More freedom for text formatting inside word sections
 
 ## Features
 
