@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { type SectionType } from "~/types/word";
+import { type SectionType, type Word } from "~/types/word";
 
 export const SECTION_TYPE_UI: Record<
   SectionType,
@@ -58,8 +58,11 @@ type SectionTypeOption = (typeof SECTION_TYPES)[number];
 type SectionTypeValue = SectionTypeOption["type"];
 
 export function AddSectionForm({
+  word,
   onCancel,
+  onSectionAdded,
 }: {
+  word: Word;
   onCancel?: () => void;
   onSectionAdded?: () => void;
 }) {
@@ -70,7 +73,10 @@ export function AddSectionForm({
   if (selectedType === null) {
     return (
       <div className="flex flex-col gap-4 p-4">
-        <h2 className="mb-2 text-xl font-semibold">Add a Section</h2>
+        <h2 className="mb-1 text-xl font-semibold">Add a Section</h2>
+        <div className="mb-2 text-lg font-medium text-muted-foreground">
+          For: <span className="text-foreground">{word.text}</span>
+        </div>
         <Separator />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {SECTION_TYPES.map(({ type, label, icon: Icon, description }) => (
@@ -113,6 +119,9 @@ export function AddSectionForm({
           <ArrowLeftIcon className="h-5 w-5" />
         </Button>
         <h2 className="text-xl font-semibold">Add {selected?.label} Section</h2>
+      </div>
+      <div className="mb-2 text-lg font-medium text-muted-foreground">
+        For: <span className="text-foreground">{word.text}</span>
       </div>
       <Separator />
       <div className="rounded border bg-muted/30 p-4">
