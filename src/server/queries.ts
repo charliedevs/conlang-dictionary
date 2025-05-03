@@ -3,6 +3,7 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 
 import { and, eq } from "drizzle-orm";
+import { parseLexicalSection } from "~/types/parseLexicalSection";
 import { type TagColor, type TagType } from "~/types/tag";
 import { type WordSection } from "~/types/word";
 import analyticsServerClient from "./analytics";
@@ -156,19 +157,15 @@ export async function getWordsByConlangId(conlangId: number) {
     orderBy: (model, { asc }) => [asc(model.text)],
     with: {
       tags: { with: { tag: true } },
-      wordSections: {
-        with: {
-          customSection: true,
-          definitionSection: {
-            with: { definitions: true, lexicalCategory: true },
-          },
-        },
+      lexicalSections: {
+        orderBy: (model, { asc }) => [asc(model.order)],
       },
     },
   });
   const wordsWithTags = words.map((w) => ({
     ...w,
     tags: w.tags.map((t) => t.tag),
+    lexicalSections: w.lexicalSections.map(parseLexicalSection),
   }));
   return wordsWithTags;
 }
@@ -178,19 +175,17 @@ export async function getWordById(id: number) {
     where: (model, { eq }) => eq(model.id, id),
     with: {
       tags: { with: { tag: true } },
-      wordSections: {
+      lexicalSections: {
         orderBy: (model, { asc }) => [asc(model.order)],
-        with: {
-          customSection: true,
-          definitionSection: {
-            with: { definitions: true, lexicalCategory: true },
-          },
-        },
       },
     },
   });
   if (!word) throw new Error(`Word with id ${id} not found`);
-  const wordWithTags = { ...word, tags: word.tags.map((t) => t.tag) };
+  const wordWithTags = {
+    ...word,
+    tags: word.tags.map((t) => t.tag),
+    lexicalSections: word.lexicalSections.map(parseLexicalSection),
+  };
   return wordWithTags;
 }
 
@@ -401,8 +396,6 @@ export async function updateWordSectionOrders(
       if (updated) results.push(updated);
     }
   });
-
-  return results;
 }
 
 export async function getCustomSections(wordSectionId: number) {
