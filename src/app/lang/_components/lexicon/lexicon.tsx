@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { type LanguagePageSearchParams } from "../../[id]/page";
-import { AddWordForm } from "./add-word";
+import { AddWordForm } from "./forms/add-word";
 import { WordList } from "./word-list";
 import { WordView } from "./word-view";
 
