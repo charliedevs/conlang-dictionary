@@ -122,7 +122,7 @@ export function WordViewEdit(props: { word: Word }) {
           >
             <div className="my-2 flex flex-col gap-2">
               {lexicalSections.map((section, index) => (
-                <SortableLexicalSection
+                <SortableSection
                   key={section.id}
                   section={section}
                   isUpdating={false}
@@ -136,6 +136,14 @@ export function WordViewEdit(props: { word: Word }) {
           </SortableContext>
         </DndContext>
       </div>
+      {props.word.lexicalSections.length === 0 && (
+        <div className="my-2">
+          <p className="text-sm text-muted-foreground">
+            Add a Definition, Pronunciation, or other Section using the button
+            above!
+          </p>
+        </div>
+      )}
       {lexicalSections.length > 0 && (
         <Button
           variant="outline"
@@ -151,7 +159,7 @@ export function WordViewEdit(props: { word: Word }) {
 }
 
 /** Holds a lexicalSection and handles sorting, edit, and content display */
-function SortableLexicalSection(props: {
+function SortableSection(props: {
   section: LexicalSection;
   isUpdating: boolean;
   totalSections: number;
