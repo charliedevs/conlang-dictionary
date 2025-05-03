@@ -95,7 +95,12 @@ export default async function LanguagePage({
   const conlangId = Number(params.id);
   let conlang;
   try {
-    conlang = await getConlangById(conlangId);
+    // Skip auth for static generation (only looks at public conlangs)
+    conlang = await getConlangById(conlangId, { skipAuth: true });
+    if (!conlang.isPublic) {
+      // Enforce auth for non-public conlangs
+      conlang = await getConlangById(conlangId, { skipAuth: false });
+    }
   } catch (error) {
     console.error("Error:", error);
     return <div className="py-5 text-center">Language not found.</div>;

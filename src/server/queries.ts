@@ -41,16 +41,16 @@ export async function getPublicConlangs() {
   return conlangs;
 }
 
-export async function getConlangById(id: number) {
-  const { userId } = auth();
-
+export async function getConlangById(id: number, { skipAuth = false } = {}) {
   const conlang = await db.query.conlangs.findFirst({
     where: (model, { eq }) => eq(model.id, id),
   });
   if (!conlang) throw new Error("Conlang not found");
 
-  if (!conlang.isPublic && conlang.ownerId !== userId)
-    throw new Error("Unauthorized");
+  if (!skipAuth && !conlang.isPublic) {
+    const { userId } = auth();
+    if (conlang.ownerId !== userId) throw new Error("Unauthorized");
+  }
 
   return conlang;
 }
