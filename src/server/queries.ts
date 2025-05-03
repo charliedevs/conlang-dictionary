@@ -5,7 +5,6 @@ import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { parseLexicalSection } from "~/types/parseLexicalSection";
 import { type TagColor, type TagType } from "~/types/tag";
-import { type WordSection } from "~/types/word";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
 import {
@@ -370,32 +369,6 @@ export async function updateWordSection(s: WordSectionUpdate) {
   if (!wordSection[0]) throw new Error("Word section not updated");
 
   return wordSection[0];
-}
-
-export interface WordSectionOrderUpdate {
-  id: number;
-  order: number;
-}
-
-export async function updateWordSectionOrders(
-  updates: WordSectionOrderUpdate[],
-) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const results: Partial<WordSection>[] = [];
-
-  await db.transaction(async (tx) => {
-    for (const update of updates) {
-      const [updated] = await tx
-        .update(wordSections)
-        .set({ order: update.order })
-        .where(eq(wordSections.id, update.id))
-        .returning();
-
-      if (updated) results.push(updated);
-    }
-  });
 }
 
 export async function getCustomSections(wordSectionId: number) {

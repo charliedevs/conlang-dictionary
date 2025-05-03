@@ -30,6 +30,7 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
 import { type LexicalSection, type Word } from "~/types/word";
+import { updateSectionOrders } from "../../_actions/word";
 import { AddSectionForm } from "./add-section";
 import { DeleteWord } from "./delete-word";
 import { EditWordButton, EditWordForm } from "./edit-word";
@@ -307,14 +308,13 @@ function useSortableSections(word: Word) {
       setSections(updatedSections);
 
       try {
-        // TODO: Send updates to server for lexicalSections order
-        // await updateSectionOrders(
-        //   updatedSections.map((section) => ({
-        //     id: section.id,
-        //     order: section.order,
-        //   })),
-        // );
-        // router.refresh();
+        await updateSectionOrders(
+          updatedSections.map((section) => ({
+            id: section.id,
+            order: section.order,
+          })),
+        );
+        router.refresh();
       } catch (error) {
         setSections(sections);
         throw error;
@@ -322,7 +322,7 @@ function useSortableSections(word: Word) {
         setIsUpdating(false);
       }
     },
-    [sections],
+    [sections, router],
   );
 
   const handleDragEnd = async (event: DragEndEvent) => {

@@ -151,8 +151,10 @@ This schema supports both legacy and new flexible section models for word entrie
 
 # Data Access Layer
 
-- **Where to find query functions:**  
-  All database queries and mutations are defined in [`src/server/queries.ts`](src/server/queries.ts).
+- **Where to find query and mutation functions:**
+
+  - All **database queries** (data fetching, "get" functions) are defined in [`src/server/queries.ts`](src/server/queries.ts).
+  - All **mutations** (create, update, delete) are now defined in [`src/server/mutations.ts`](src/server/mutations.ts). **All new mutations must be added to this file going forward.** (Not all mutations have been moved yet, but this is the standard for new code.)
 
 - **How to query data:**
 
@@ -169,7 +171,7 @@ This schema supports both legacy and new flexible section models for word entrie
 
 - **How to mutate data:**
 
-  - All mutation logic (create, update, delete) is also in [`src/server/queries.ts`](src/server/queries.ts).
+  - All mutation logic (create, update, delete) is now in [`src/server/mutations.ts`](src/server/mutations.ts).
   - Mutations require user authentication (`auth()` from Clerk).
   - Example:
     ```ts

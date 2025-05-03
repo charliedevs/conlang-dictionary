@@ -24,7 +24,6 @@ export type DefinitionSection = DefinitionSections[number];
 type Definitions = Awaited<ReturnType<typeof getDefinitions>>;
 export type Definition = Definitions[number];
 
-// --- LexicalSection type-safe properties ---
 export type DefinitionSectionProperties = {
   title?: string;
   lexicalCategoryId: number;
@@ -75,4 +74,3 @@ export type LexicalSection = Omit<
         properties: CustomFieldsSectionProperties;
       }
   );
-// --- End LexicalSection type-safe properties ---

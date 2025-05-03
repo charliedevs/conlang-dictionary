@@ -1,6 +1,10 @@
 "use server";
 
 import {
+  updateLexicalSectionOrders,
+  type LexicalSectionOrderUpdate,
+} from "~/server/mutations";
+import {
   deleteDefinition,
   deleteWord,
   deleteWordSection,
@@ -12,7 +16,6 @@ import {
   updateDefinition,
   updateWord,
   updateWordSection,
-  updateWordSectionOrders,
   type DefinitionInsert,
   type DefinitionUpdate,
   type WordInsert,
@@ -73,13 +76,10 @@ export async function createDefinitionSection(ds: DefinitionSectionCreate) {
   return newDefinition;
 }
 
-export interface SectionOrderUpdate {
-  id: number;
-  order: number;
-}
-
-export async function updateSectionOrders(updates: SectionOrderUpdate[]) {
-  const results = await updateWordSectionOrders(updates);
+export async function updateSectionOrders(
+  updates: LexicalSectionOrderUpdate[],
+) {
+  const results = await updateLexicalSectionOrders(updates);
   return results;
 }
 
