@@ -31,9 +31,9 @@ import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
 import { type LexicalSection, type Word } from "~/types/word";
 import { updateSectionOrders } from "../../_actions/word";
-import { AddSectionForm } from "./add-section";
-import { DeleteWord } from "./delete-word";
-import { EditWordButton, EditWordForm } from "./edit-word";
+import { AddSectionForm } from "./forms/add-section";
+import { DeleteWord } from "./forms/delete-word";
+import { EditWordButton, EditWordForm } from "./forms/edit-word";
 
 /** Editable WordView */
 export function WordViewEdit(props: { word: Word }) {
