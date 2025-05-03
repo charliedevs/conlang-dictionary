@@ -1,50 +1,147 @@
-import parseHtml from "html-react-parser";
 import { Edit2Icon } from "lucide-react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { cn } from "~/lib/utils";
 import { getWordById } from "~/server/queries";
-import type { Word, WordSection } from "~/types/word";
+import type { LexicalSection, Word } from "~/types/word";
 import { type LanguagePageSearchParams } from "../../[id]/page";
-import { WordViewEdit } from "./word-view-edit";
 
-function CustomSection(props: { word: Word; section: WordSection }) {
-  const { section } = props;
+function DefinitionSection({
+  section,
+}: {
+  section: Extract<LexicalSection, { sectionType: "definition" }>;
+}) {
+  const { title, lexicalCategoryId, definitionText, examples } =
+    section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{section.title}</h3>
-      <div className="text-pretty text-sm">
-        {parseHtml(section.customSection?.text ?? "")}
-      </div>
+      <h3 className="mb-2 text-lg font-bold">
+        {title ??
+          (lexicalCategoryId
+            ? `Category ID: ${lexicalCategoryId}`
+            : "Definition")}
+      </h3>
+      {definitionText && (
+        <div className="text-pretty text-sm [&_ol]:list-inside [&_ol]:list-decimal">
+          <ReactMarkdown>{definitionText}</ReactMarkdown>
+        </div>
+      )}
+      {Array.isArray(examples) && examples.length > 0 && (
+        <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
+          {examples.map((ex: string, i: number) => (
+            <li key={i} className="pb-2">
+              {ex}
+            </li>
+          ))}
+        </ol>
+      )}
     </div>
   );
 }
 
-function DefinitionSection(props: { word: Word; section: WordSection }) {
-  const { word, section } = props;
-  const category = section?.definitionSection?.lexicalCategory.category;
-  const sectionTitle = section.title
-    ? category && category !== section.title
-      ? `${section.title} (${category})`
-      : section.title
-    : (category ?? "");
-
+function PronunciationSection({
+  section,
+}: {
+  section: Extract<LexicalSection, { sectionType: "pronunciation" }>;
+}) {
+  const { title, ipa, audioUrl, region } = section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{sectionTitle}</h3>
-      <h4 className="text-sm font-bold">{word.text}</h4>
-      <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
-        {section.definitionSection?.definitions?.map((d) => {
-          return (
-            <li key={d.id} className="pb-2">
-              <div className="[&_ol]:mt-2 [&_ol]:pl-4">{parseHtml(d.text)}</div>
-            </li>
-          );
-        })}
-      </ol>
+      <h3 className="mb-2 text-lg font-bold">{title ?? "Pronunciation"}</h3>
+      {ipa && (
+        <div>
+          IPA:{" "}
+          <span className="font-mono">
+            <ReactMarkdown>{ipa}</ReactMarkdown>
+          </span>
+        </div>
+      )}
+      {audioUrl && (
+        <audio controls src={audioUrl} className="mt-2">
+          Your browser does not support the audio element.
+        </audio>
+      )}
+      {region && <div>Region: {region}</div>}
     </div>
   );
+}
+
+function EtymologySection({
+  section,
+}: {
+  section: Extract<LexicalSection, { sectionType: "etymology" }>;
+}) {
+  const { title, etymologyText } = section.properties;
+  return (
+    <div>
+      <h3 className="mb-2 text-lg font-bold">{title ?? "Etymology"}</h3>
+      {etymologyText && (
+        <div className="text-pretty text-sm">
+          <ReactMarkdown>{etymologyText}</ReactMarkdown>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CustomTextSection({
+  section,
+}: {
+  section: Extract<LexicalSection, { sectionType: "custom_text" }>;
+}) {
+  const { title, contentText } = section.properties;
+  return (
+    <div>
+      <h3 className="mb-2 text-lg font-bold">{title ?? "Custom Section"}</h3>
+      {contentText && (
+        <div className="text-pretty text-sm">
+          <ReactMarkdown>{contentText}</ReactMarkdown>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CustomFieldsSection({
+  section,
+}: {
+  section: Extract<LexicalSection, { sectionType: "custom_fields" }>;
+}) {
+  const { title, customFields } = section.properties;
+  return (
+    <div>
+      <h3 className="mb-2 text-lg font-bold">{title ?? "Custom Fields"}</h3>
+      <table className="text-sm">
+        <tbody>
+          {customFields &&
+            Object.entries(customFields).map(([key, value]) => (
+              <tr key={key}>
+                <td className="pr-2 font-semibold">{key}</td>
+                <td>{String(value)}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function renderSection(section: LexicalSection) {
+  switch (section.sectionType) {
+    case "definition":
+      return <DefinitionSection section={section} />;
+    case "pronunciation":
+      return <PronunciationSection section={section} />;
+    case "etymology":
+      return <EtymologySection section={section} />;
+    case "custom_text":
+      return <CustomTextSection section={section} />;
+    case "custom_fields":
+      return <CustomFieldsSection section={section} />;
+    default:
+      return null;
+  }
 }
 
 export async function WordView(props: {
@@ -52,7 +149,7 @@ export async function WordView(props: {
   isConlangOwner: boolean;
   searchParams?: LanguagePageSearchParams;
 }) {
-  let word;
+  let word: Word;
   try {
     word = await getWordById(props.wordId);
   } catch (error) {
@@ -61,11 +158,7 @@ export async function WordView(props: {
   }
 
   const isEditMode =
-    props.searchParams?.edit === "true" || word.wordSections.length === 0;
-
-  if (props.isConlangOwner && isEditMode) {
-    return <WordViewEdit word={word} />;
-  }
+    props.searchParams?.edit === "true" || word.lexicalSections.length === 0;
 
   const editSearchParams = new URLSearchParams(props.searchParams ?? {});
   editSearchParams.set("edit", "true");
@@ -86,26 +179,9 @@ export async function WordView(props: {
       </div>
       <Separator />
       <div className="my-2 flex flex-col gap-2">
-        {word.wordSections.map((section, index) => {
-          const isDefinitionSection = Boolean(section.definitionSection);
-
-          if (isDefinitionSection) {
-            return (
-              <div key={section.id} className="my-2">
-                <DefinitionSection word={word} section={section} />
-              </div>
-            );
-          }
-
-          return (
-            <div
-              key={section.id}
-              className={cn("mb-1", index > 0 ? "mt-2" : "")}
-            >
-              <CustomSection word={word} section={section} />
-            </div>
-          );
-        })}
+        {word.lexicalSections.map((section) => (
+          <div key={section.id}>{renderSection(section)}</div>
+        ))}
       </div>
     </div>
   );
