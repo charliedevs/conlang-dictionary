@@ -1,19 +1,19 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
-
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTableCreator,
   primaryKey,
   serial,
   text,
   timestamp,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { env } from "../../env";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -22,7 +22,7 @@ import {
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const createTable = pgTableCreator(
-  (name) => `conlang-dictionary_${name}`,
+  (name) => `${env.TABLE_PREFIX}${name}`,
 );
 
 // Main conlang table
@@ -67,6 +67,7 @@ export const words = createTable(
 export const wordsRelations = relations(words, ({ many }) => ({
   tags: many(wordsToTags),
   wordSections: many(wordSections),
+  lexicalSections: many(lexicalSections),
 }));
 
 // Tags
@@ -197,35 +198,92 @@ export const definitionsRelations = relations(definitions, ({ one }) => ({
   }),
 }));
 
-// TODO: Add other section types one at a time and test
-// export const pronunciations = createTable("pronunciations", {
-//   id: serial("id").primaryKey(),
-//   ipa: text("ipa"),
-// });
+// New lexical Sections Table (Using JSONB)
+// This table replaces the old wordSections, definitionSections, customSections structure
+export const sectionType = pgEnum("sectionType", [
+  "definition",
+  "pronunciation",
+  "etymology",
+  "custom_text",
+  "custom_fields",
+]);
+export const lexicalSections = createTable(
+  "lexicalSections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    wordId: integer("wordId")
+      .notNull()
+      .references(() => words.id, { onDelete: "cascade" }),
+    sectionType: sectionType("sectionType").notNull(),
+    order: integer("order").notNull().default(0),
+    properties: jsonb("properties").notNull().default("{}"),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (section) => ({
+    wordIdIndex: index("lexical_sections_word_id_idx").on(section.wordId),
+    sectionTypeIndex: index("lexical_sections_type_idx").on(
+      section.sectionType,
+    ),
+    // GIN index on properties is crucial for querying JSONB efficiently
+    // Use jsonb_ops for general key/value existence and containment checks (@>,?,?|,?&)
+    propertiesIndex: index("lexical_sections_properties_gin_idx").using(
+      "gin",
+      section.properties,
+    ),
+  }),
+);
 
-// // table for related words that allows many to many between words
-// export const relatedWords = createTable(
-//   "relatedWords",
-//   {
-//     wordId: integer("wordId")
-//       .notNull()
-//       .references(() => words.id),
-//     relatedWordId: integer("tagId")
-//       .notNull()
-//       .references(() => tags.id),
-//   },
-//   (r) => ({
-//     pk: primaryKey({ columns: [r.wordId, r.relatedWordId] }),
-//   }),
-// );
+export const lexicalSectionsRelations = relations(
+  lexicalSections,
+  ({ one }) => ({
+    word: one(words, {
+      fields: [lexicalSections.wordId],
+      references: [words.id],
+      relationName: "lexicalSectionsToWord",
+    }),
+  }),
+);
 
-// export const relatedWordsRelations = relations(relatedWords, ({ one }) => ({
-//   word: one(words, {
-//     fields: [relatedWords.wordId],
-//     references: [words.id],
-//   }),
-//   relatedWord: one(words, {
-//     fields: [relatedWords.relatedWordId],
-//     references: [words.id],
-//   }),
-// }));
+/*
+Example structure within properties JSONB:
+
+For sectionType: 'DEFINITION'
+properties: {
+  "lexicalCategoryId": 123, // ID from lexicalCategories table
+  "definitionText": "# Definition\nThis word means...", // Markdown content
+  "examples": ["Example sentence 1.", "Another example."]
+}
+
+For sectionType: 'PRONUNCIATION'
+properties: {
+  "ipa": "/prəˌnʌnsiˈeɪʃən/",
+  "audioUrl": "/audio/pronunciation.mp3",
+  "region": "General American",
+  "phonemeIds": ["uuid1", "uuid2"] // Link to future phonology module
+}
+
+For sectionType: 'CUSTOM_FIELDS'
+properties: {
+  "customFields": {
+    "Source": "Book Title",
+    "Page Number": 123,
+    "Attestation Date": "2024-01-15"
+  }
+}
+
+For sectionType: 'ETYMOLOGY'
+properties: {
+  "etymologyText": "## Origin\nDerived from Proto-Lang *wordo..." // Markdown content
+}
+
+For sectionType: 'CUSTOM_TEXT'
+properties: {
+  "title": "Cultural Context",
+  "contentText": "..." // Markdown content
+}
+*/

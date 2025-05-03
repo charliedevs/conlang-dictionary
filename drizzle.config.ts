@@ -1,6 +1,6 @@
 import { type Config } from "drizzle-kit";
 
-import { env } from "~/env";
+import { env } from "./src/env";
 
 export default {
   schema: "./src/server/db/schema.ts",
@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.POSTGRES_URL,
   },
-  tablesFilter: ["conlang-dictionary_*"],
+  tablesFilter: [`${env.TABLE_PREFIX}*`],
 } satisfies Config;
