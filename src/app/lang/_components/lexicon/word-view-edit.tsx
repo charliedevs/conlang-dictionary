@@ -97,7 +97,10 @@ export function WordViewEdit(props: { word: Word }) {
         <div id="add-new-section">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="ghost" className="md:h-8">
+              <Button
+                variant="ghost"
+                className="w-full text-lg md:h-8 md:w-fit md:text-sm"
+              >
                 <PlusIcon className="mr-1 size-4 text-green-600" />
                 Add Section
               </Button>
@@ -152,7 +155,7 @@ export function WordViewEdit(props: { word: Word }) {
           className="mb-4 flex h-8 md:mb-0 md:hidden"
           onClick={handleExitEditMode}
         >
-          <ArrowTurnLeft className="mr-2 size-4" /> Return
+          <ArrowTurnLeft className="mr-2 size-4" /> Exit Edit Mode
         </Button>
       )}
     </div>

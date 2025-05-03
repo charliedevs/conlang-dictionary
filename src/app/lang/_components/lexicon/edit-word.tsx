@@ -17,7 +17,7 @@ export const EditWordButton = (props: { onClick: () => void }) => {
       onClick={props.onClick}
       variant="ghost"
       size="sm"
-      className="size-6 p-1 transition-all md:opacity-0 md:group-hover/header:opacity-100"
+      className="size-6 p-1"
     >
       <Edit2Icon className="size-5" />
     </Button>

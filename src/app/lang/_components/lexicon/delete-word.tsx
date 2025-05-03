@@ -40,14 +40,18 @@ export function DeleteWord(props: { word: Word; afterDelete: () => void }) {
           id="delete-word-button"
           variant="ghost"
           size="sm"
-          className="size-6 p-1 text-red-700 transition-all hover:bg-red-600/20 hover:text-red-800 md:opacity-0 md:group-hover/header:opacity-100"
+          className="size-6 p-1 text-red-700 transition-all hover:bg-red-600/20 hover:text-red-800"
         >
           <Trash2Icon className="size-5" />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Word {props.word.text}?</DialogTitle>
+          <DialogTitle>
+            Delete Word{" "}
+            <span className="font-bold text-primary/90">{props.word.text}</span>
+            ?
+          </DialogTitle>
           <DialogDescription>
             Are you sure you want to delete this word?
           </DialogDescription>
