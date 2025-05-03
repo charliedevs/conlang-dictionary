@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { ArrowTurnLeft } from "~/components/icons/arrow-turn-left";
 import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,17 +30,35 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { capitalize } from "~/lib/strings";
 import { cn } from "~/lib/utils";
-import { type Definition, type Word, type WordSection } from "~/types/word";
+import {
+  type Definition,
+  type LexicalSection,
+  type Word,
+  type WordSection,
+} from "~/types/word";
 import { AddCustomSectionForm } from "./add-custom-section";
 import { AddDefinitionButton, AddDefinitionForm } from "./add-definition";
 import { AddDefinitionSectionForm } from "./add-definition-section";
+import { AddSectionForm } from "./add-section";
 import { DeleteDefinition } from "./delete-definition";
 import { DeleteSection } from "./delete-section";
 import { DeleteWord } from "./delete-word";
 import { EditDefinitionButton, EditDefinitionForm } from "./edit-definition";
 import { EditSectionButton, EditSectionForm } from "./edit-section";
 import { EditWordButton, EditWordForm } from "./edit-word";
-import { useSortableSections } from "./hooks/useSortableSections";
+
+// --- New sortable hook for lexicalSections ---
+import { PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { ArrowTurnLeft } from "~/components/icons/arrow-turn-left";
+
+function useSortableLexicalSections(sections: LexicalSection[]) {
+  // For now, just return the sections in order and a drag end handler that alerts
+  const sensors = useSensors(useSensor(PointerSensor));
+  function handleDragEnd() {
+    window.alert("Reordering lexical sections is not implemented yet.");
+  }
+  return { sections, sensors, handleDragEnd };
+}
 
 function SectionTypeSelect(props: {
   sectionType: string;
@@ -367,12 +385,72 @@ function SortableSection(props: {
   );
 }
 
+function SortableLexicalSection(props: {
+  section: LexicalSection;
+  isUpdating: boolean;
+  totalSections: number;
+  index: number;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: props.section.id, disabled: props.isUpdating });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : props.isUpdating ? 0.7 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group/section relative flex items-start gap-2",
+        props.isUpdating ? "cursor-wait" : "",
+      )}
+    >
+      {props.totalSections > 1 && (
+        <div className="flex h-full items-center gap-1">
+          <div
+            {...attributes}
+            {...listeners}
+            className={cn(
+              "flex h-full items-center p-2 text-muted-foreground hover:text-foreground",
+              props.isUpdating ? "cursor-wait" : "cursor-grab",
+            )}
+          >
+            <GripVerticalIcon className="size-4" />
+          </div>
+        </div>
+      )}
+      <div className="flex-1">
+        {/* Placeholder for section content */}
+        <div className="rounded border bg-muted/30 p-3">
+          <strong>{props.section.sectionType}</strong> section (ID:{" "}
+          {props.section.id})
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function WordViewEdit(props: { word: Word }) {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { sections, isUpdating, sensors, handleDragEnd, handleMove } =
-    useSortableSections(props.word);
+
+  const lexicalSectionsRaw = props.word.lexicalSections ?? [];
+  const {
+    sections: lexicalSections,
+    sensors,
+    handleDragEnd: lexicalHandleDragEnd,
+  } = useSortableLexicalSections(lexicalSectionsRaw);
 
   function handleExitEditMode() {
     // Create new URLSearchParams object from the current params
@@ -406,7 +484,7 @@ export function WordViewEdit(props: { word: Word }) {
               }
             />
           </div>
-          {props.word.wordSections.length > 0 && (
+          {lexicalSections.length > 0 && (
             <Button
               variant="ghost"
               size="sm"
@@ -421,35 +499,46 @@ export function WordViewEdit(props: { word: Word }) {
       <Separator />
       <div id="word-sections" className="my-2">
         <div id="add-new-section">
-          <AddSection word={props.word} />
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="ghost" className="md:h-8">
+                <PlusIcon className="mr-1 size-4 text-green-600" />
+                Add Section
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="w-full max-w-lg p-0">
+              <AddSectionForm
+                onSectionAdded={() => {
+                  alert("not implemented");
+                }}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
+          onDragEnd={lexicalHandleDragEnd}
         >
           <SortableContext
-            items={sections.map((section) => section.id)}
+            items={lexicalSections.map((section) => section.id)}
             strategy={verticalListSortingStrategy}
           >
             <div className="my-2 flex flex-col gap-2">
-              {sections.map((section, index) => (
-                <SortableSection
+              {lexicalSections.map((section, index) => (
+                <SortableLexicalSection
                   key={section.id}
                   section={section}
-                  word={props.word}
-                  isUpdating={isUpdating}
-                  totalSections={sections.length}
+                  isUpdating={false}
+                  totalSections={lexicalSections.length}
                   index={index}
-                  onMoveUp={() => handleMove(index, "up")}
-                  onMoveDown={() => handleMove(index, "down")}
                 />
               ))}
             </div>
           </SortableContext>
         </DndContext>
       </div>
-      {props.word.wordSections.length > 0 && (
+      {lexicalSections.length > 0 && (
         <Button
           variant="outline"
           size="lg"

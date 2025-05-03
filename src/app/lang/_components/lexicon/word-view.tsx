@@ -6,6 +6,7 @@ import { Separator } from "~/components/ui/separator";
 import { getWordById } from "~/server/queries";
 import type { LexicalSection, Word } from "~/types/word";
 import { type LanguagePageSearchParams } from "../../[id]/page";
+import { WordViewEdit } from "./word-view-edit";
 
 function DefinitionSection({
   section,
@@ -162,6 +163,10 @@ export async function WordView(props: {
 
   const editSearchParams = new URLSearchParams(props.searchParams ?? {});
   editSearchParams.set("edit", "true");
+
+  if (isEditMode) {
+    return <WordViewEdit word={word} />;
+  }
 
   return (
     <div id="word" className="flex flex-col gap-1">
