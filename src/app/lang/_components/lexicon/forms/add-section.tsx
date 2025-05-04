@@ -18,7 +18,9 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { type InsertLexicalSectionInput } from "~/server/mutations";
 import { type SectionType, type Word } from "~/types/word";
+import { CustomTextSectionForm } from "./custom-text-section-form";
 import { DefinitionSectionForm } from "./definition-section-form";
+import { EtymologySectionForm } from "./etymology-section-form";
 import { PronunciationSectionForm } from "./pronunciation-section-form";
 
 export const SECTION_TYPE_UI: Record<
@@ -258,9 +260,37 @@ function SectionFormSwitcher({
         />
       );
     case "etymology":
-      return <div>[Etymology Section Form goes here]</div>;
+      return (
+        <EtymologySectionForm
+          word={word}
+          mode="add"
+          onCancel={onCancel}
+          onSubmit={(values) =>
+            onSectionFormSubmit({
+              sectionType: "etymology",
+              wordId: word.id,
+              properties: values,
+            })
+          }
+          disabled={isAdding}
+        />
+      );
     case "custom_text":
-      return <div>[Custom Text Section Form goes here]</div>;
+      return (
+        <CustomTextSectionForm
+          word={word}
+          mode="add"
+          onCancel={onCancel}
+          onSubmit={(values) =>
+            onSectionFormSubmit({
+              sectionType: "custom_text",
+              wordId: word.id,
+              properties: values,
+            })
+          }
+          disabled={isAdding}
+        />
+      );
     case "custom_fields":
       return <div>[Custom Fields Section Form goes here]</div>;
     default:

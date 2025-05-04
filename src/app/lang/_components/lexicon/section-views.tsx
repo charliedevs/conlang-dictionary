@@ -28,7 +28,7 @@ function DefinitionSection({
   return (
     <div>
       <h3 className="mb-2 text-lg font-bold">
-        {title ??
+        {title ||
           (lexicalCategoryId
             ? `Category ID: ${lexicalCategoryId}`
             : "Definition")}
@@ -60,7 +60,7 @@ function PronunciationSection({
     section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{title ?? "Pronunciation"}</h3>
+      <h3 className="mb-2 text-lg font-bold">{title || "Pronunciation"}</h3>
       {ipa && (
         <div>
           IPA: <span className="font-mono">{ipa}</span>
@@ -89,7 +89,7 @@ function EtymologySection({
   const { title, etymologyText } = section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{title ?? "Etymology"}</h3>
+      <h3 className="mb-2 text-lg font-bold">{title || "Etymology"}</h3>
       {etymologyText && (
         <div className="text-pretty text-sm">
           <ReactMarkdown>{etymologyText}</ReactMarkdown>
@@ -125,7 +125,7 @@ function CustomFieldsSection({
   const { title, customFields } = section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{title ?? "Custom Fields"}</h3>
+      <h3 className="mb-2 text-lg font-bold">{title || "Custom Fields"}</h3>
       <table className="text-sm">
         <tbody>
           {customFields &&

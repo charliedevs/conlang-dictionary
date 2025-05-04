@@ -12,7 +12,9 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { type LexicalSection, type Word } from "~/types/word";
 import { editLexicalSectionProperties } from "../../../_actions/word";
+import { CustomTextSectionForm } from "./custom-text-section-form";
 import { DefinitionSectionForm } from "./definition-section-form";
+import { EtymologySectionForm } from "./etymology-section-form";
 import { PronunciationSectionForm } from "./pronunciation-section-form";
 
 export function EditSection({
@@ -114,6 +116,28 @@ function SectionFormSwitcher({
     case "pronunciation":
       return (
         <PronunciationSectionForm
+          word={word}
+          mode="edit"
+          initialValues={section.properties}
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+          disabled={isSaving}
+        />
+      );
+    case "etymology":
+      return (
+        <EtymologySectionForm
+          word={word}
+          mode="edit"
+          initialValues={section.properties}
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+          disabled={isSaving}
+        />
+      );
+    case "custom_text":
+      return (
+        <CustomTextSectionForm
           word={word}
           mode="edit"
           initialValues={section.properties}

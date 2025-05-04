@@ -23,7 +23,9 @@ import { LexicalCategorySelect } from "./lexical-category-select";
 export const definitionProps = z.object({
   title: z.string().optional(),
   lexicalCategoryId: z.coerce.number({ invalid_type_error: "Required" }),
-  definitionText: z.string(),
+  definitionText: z
+    .string()
+    .refine((val) => val !== "", "Definition cannot be empty"),
   examples: z.array(z.object({ value: z.string() })).optional(),
 });
 
@@ -171,7 +173,7 @@ export function DefinitionSectionForm({
           name="examples"
           render={() => (
             <FormItem>
-              <FormLabel>Examples</FormLabel>
+              <FormLabel>Examples (optional)</FormLabel>
               <div className="mb-2 flex gap-2">
                 <Input
                   placeholder="Add example sentence"
