@@ -9,7 +9,7 @@ import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { type Word } from "~/types/word";
-import { editWord } from "../../_actions/word";
+import { editWord } from "../../../_actions/word";
 
 export const EditWordButton = (props: { onClick: () => void }) => {
   return (

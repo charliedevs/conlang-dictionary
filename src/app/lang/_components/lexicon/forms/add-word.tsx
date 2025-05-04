@@ -10,7 +10,7 @@ import { CornerDownLeftIcon, PlusIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { createWord } from "../../_actions/word";
+import { createWord } from "../../../_actions/word";
 
 const newWordSchema = z.object({
   conlangId: z.number(),

@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { type Word } from "~/types/word";
-import { removeWord } from "../../_actions/word";
+import { removeWord } from "../../../_actions/word";
 
 export function DeleteWord(props: { word: Word; afterDelete: () => void }) {
   const [open, setOpen] = useState(false);
