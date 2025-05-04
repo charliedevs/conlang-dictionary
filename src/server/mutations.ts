@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "./db";
-import { lexicalSections } from "./db/schema";
+import { lexicalCategories, lexicalSections } from "./db/schema";
 
 // #region Lexical Sections
 
@@ -126,3 +126,28 @@ export async function updateLexicalSectionOrders(
 }
 
 // #endregion Lexical Sections
+
+// #region Lexical Categories
+
+export interface LexicalCategoryInsert {
+  category: string;
+  conlangId: number;
+}
+
+export async function insertLexicalCategory(l: LexicalCategoryInsert) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const lexicalCategory = await db
+    .insert(lexicalCategories)
+    .values({
+      ...l,
+      ownerId: userId,
+    })
+    .returning();
+
+  if (!lexicalCategory[0]) throw new Error("Lexical category not created");
+  return lexicalCategory[0];
+}
+
+// #endregion Lexical Categories

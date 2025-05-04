@@ -7,13 +7,7 @@ import { parseLexicalSection } from "~/types/parseLexicalSection";
 import { type TagColor, type TagType } from "~/types/tag";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
-import {
-  conlangs,
-  lexicalCategories,
-  tags,
-  words,
-  wordsToTags,
-} from "./db/schema";
+import { conlangs, tags, words, wordsToTags } from "./db/schema";
 
 // #region CONLANGS
 export async function getMyConlangs() {
@@ -319,24 +313,5 @@ export async function getLexicalCategoriesForConlang(conlangId: number) {
   });
 
   return lexicalCategories;
-}
-
-export interface LexicalCategoryInsert {
-  category: string;
-  conlangId: number;
-}
-export async function insertLexicalCategory(l: LexicalCategoryInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const lexicalCategory = await db
-    .insert(lexicalCategories)
-    .values({
-      ...l,
-      ownerId: userId,
-    })
-    .returning();
-
-  if (!lexicalCategory[0]) throw new Error("Lexical category not created");
 }
 // #endregion
