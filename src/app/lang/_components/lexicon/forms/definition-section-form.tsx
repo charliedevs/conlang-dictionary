@@ -20,7 +20,6 @@ import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
 import { type Word } from "~/types/word";
 import { LexicalCategorySelect } from "./lexical-category-select";
 
-// Zod schema for definition section properties
 export const definitionProps = z.object({
   title: z.string().optional(),
   lexicalCategoryId: z.coerce.number({ invalid_type_error: "Required" }),

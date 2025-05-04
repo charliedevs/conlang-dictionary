@@ -19,6 +19,7 @@ import { Separator } from "~/components/ui/separator";
 import { type InsertLexicalSectionInput } from "~/server/mutations";
 import { type SectionType, type Word } from "~/types/word";
 import { DefinitionSectionForm } from "./definition-section-form";
+import { PronunciationSectionForm } from "./pronunciation-section-form";
 
 export const SECTION_TYPE_UI: Record<
   SectionType,
@@ -233,7 +234,20 @@ function SectionFormSwitcher({
         />
       );
     case "pronunciation":
-      return <div>[Pronunciation Section Form goes here]</div>;
+      return (
+        <PronunciationSectionForm
+          word={word}
+          mode="add"
+          onCancel={onCancel}
+          onSubmit={(values) =>
+            onSectionFormSubmit({
+              sectionType: "pronunciation",
+              wordId: word.id,
+              properties: values,
+            })
+          }
+        />
+      );
     case "etymology":
       return <div>[Etymology Section Form goes here]</div>;
     case "custom_text":

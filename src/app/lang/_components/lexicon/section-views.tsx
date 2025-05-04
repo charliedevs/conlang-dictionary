@@ -56,20 +56,23 @@ function PronunciationSection({
 }: {
   section: Extract<LexicalSection, { sectionType: "pronunciation" }>;
 }) {
-  const { title, ipa, audioUrl, region } = section.properties;
+  const { title, ipa, audioUrl, region, pronunciationText } =
+    section.properties;
   return (
     <div>
       <h3 className="mb-2 text-lg font-bold">{title ?? "Pronunciation"}</h3>
       {ipa && (
         <div>
-          IPA:{" "}
-          <span className="font-mono">
-            <ReactMarkdown>{ipa}</ReactMarkdown>
-          </span>
+          IPA: <span className="font-mono">{ipa}</span>
+        </div>
+      )}
+      {pronunciationText && (
+        <div className="mt-2 text-pretty text-sm">
+          <ReactMarkdown>{pronunciationText}</ReactMarkdown>
         </div>
       )}
       {audioUrl && (
-        <audio controls src={audioUrl} className="mt-2">
+        <audio controls src={audioUrl} preload="metadata" className="mt-2">
           Your browser does not support the audio element.
         </audio>
       )}
