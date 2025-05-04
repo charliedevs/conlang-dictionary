@@ -8,6 +8,7 @@ import {
   StrikethroughIcon,
 } from "lucide-react";
 import { forwardRef, type ReactNode } from "react";
+import { Markdown } from "tiptap-markdown";
 import { cn } from "~/lib/utils";
 import { Separator } from "./ui/separator";
 import { Toggle } from "./ui/toggle";
@@ -18,6 +19,10 @@ interface TextEditorProps {
   showOrderedList?: boolean;
   customToolbarActions?: ReactNode;
   className?: string;
+}
+
+interface MarkdownStorage {
+  getMarkdown: () => string;
 }
 
 export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
@@ -55,10 +60,30 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
             },
           },
         }),
+        Markdown.configure({
+          html: true, // Allow HTML input/output
+          tightLists: true, // No <p> inside <li> in markdown output
+          tightListClass: "tight", // Add class to <ul> allowing you to remove <p> margins when tight
+          bulletListMarker: "-", // <li> prefix in markdown output
+          linkify: true, // Create links from "https://..." text
+          breaks: false, // New lines (\n) in markdown input are converted to <br>
+          transformPastedText: true, // Allow to paste markdown text in the editor
+          transformCopiedText: false, // Copied text is transformed to markdown
+        }),
       ],
       content: value,
       onUpdate: ({ editor }) => {
-        onChange(editor.getHTML());
+        const markdownStorage = editor.storage.markdown as
+          | MarkdownStorage
+          | undefined;
+        if (
+          markdownStorage &&
+          typeof markdownStorage.getMarkdown === "function"
+        ) {
+          onChange(markdownStorage.getMarkdown().trim());
+        } else {
+          onChange(editor.getHTML());
+        }
       },
     });
 
@@ -68,6 +93,7 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
         {editor ? (
           <RichTextEditorToolbar
             editor={editor}
+            showOrderedList={showOrderedList}
             customToolbarActions={customToolbarActions}
           />
         ) : null}

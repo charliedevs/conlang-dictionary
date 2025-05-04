@@ -59,6 +59,7 @@
     "sharp": "^0.33.4",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
+    "tiptap-markdown": "^0.8.10",
     "turndown": "^7.2.0",
     "usehooks-ts": "^3.1.0",
     "uuid": "^11.1.0",
