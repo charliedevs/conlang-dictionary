@@ -1,9 +1,7 @@
 "use server";
 
-import {
-  getLexicalCategoriesForConlang,
-  insertLexicalCategory,
-} from "../queries";
+import { insertLexicalCategory } from "../mutations";
+import { getLexicalCategoriesForConlang } from "../queries";
 
 export interface CreateLexicalCategory {
   conlangId: number;
