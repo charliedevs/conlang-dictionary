@@ -6,6 +6,7 @@ import {
   FileTextIcon,
   InfoIcon,
   ListIcon,
+  PlusIcon,
   Volume2Icon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { createLexicalSection } from "~/app/lang/_actions/word";
 import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { type InsertLexicalSectionInput } from "~/server/mutations";
 import { type SectionType, type Word } from "~/types/word";
@@ -63,6 +65,39 @@ const SECTION_TYPES = (Object.keys(SECTION_TYPE_UI) as SectionType[]).map(
 type SectionTypeOption = (typeof SECTION_TYPES)[number];
 
 type SectionTypeValue = SectionTypeOption["type"];
+
+export function AddSectionDialog({
+  word,
+  onSectionAdded,
+}: {
+  word: Word;
+  onSectionAdded?: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          className="w-full text-lg md:h-8 md:w-fit md:text-sm"
+        >
+          <PlusIcon className="mr-1 size-4 text-green-600" />
+          Add Section
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-full max-w-lg p-0">
+        <AddSectionForm
+          word={word}
+          onSectionAdded={() => {
+            setOpen(false);
+            onSectionAdded?.();
+          }}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function AddSectionForm({
   word,

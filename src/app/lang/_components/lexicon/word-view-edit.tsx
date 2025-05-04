@@ -15,23 +15,17 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  GripVerticalIcon,
-  PlusIcon,
-} from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, GripVerticalIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ArrowTurnLeft } from "~/components/icons/arrow-turn-left";
 import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
 import { type LexicalSection, type Word } from "~/types/word";
 import { updateSectionOrders } from "../../_actions/word";
-import { AddSectionForm } from "./forms/add-section";
+import { AddSectionDialog } from "./forms/add-section";
 import { DeleteWord } from "./forms/delete-word";
 import { EditWordButton, EditWordForm } from "./forms/edit-word";
 
@@ -92,25 +86,12 @@ export function WordViewEdit(props: { word: Word }) {
       <Separator />
       <div id="word-sections" className="my-2">
         <div id="add-new-section">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                className="w-full text-lg md:h-8 md:w-fit md:text-sm"
-              >
-                <PlusIcon className="mr-1 size-4 text-green-600" />
-                Add Section
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="w-full max-w-lg p-0">
-              <AddSectionForm
-                word={props.word}
-                onSectionAdded={() => {
-                  router.refresh();
-                }}
-              />
-            </DialogContent>
-          </Dialog>
+          <AddSectionDialog
+            word={props.word}
+            onSectionAdded={() => {
+              router.refresh();
+            }}
+          />
         </div>
         <DndContext
           sensors={sensors}
