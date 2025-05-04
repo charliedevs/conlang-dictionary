@@ -1,11 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { InfoIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { OpenPage } from "~/components/icons/open-page";
 import { TextEditor } from "~/components/text-editor";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -16,6 +19,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import useIsMobile from "~/hooks/responsiveness/useIsMobile";
 import { type Word } from "~/types/word";
 
 const pronunciationFormProps = z
@@ -28,6 +32,7 @@ const pronunciationFormProps = z
       z.literal(""),
     ]),
     region: z.string().optional(),
+    displayLinkForIPA: z.boolean().optional().default(false),
     //phonemeIds: z.string().optional(), // TODO: Integrate later as Phonology is built out
   })
   .superRefine((data, ctx) => {
@@ -68,12 +73,15 @@ export function PronunciationSectionForm({
       ipa: initialValues.ipa ?? "",
       audioUrl: initialValues.audioUrl ?? "",
       region: initialValues.region ?? "",
+      displayLinkForIPA: initialValues.displayLinkForIPA ?? false,
     },
   });
 
   function handleSubmit(values: PronunciationSectionFormValues) {
     onSubmit?.(values);
   }
+
+  const isMobile = useIsMobile();
 
   return (
     <Form {...form}>
@@ -92,6 +100,26 @@ export function PronunciationSectionForm({
                 <Input
                   {...field}
                   placeholder="e.g. Pronunciation"
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="pronunciationText"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Pronunciation Text</FormLabel>
+              <FormControl>
+                <TextEditor
+                  {...field}
+                  value={field.value}
+                  className="min-h-[80px] bg-background"
+                  showOrderedList
                   disabled={disabled}
                 />
               </FormControl>
@@ -128,20 +156,57 @@ export function PronunciationSectionForm({
         />
         <FormField
           control={form.control}
-          name="pronunciationText"
+          name="displayLinkForIPA"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Pronunciation Text</FormLabel>
-              <FormControl>
-                <TextEditor
-                  {...field}
-                  value={field.value}
-                  className="min-h-[80px] bg-background"
-                  showOrderedList
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
+            <FormItem className="flex flex-col space-y-0">
+              <div className="flex flex-row items-center gap-2">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <FormLabel className="mb-0 flex items-center gap-1">
+                  Display link for IPA playback?
+                  {!isMobile ? (
+                    <Tooltip
+                      content={
+                        <span>
+                          Show users a link to{" "}
+                          <a
+                            href="https://ipa-reader.com"
+                            target="_blank"
+                            className="underline"
+                          >
+                            ipa-reader.com
+                          </a>{" "}
+                          for speech-to-text of your word.
+                        </span>
+                      }
+                      side="right"
+                    >
+                      <InfoIcon className="inline h-[1em] w-[1em] align-text-bottom text-muted-foreground transition-colors hover:text-primary" />
+                    </Tooltip>
+                  ) : null}
+                </FormLabel>
+              </div>
+              {isMobile ? (
+                <FormDescription className="!mt-2 flex items-center text-xs text-muted-foreground">
+                  <InfoIcon className="inline h-[1em] w-[1em] align-text-bottom" />
+                  <span className="!ml-1">
+                    Show users a link to{" "}
+                    <a
+                      href="https://ipa-reader.com"
+                      target="_blank"
+                      className="inline underline"
+                    >
+                      ipa-reader.com
+                    </a>{" "}
+                    for speech-to-text of your word.
+                  </span>
+                </FormDescription>
+              ) : null}
             </FormItem>
           )}
         />

@@ -26,6 +26,7 @@ export type PronunciationSectionProperties = {
   region?: string;
   phonemeIds?: string[];
   pronunciationText?: string;
+  displayLinkForIPA?: boolean;
 };
 
 export type EtymologySectionProperties = {
