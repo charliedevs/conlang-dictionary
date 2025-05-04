@@ -19,6 +19,7 @@ interface TextEditorProps {
   showOrderedList?: boolean;
   customToolbarActions?: ReactNode;
   className?: string;
+  disabled?: boolean;
 }
 
 interface MarkdownStorage {
@@ -33,6 +34,7 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
       showOrderedList = false,
       customToolbarActions,
       className,
+      disabled = false,
     },
     ref,
   ) => {
@@ -85,12 +87,13 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
           onChange(editor.getHTML());
         }
       },
+      editable: !disabled,
     });
 
     return (
       <div id="textEditor" ref={ref}>
         <EditorContent editor={editor} />
-        {editor ? (
+        {editor && !disabled ? (
           <RichTextEditorToolbar
             editor={editor}
             showOrderedList={showOrderedList}
