@@ -41,6 +41,7 @@ export function WordViewEdit(props: { word: Word }) {
     sensors,
     handleDragEnd: lexicalHandleDragEnd,
     handleMove,
+    isUpdating,
   } = useSortableSections(props.word);
 
   function handleExitEditMode() {
@@ -108,7 +109,7 @@ export function WordViewEdit(props: { word: Word }) {
                 <SortableSection
                   key={section.id}
                   section={section}
-                  isUpdating={false}
+                  isUpdating={isUpdating}
                   totalSections={lexicalSections.length}
                   index={index}
                   onMoveUp={() => handleMove(index, "up")}
@@ -209,8 +210,12 @@ function SortableSection(props: {
               {...listeners}
               className={cn(
                 "flex h-full items-center p-2 text-muted-foreground hover:text-foreground",
-                props.isUpdating ? "cursor-wait" : "cursor-grab",
+                props.isUpdating
+                  ? "pointer-events-none cursor-wait opacity-50"
+                  : "cursor-grab",
               )}
+              tabIndex={props.isUpdating ? -1 : 0}
+              aria-disabled={props.isUpdating}
             >
               <GripVerticalIcon className="size-4" />
             </div>
