@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { type SectionType, type Word } from "~/types/word";
+import { DefinitionSectionForm } from "./definition-section-form";
 
 export const SECTION_TYPE_UI: Record<
   SectionType,
@@ -127,9 +128,12 @@ export function AddSectionForm({
       </div>
       <Separator />
       <div className="rounded border bg-muted/30 p-4">
-        <p className="text-muted-foreground">
-          [Form for {selected?.label} goes here]
-        </p>
+        <SectionFormSwitcher
+          sectionType={selectedType}
+          word={word}
+          onSectionAdded={onSectionAdded}
+          onCancel={() => setSelectedType(null)}
+        />
       </div>
       <div className="mt-4 flex justify-end">
         <Button variant="ghost" onClick={() => setSelectedType(null)}>
@@ -143,4 +147,42 @@ export function AddSectionForm({
       </div>
     </div>
   );
+}
+
+function SectionFormSwitcher({
+  sectionType,
+  word,
+  onSectionAdded,
+  onCancel,
+}: {
+  sectionType: SectionTypeValue;
+  word: Word;
+  onSectionAdded?: () => void;
+  onCancel?: () => void;
+}) {
+  switch (sectionType) {
+    case "definition":
+      return (
+        <DefinitionSectionForm
+          word={word}
+          mode="add"
+          onCancel={onCancel}
+          onSubmit={(values) => {
+            // For now, just log the values
+            console.log("DefinitionSectionForm submitted", values);
+            onSectionAdded?.();
+          }}
+        />
+      );
+    case "pronunciation":
+      return <div>[Pronunciation Section Form goes here]</div>;
+    case "etymology":
+      return <div>[Etymology Section Form goes here]</div>;
+    case "custom_text":
+      return <div>[Custom Text Section Form goes here]</div>;
+    case "custom_fields":
+      return <div>[Custom Fields Section Form goes here]</div>;
+    default:
+      return <div>Unknown section type</div>;
+  }
 }
