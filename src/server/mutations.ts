@@ -2,103 +2,46 @@ import "server-only";
 
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
 import {
   CustomFieldsSectionProperties,
   CustomTextSectionProperties,
   DefinitionSectionProperties,
   EtymologySectionProperties,
   PronunciationSectionProperties,
+  SectionType,
 } from "~/types/word";
 import { db } from "./db";
 import { lexicalCategories, lexicalSections } from "./db/schema";
 
 // #region Lexical Sections
 
-// Zod schemas for each section type's properties
-const definitionProps = z.object({
-  title: z.string().optional(),
-  lexicalCategoryId: z.number(),
-  definitionText: z.string().optional(),
-  examples: z.array(z.string()).optional(),
-});
-
-const pronunciationProps = z.object({
-  title: z.string().optional(),
-  pronunciationText: z.string().optional(),
-  ipa: z.string().optional(),
-  audioUrl: z.string().optional(),
-  region: z.string().optional(),
-  phonemeIds: z.array(z.string()).optional(),
-});
-
-const etymologyProps = z.object({
-  title: z.string().optional(),
-  etymologyText: z.string().optional(),
-});
-
-const customTextProps = z.object({
-  title: z.string().optional(),
-  contentText: z.string().optional(),
-});
-
-const customFieldsProps = z.object({
-  title: z.string().optional(),
-  customFields: z.record(z.unknown()),
-});
-
-// Discriminated union for the full insert schema
-export const insertLexicalSectionSchema = z.discriminatedUnion("sectionType", [
-  z.object({
-    sectionType: z.literal("definition"),
-    wordId: z.number(),
-    order: z.number().optional(),
-    properties: definitionProps,
-  }),
-  z.object({
-    sectionType: z.literal("pronunciation"),
-    wordId: z.number(),
-    order: z.number().optional(),
-    properties: pronunciationProps,
-  }),
-  z.object({
-    sectionType: z.literal("etymology"),
-    wordId: z.number(),
-    order: z.number().optional(),
-    properties: etymologyProps,
-  }),
-  z.object({
-    sectionType: z.literal("custom_text"),
-    wordId: z.number(),
-    order: z.number().optional(),
-    properties: customTextProps,
-  }),
-  z.object({
-    sectionType: z.literal("custom_fields"),
-    wordId: z.number(),
-    order: z.number().optional(),
-    properties: customFieldsProps,
-  }),
-]);
-
-export type InsertLexicalSectionInput = z.infer<
-  typeof insertLexicalSectionSchema
->;
+export type InsertLexicalSectionInput = {
+  sectionType: SectionType;
+  wordId: number;
+  order?: number;
+  properties:
+    | DefinitionSectionProperties
+    | PronunciationSectionProperties
+    | EtymologySectionProperties
+    | CustomTextSectionProperties
+    | CustomFieldsSectionProperties;
+};
 
 export async function insertLexicalSection(input: InsertLexicalSectionInput) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
-  // Validate input (redundant if already validated at API layer, but safe)
-  const parsed = insertLexicalSectionSchema.parse(input);
+  if (!input.wordId || !input.sectionType || !input.properties) {
+    throw new Error("Missing required fields");
+  }
 
   const newSection = await db
     .insert(lexicalSections)
     .values({
-      wordId: parsed.wordId,
-      sectionType: parsed.sectionType,
-      order: parsed.order ?? 0,
-      properties: parsed.properties,
+      wordId: input.wordId,
+      sectionType: input.sectionType,
+      order: input.order ?? 0,
+      properties: input.properties,
     })
     .returning();
 
