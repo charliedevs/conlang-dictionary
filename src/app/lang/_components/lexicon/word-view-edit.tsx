@@ -49,11 +49,8 @@ export function WordViewEdit(props: { word: Word }) {
   } = useSortableSections(props.word);
 
   function handleExitEditMode() {
-    // Create new URLSearchParams object from the current params
     const newParams = new URLSearchParams(searchParams.toString());
-    // Remove the edit param
     newParams.delete("edit");
-    // Push the new URL
     router.push(`?${newParams.toString()}`);
   }
 
@@ -109,7 +106,7 @@ export function WordViewEdit(props: { word: Word }) {
               <AddSectionForm
                 word={props.word}
                 onSectionAdded={() => {
-                  alert("not implemented");
+                  router.refresh();
                 }}
               />
             </DialogContent>

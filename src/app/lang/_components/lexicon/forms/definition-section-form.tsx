@@ -149,8 +149,6 @@ export function DefinitionSectionForm({
               <FormControl>
                 <TextEditor
                   {...field}
-                  //value={field.value ?? ""}
-                  //onChange={field.onChange}
                   className="min-h-[80px] bg-background"
                   showOrderedList
                 />

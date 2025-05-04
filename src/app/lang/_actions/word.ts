@@ -1,7 +1,9 @@
 "use server";
 
 import {
+  insertLexicalSection,
   updateLexicalSectionOrders,
+  type InsertLexicalSectionInput,
   type LexicalSectionOrderUpdate,
 } from "~/server/mutations";
 import {
@@ -30,4 +32,8 @@ export async function updateSectionOrders(
 ) {
   const results = await updateLexicalSectionOrders(updates);
   return results;
+}
+
+export async function createLexicalSection(input: InsertLexicalSectionInput) {
+  return await insertLexicalSection(input);
 }

@@ -8,9 +8,13 @@ import {
   ListIcon,
   Volume2Icon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
+import { createLexicalSection } from "~/app/lang/_actions/word";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { type InsertLexicalSectionInput } from "~/server/mutations";
 import { type SectionType, type Word } from "~/types/word";
 import { DefinitionSectionForm } from "./definition-section-form";
 
@@ -73,6 +77,26 @@ export function AddSectionForm({
     null,
   );
 
+  const router = useRouter();
+  async function handleSubmit(section: InsertLexicalSectionInput) {
+    try {
+      await createLexicalSection(section);
+      onSectionAdded?.();
+      router.refresh();
+      toast.success(
+        `${SECTION_TYPE_UI[section.sectionType].label} section added`,
+      );
+    } catch (error) {
+      console.error("Error:", error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to add definition section. Please try again.");
+      }
+      return;
+    }
+  }
+
   if (selectedType === null) {
     return (
       <div className="flex flex-col gap-4 p-4">
@@ -131,7 +155,7 @@ export function AddSectionForm({
         <SectionFormSwitcher
           sectionType={selectedType}
           word={word}
-          onSectionAdded={onSectionAdded}
+          onSectionFormSubmit={handleSubmit}
           onCancel={() => setSelectedType(null)}
         />
       </div>
@@ -152,12 +176,12 @@ export function AddSectionForm({
 function SectionFormSwitcher({
   sectionType,
   word,
-  onSectionAdded,
+  onSectionFormSubmit,
   onCancel,
 }: {
   sectionType: SectionTypeValue;
   word: Word;
-  onSectionAdded?: () => void;
+  onSectionFormSubmit: (section: InsertLexicalSectionInput) => void;
   onCancel?: () => void;
 }) {
   switch (sectionType) {
@@ -167,11 +191,13 @@ function SectionFormSwitcher({
           word={word}
           mode="add"
           onCancel={onCancel}
-          onSubmit={(values) => {
-            // For now, just log the values
-            console.log("DefinitionSectionForm submitted", values);
-            onSectionAdded?.();
-          }}
+          onSubmit={(values) =>
+            onSectionFormSubmit({
+              sectionType: "definition",
+              wordId: word.id,
+              properties: values,
+            })
+          }
         />
       );
     case "pronunciation":
