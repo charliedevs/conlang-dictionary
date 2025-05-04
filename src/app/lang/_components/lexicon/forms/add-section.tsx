@@ -112,9 +112,11 @@ export function AddSectionForm({
   const [selectedType, setSelectedType] = useState<SectionTypeValue | null>(
     null,
   );
+  const [isAdding, setIsAdding] = useState(false);
 
   const router = useRouter();
   async function handleSubmit(section: InsertLexicalSectionInput) {
+    setIsAdding(true);
     try {
       await createLexicalSection(section);
       onSectionAdded?.();
@@ -130,6 +132,8 @@ export function AddSectionForm({
         toast.error("Failed to add definition section. Please try again.");
       }
       return;
+    } finally {
+      setIsAdding(false);
     }
   }
 
@@ -193,6 +197,7 @@ export function AddSectionForm({
           word={word}
           onSectionFormSubmit={handleSubmit}
           onCancel={() => setSelectedType(null)}
+          isAdding={isAdding}
         />
       </div>
       <div className="mt-4 flex justify-end">
@@ -211,11 +216,13 @@ function SectionFormSwitcher({
   word,
   onSectionFormSubmit,
   onCancel,
+  isAdding = false,
 }: {
   sectionType: SectionTypeValue;
   word: Word;
   onSectionFormSubmit: (section: InsertLexicalSectionInput) => void;
   onCancel?: () => void;
+  isAdding?: boolean;
 }) {
   switch (sectionType) {
     case "definition":
@@ -231,6 +238,7 @@ function SectionFormSwitcher({
               properties: values,
             })
           }
+          disabled={isAdding}
         />
       );
     case "pronunciation":
@@ -246,6 +254,7 @@ function SectionFormSwitcher({
               properties: values,
             })
           }
+          disabled={isAdding}
         />
       );
     case "etymology":
