@@ -16,7 +16,7 @@ import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
 
 export interface LexicalCategorySelectProps {
   conlangId: number;
-  defaultValue?: number | null;
+  value?: string | number | null;
   onChange: (value: string) => void;
   className?: string;
 }
@@ -29,18 +29,19 @@ export const LexicalCategorySelect = forwardRef<
     props.conlangId,
   );
   const [isAdding, setIsAdding] = useState(false);
-  const [category, setCategory] = useState("");
+  const [newCategory, setNewCategory] = useState("");
   const router = useRouter();
 
   const handleSave = async () => {
     try {
       setIsAdding(false);
-      await addLexicalCategory.mutateAsync({
+      const response = await addLexicalCategory.mutateAsync({
         conlangId: props.conlangId,
-        category,
+        category: newCategory,
       });
-      toast.success(`${category} added.`);
-      setCategory("");
+      toast.success(`${response.category} added.`);
+      props.onChange(response.id.toString());
+      setNewCategory("");
       router.refresh();
     } catch (error) {
       console.error("Error:", error);
@@ -55,8 +56,8 @@ export const LexicalCategorySelect = forwardRef<
   return (
     <>
       <Select
+        value={props.value ? String(props.value) : ""}
         onValueChange={props.onChange}
-        defaultValue={props.defaultValue ? String(props.defaultValue) : ""}
       >
         <SelectTrigger className={props.className} ref={ref}>
           <SelectValue placeholder="Choose part of speech..." />
@@ -98,15 +99,15 @@ export const LexicalCategorySelect = forwardRef<
           <>
             <Input
               placeholder="New part of speech..."
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => setNewCategory(e.target.value)}
               onKeyDown={async (e) => {
-                if (e.key === "Enter" && category) {
+                if (e.key === "Enter" && newCategory) {
                   await handleSave();
                 }
               }}
               className="min-w-44"
             />
-            <Button disabled={!category} onClick={handleSave}>
+            <Button disabled={!newCategory} onClick={handleSave}>
               Save
             </Button>
           </>
