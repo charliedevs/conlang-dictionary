@@ -4,8 +4,10 @@ import {
   deleteLexicalSection,
   insertLexicalSection,
   updateLexicalSectionOrders,
+  updateLexicalSectionProperties,
   type InsertLexicalSectionInput,
   type LexicalSectionOrderUpdate,
+  type UpdateLexicalSectionPropertiesInput,
 } from "~/server/mutations";
 import {
   deleteWord,
@@ -15,30 +17,39 @@ import {
   type WordUpdate,
 } from "~/server/queries";
 
+// #region Word Actions
 export async function createWord(word: WordInsert) {
-  const newWord = await insertWord(word);
-  return newWord;
+  return await insertWord(word);
 }
 
 export async function editWord(word: WordUpdate) {
-  await updateWord(word);
+  return await updateWord(word);
 }
 
 export async function removeWord(wordId: number) {
-  await deleteWord(wordId);
+  return await deleteWord(wordId);
+}
+// #endregion Word Actions
+
+// #region Lexical Section Actions
+export async function createLexicalSection(input: InsertLexicalSectionInput) {
+  return await insertLexicalSection(input);
+}
+
+export async function editLexicalSectionProperties(
+  sectionId: string,
+  input: UpdateLexicalSectionPropertiesInput,
+) {
+  return await updateLexicalSectionProperties(sectionId, input);
 }
 
 export async function updateSectionOrders(
   updates: LexicalSectionOrderUpdate[],
 ) {
-  const results = await updateLexicalSectionOrders(updates);
-  return results;
-}
-
-export async function createLexicalSection(input: InsertLexicalSectionInput) {
-  return await insertLexicalSection(input);
+  return await updateLexicalSectionOrders(updates);
 }
 
 export async function removeLexicalSection(sectionId: string) {
   return await deleteLexicalSection(sectionId);
 }
+// #endregion Lexical Section Actions
