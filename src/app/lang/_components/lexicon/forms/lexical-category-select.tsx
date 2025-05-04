@@ -19,6 +19,7 @@ export interface LexicalCategorySelectProps {
   value?: string | number | null;
   onChange: (value: string) => void;
   className?: string;
+  disabled?: boolean;
 }
 
 export const LexicalCategorySelect = forwardRef<
@@ -58,8 +59,13 @@ export const LexicalCategorySelect = forwardRef<
       <Select
         value={props.value ? String(props.value) : ""}
         onValueChange={props.onChange}
+        disabled={props.disabled}
       >
-        <SelectTrigger className={props.className} ref={ref}>
+        <SelectTrigger
+          className={props.className}
+          ref={ref}
+          disabled={props.disabled}
+        >
           <SelectValue placeholder="Choose part of speech..." />
         </SelectTrigger>
         <SelectContent>
@@ -81,6 +87,7 @@ export const LexicalCategorySelect = forwardRef<
               variant="ghost"
               size="sm"
               className="w-full rounded-sm"
+              disabled={props.disabled}
             >
               <PlusCircle className="mr-2 size-5 text-inherit" />
               Add New Part of Speech
@@ -106,8 +113,12 @@ export const LexicalCategorySelect = forwardRef<
                 }
               }}
               className="min-w-44"
+              disabled={props.disabled}
             />
-            <Button disabled={!newCategory} onClick={handleSave}>
+            <Button
+              disabled={!newCategory || props.disabled}
+              onClick={handleSave}
+            >
               Save
             </Button>
           </>
