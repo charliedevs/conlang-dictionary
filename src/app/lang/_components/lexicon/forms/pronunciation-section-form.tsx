@@ -50,6 +50,7 @@ interface PronunciationSectionFormProps {
   mode?: "add" | "edit";
   onSubmit?: (values: PronunciationSectionFormValues) => void;
   onCancel?: () => void;
+  disabled?: boolean;
 }
 
 export function PronunciationSectionForm({
@@ -57,6 +58,7 @@ export function PronunciationSectionForm({
   mode = "add",
   onSubmit,
   onCancel,
+  disabled = false,
 }: PronunciationSectionFormProps) {
   const form = useForm<PronunciationSectionFormValues>({
     resolver: zodResolver(pronunciationFormProps),
@@ -78,6 +80,7 @@ export function PronunciationSectionForm({
       <form
         className="flex flex-col gap-4"
         onSubmit={form.handleSubmit(handleSubmit)}
+        aria-disabled={disabled}
       >
         <FormField
           control={form.control}
@@ -86,7 +89,11 @@ export function PronunciationSectionForm({
             <FormItem>
               <FormLabel>Section Title (optional)</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. Pronunciation" />
+                <Input
+                  {...field}
+                  placeholder="e.g. Pronunciation"
+                  disabled={disabled}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -99,7 +106,11 @@ export function PronunciationSectionForm({
             <FormItem>
               <FormLabel>IPA</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. /ˈmaʊn.tɪn/" />
+                <Input
+                  {...field}
+                  placeholder="e.g. /ˈmaʊn.tɪn/"
+                  disabled={disabled}
+                />
               </FormControl>
               <FormDescription className="group/link">
                 <a
@@ -127,6 +138,7 @@ export function PronunciationSectionForm({
                   value={field.value}
                   className="min-h-[80px] bg-background"
                   showOrderedList
+                  disabled={disabled}
                 />
               </FormControl>
               <FormMessage />
@@ -144,6 +156,7 @@ export function PronunciationSectionForm({
                   {...field}
                   type="url"
                   placeholder="Paste audio file URL"
+                  disabled={disabled}
                 />
               </FormControl>
               <FormMessage />
@@ -152,14 +165,19 @@ export function PronunciationSectionForm({
         />
         <div className="flex justify-end gap-2">
           {onCancel && (
-            <Button type="button" variant="ghost" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onCancel}
+              disabled={disabled}
+            >
               Cancel
             </Button>
           )}
           <Button
             type="submit"
             variant="default"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || disabled}
           >
             {mode === "edit" ? "Save Changes" : "Add Section"}
           </Button>

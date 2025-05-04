@@ -41,6 +41,7 @@ interface DefinitionSectionFormProps {
     },
   ) => void;
   onCancel?: () => void;
+  disabled?: boolean;
 }
 
 export function DefinitionSectionForm({
@@ -49,6 +50,7 @@ export function DefinitionSectionForm({
   mode = "add",
   onSubmit,
   onCancel,
+  disabled = false,
 }: DefinitionSectionFormProps) {
   // Map initial string[] to { value: string }[]
   const initialExamples = (initialValues.examples ?? []).map((ex) => ({
@@ -92,6 +94,7 @@ export function DefinitionSectionForm({
       <form
         className="flex flex-col gap-4"
         onSubmit={form.handleSubmit(handleSubmit)}
+        aria-disabled={disabled}
       >
         <FormField
           control={form.control}
@@ -100,7 +103,11 @@ export function DefinitionSectionForm({
             <FormItem>
               <FormLabel>Section Title (optional)</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. Noun, Verb, etc." />
+                <Input
+                  {...field}
+                  placeholder="e.g. Noun, Verb, etc."
+                  disabled={disabled}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -134,6 +141,7 @@ export function DefinitionSectionForm({
                     }
                     field.onChange(Number(val));
                   }}
+                  disabled={disabled}
                 />
               </FormControl>
               <FormMessage />
@@ -151,6 +159,7 @@ export function DefinitionSectionForm({
                   {...field}
                   className="min-h-[80px] bg-background"
                   showOrderedList
+                  disabled={disabled}
                 />
               </FormControl>
               <FormMessage />
@@ -174,11 +183,12 @@ export function DefinitionSectionForm({
                       handleAddExample();
                     }
                   }}
+                  disabled={disabled}
                 />
                 <Button
                   type="button"
                   variant="outline"
-                  disabled={!newExample}
+                  disabled={!newExample || disabled}
                   onClick={handleAddExample}
                 >
                   Add
@@ -193,7 +203,7 @@ export function DefinitionSectionForm({
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormControl>
-                            <Input {...field} />
+                            <Input {...field} disabled={disabled} />
                           </FormControl>
                         </FormItem>
                       )}
@@ -203,6 +213,7 @@ export function DefinitionSectionForm({
                       size="sm"
                       variant="ghost"
                       onClick={() => remove(idx)}
+                      disabled={disabled}
                     >
                       <XIcon />
                     </Button>
@@ -215,14 +226,19 @@ export function DefinitionSectionForm({
         />
         <div className="flex justify-end gap-2">
           {onCancel && (
-            <Button type="button" variant="ghost" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onCancel}
+              disabled={disabled}
+            >
               Cancel
             </Button>
           )}
           <Button
             type="submit"
             variant="default"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || disabled}
           >
             {mode === "edit" ? "Save Changes" : "Add Section"}
           </Button>
