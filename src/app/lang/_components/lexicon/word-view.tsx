@@ -27,7 +27,7 @@ export async function WordView(props: {
   const editSearchParams = new URLSearchParams(props.searchParams ?? {});
   editSearchParams.set("edit", "true");
 
-  if (isEditMode) {
+  if (isEditMode && props.isConlangOwner) {
     return <WordViewEdit word={word} />;
   }
 
