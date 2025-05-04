@@ -136,7 +136,7 @@ export function AddSectionForm({
     return (
       <div className="flex flex-col gap-4 p-4">
         <h2 className="mb-1 text-xl font-semibold">Add a Section</h2>
-        <div className="mb-2 text-lg font-medium text-muted-foreground">
+        <div className="mb-1 text-lg font-medium text-muted-foreground">
           For: <span className="text-foreground">{word.text}</span>
         </div>
         <Separator />
@@ -172,7 +172,7 @@ export function AddSectionForm({
   const selected = SECTION_TYPES.find((s) => s.type === selectedType);
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div className="mb-2 flex items-center gap-2">
+      <div className="mb-1 flex items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
@@ -182,11 +182,11 @@ export function AddSectionForm({
         </Button>
         <h2 className="text-xl font-semibold">Add {selected?.label} Section</h2>
       </div>
-      <div className="mb-2 text-lg font-medium text-muted-foreground">
+      <div className="mb-1 text-lg font-medium text-muted-foreground">
         For: <span className="text-foreground">{word.text}</span>
       </div>
       <Separator />
-      <div className="rounded border bg-muted/30 p-4">
+      <div className="">
         <SectionFormSwitcher
           sectionType={selectedType}
           word={word}
@@ -195,9 +195,6 @@ export function AddSectionForm({
         />
       </div>
       <div className="mt-4 flex justify-end">
-        <Button variant="ghost" onClick={() => setSelectedType(null)}>
-          Change Section Type
-        </Button>
         {onCancel && (
           <Button variant="ghost" onClick={onCancel}>
             Cancel

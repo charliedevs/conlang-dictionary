@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -175,7 +176,12 @@ export function DefinitionSectionForm({
                     }
                   }}
                 />
-                <Button type="button" onClick={handleAddExample}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!newExample}
+                  onClick={handleAddExample}
+                >
                   Add
                 </Button>
               </div>
@@ -199,7 +205,7 @@ export function DefinitionSectionForm({
                       variant="ghost"
                       onClick={() => remove(idx)}
                     >
-                      Remove
+                      <XIcon />
                     </Button>
                   </li>
                 ))}
