@@ -28,6 +28,7 @@ import { updateSectionOrders } from "../../_actions/word";
 import { AddSectionDialog } from "./forms/add-section";
 import { DeleteSection } from "./forms/delete-section";
 import { DeleteWord } from "./forms/delete-word";
+import { EditSection } from "./forms/edit-section";
 import { EditWordButton, EditWordForm } from "./forms/edit-word";
 import { renderSection } from "./section-views";
 
@@ -116,7 +117,9 @@ export function WordViewEdit(props: { word: Word }) {
                   onMoveUp={() => handleMove(index, "up")}
                   onMoveDown={() => handleMove(index, "down")}
                   wordText={props.word.text}
+                  word={props.word}
                   onSectionDeleted={() => router.refresh()}
+                  onSectionEdited={() => router.refresh()}
                 />
               ))}
             </div>
@@ -154,7 +157,9 @@ function SortableSection(props: {
   onMoveUp?: () => void;
   onMoveDown?: () => void;
   wordText?: string;
+  word?: Word;
   onSectionDeleted?: () => void;
+  onSectionEdited?: () => void;
 }) {
   const {
     attributes,
@@ -184,7 +189,12 @@ function SortableSection(props: {
         props.isUpdating ? "cursor-wait" : "",
       )}
     >
-      <div className="absolute right-2 top-2 z-10">
+      <div className="absolute right-2 top-2 z-10 flex gap-1">
+        <EditSection
+          section={props.section}
+          word={props.word!}
+          afterEdit={props.onSectionEdited}
+        />
         <DeleteSection
           section={props.section}
           wordText={props.wordText ?? ""}
