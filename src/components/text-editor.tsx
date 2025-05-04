@@ -91,8 +91,12 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
     });
 
     return (
-      <div id="textEditor" ref={ref}>
-        <EditorContent editor={editor} />
+      <div
+        id="textEditor"
+        ref={ref}
+        className={disabled ? "pointer-events-none opacity-50" : ""}
+      >
+        <EditorContent editor={editor} disabled={disabled} />
         {editor && !disabled ? (
           <RichTextEditorToolbar
             editor={editor}
