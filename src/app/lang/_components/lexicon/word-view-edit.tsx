@@ -26,6 +26,7 @@ import { cn } from "~/lib/utils";
 import { type LexicalSection, type Word } from "~/types/word";
 import { updateSectionOrders } from "../../_actions/word";
 import { AddSectionDialog } from "./forms/add-section";
+import { DeleteSection } from "./forms/delete-section";
 import { DeleteWord } from "./forms/delete-word";
 import { EditWordButton, EditWordForm } from "./forms/edit-word";
 import { renderSection } from "./section-views";
@@ -114,6 +115,8 @@ export function WordViewEdit(props: { word: Word }) {
                   index={index}
                   onMoveUp={() => handleMove(index, "up")}
                   onMoveDown={() => handleMove(index, "down")}
+                  wordText={props.word.text}
+                  onSectionDeleted={() => router.refresh()}
                 />
               ))}
             </div>
@@ -150,6 +153,8 @@ function SortableSection(props: {
   index: number;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  wordText?: string;
+  onSectionDeleted?: () => void;
 }) {
   const {
     attributes,
@@ -179,6 +184,13 @@ function SortableSection(props: {
         props.isUpdating ? "cursor-wait" : "",
       )}
     >
+      <div className="absolute right-2 top-2 z-10">
+        <DeleteSection
+          section={props.section}
+          wordText={props.wordText ?? ""}
+          afterDelete={props.onSectionDeleted}
+        />
+      </div>
       {props.totalSections > 1 && (
         <div className="flex h-full items-center gap-1">
           {isMobile ? (

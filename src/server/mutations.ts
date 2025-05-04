@@ -126,6 +126,19 @@ export async function updateLexicalSectionOrders(
   });
 }
 
+export async function deleteLexicalSection(sectionId: string) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const deleted = await db
+    .delete(lexicalSections)
+    .where(eq(lexicalSections.id, sectionId))
+    .returning();
+
+  if (!deleted[0]) throw new Error("Failed to delete lexical section");
+  return deleted[0];
+}
+
 // #endregion Lexical Sections
 
 // #region Lexical Categories

@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  deleteLexicalSection,
   insertLexicalSection,
   updateLexicalSectionOrders,
   type InsertLexicalSectionInput,
@@ -36,4 +37,8 @@ export async function updateSectionOrders(
 
 export async function createLexicalSection(input: InsertLexicalSectionInput) {
   return await insertLexicalSection(input);
+}
+
+export async function removeLexicalSection(sectionId: string) {
+  return await deleteLexicalSection(sectionId);
 }
