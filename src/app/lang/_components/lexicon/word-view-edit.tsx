@@ -28,6 +28,7 @@ import { updateSectionOrders } from "../../_actions/word";
 import { AddSectionDialog } from "./forms/add-section";
 import { DeleteWord } from "./forms/delete-word";
 import { EditWordButton, EditWordForm } from "./forms/edit-word";
+import { renderSection } from "./section-views";
 
 /** Editable WordView */
 export function WordViewEdit(props: { word: Word }) {
@@ -218,10 +219,7 @@ function SortableSection(props: {
       )}
       <div className="flex-1">
         {/* Placeholder for section content */}
-        <div className="p-3">
-          <strong>{props.section.sectionType}</strong> section (ID:{" "}
-          {props.section.id})
-        </div>
+        {renderSection(props.section)}
       </div>
     </div>
   );
