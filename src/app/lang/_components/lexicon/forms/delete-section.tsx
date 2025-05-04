@@ -50,6 +50,7 @@ export function DeleteSection({
           size="sm"
           className="size-6 p-1 text-muted-foreground transition-all hover:bg-red-600/20 hover:!text-red-800 group-hover/section:text-red-700"
         >
+          <span className="sr-only">Delete section</span>
           <Trash2Icon className="size-5" />
         </Button>
       </DialogTrigger>
