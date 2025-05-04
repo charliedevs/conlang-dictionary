@@ -3,6 +3,13 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import {
+  CustomFieldsSectionProperties,
+  CustomTextSectionProperties,
+  DefinitionSectionProperties,
+  EtymologySectionProperties,
+  PronunciationSectionProperties,
+} from "~/types/word";
 import { db } from "./db";
 import { lexicalCategories, lexicalSections } from "./db/schema";
 
@@ -124,6 +131,30 @@ export async function updateLexicalSectionOrders(
       if (updated) results.push(updated);
     }
   });
+}
+
+export type UpdateLexicalSectionPropertiesInput =
+  | { sectionType: "definition"; properties: DefinitionSectionProperties }
+  | { sectionType: "pronunciation"; properties: PronunciationSectionProperties }
+  | { sectionType: "etymology"; properties: EtymologySectionProperties }
+  | { sectionType: "custom_text"; properties: CustomTextSectionProperties }
+  | { sectionType: "custom_fields"; properties: CustomFieldsSectionProperties };
+
+export async function updateLexicalSectionProperties(
+  sectionId: string,
+  input: UpdateLexicalSectionPropertiesInput,
+) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const updated = await db
+    .update(lexicalSections)
+    .set({ properties: input.properties })
+    .where(eq(lexicalSections.id, sectionId))
+    .returning();
+
+  if (!updated[0]) throw new Error("Failed to update lexical section");
+  return updated[0];
 }
 
 export async function deleteLexicalSection(sectionId: string) {
