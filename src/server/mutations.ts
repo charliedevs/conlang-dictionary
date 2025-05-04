@@ -18,6 +18,7 @@ const definitionProps = z.object({
 
 const pronunciationProps = z.object({
   title: z.string().optional(),
+  pronunciationText: z.string().optional(),
   ipa: z.string().optional(),
   audioUrl: z.string().optional(),
   region: z.string().optional(),
