@@ -1,5 +1,5 @@
-import { Volume2Icon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { IPAReaderLink } from "~/components/ipa-reader-link";
 import type { LexicalSection } from "~/types/word";
 
 export function renderSection(section: LexicalSection) {
@@ -65,21 +65,7 @@ function PronunciationSection({
       {ipa && (
         <div>
           IPA: <span className="font-mono">{ipa}</span>
-          {displayLinkForIPA && (
-            <a
-              href={`https://ipa-reader.com/?text=${encodeURIComponent(ipa)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-2 text-muted-foreground hover:text-primary/80"
-              style={{
-                verticalAlign: "middle",
-                display: "inline-flex",
-                alignItems: "center",
-              }}
-            >
-              <Volume2Icon className="h-4 w-4" />
-            </a>
-          )}
+          {displayLinkForIPA && <IPAReaderLink ipa={ipa} />}
         </div>
       )}
       {pronunciationText && (
