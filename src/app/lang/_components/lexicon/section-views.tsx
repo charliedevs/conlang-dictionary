@@ -2,6 +2,15 @@ import ReactMarkdown from "react-markdown";
 import { IPAReaderLink } from "~/components/ipa-reader-link";
 import type { LexicalSection } from "~/types/word";
 
+// Custom components for ReactMarkdown to ensure proper nested list styling
+const markdownComponents = {
+  ul: ({ node, ...props }: any) => <ul className="list-disc pl-2" {...props} />,
+  ol: ({ node, ...props }: any) => (
+    <ol className="list-decimal pl-2" {...props} />
+  ),
+  li: ({ node, ...props }: any) => <li className="ml-2" {...props} />,
+} as const;
+
 export function renderSection(section: LexicalSection) {
   switch (section.sectionType) {
     case "definition":
@@ -26,14 +35,17 @@ function DefinitionSection({
 }) {
   const { title, lexicalCategoryId, definitionText, examples } =
     section.properties;
+
   return (
     <div>
       <h3 className="mb-2 text-lg font-bold">
         {title && title.trim() !== "" ? title : "Definition"}
       </h3>
       {definitionText && (
-        <div className="text-pretty text-sm [&_ol]:list-inside [&_ol]:list-decimal">
-          <ReactMarkdown>{definitionText}</ReactMarkdown>
+        <div className="text-pretty text-sm">
+          <ReactMarkdown components={markdownComponents}>
+            {definitionText}
+          </ReactMarkdown>
         </div>
       )}
       {Array.isArray(examples) && examples.length > 0 && (
@@ -63,7 +75,9 @@ function PronunciationSection({
       </h3>
       {pronunciationText && (
         <div className="mt-2 text-pretty text-sm">
-          <ReactMarkdown>{pronunciationText}</ReactMarkdown>
+          <ReactMarkdown components={markdownComponents}>
+            {pronunciationText}
+          </ReactMarkdown>
         </div>
       )}
       {ipa && (
@@ -95,7 +109,9 @@ function EtymologySection({
       </h3>
       {etymologyText && (
         <div className="text-pretty text-sm">
-          <ReactMarkdown>{etymologyText}</ReactMarkdown>
+          <ReactMarkdown components={markdownComponents}>
+            {etymologyText}
+          </ReactMarkdown>
         </div>
       )}
     </div>
@@ -115,7 +131,9 @@ function CustomTextSection({
       </h3>
       {contentText && (
         <div className="text-pretty text-sm">
-          <ReactMarkdown>{contentText}</ReactMarkdown>
+          <ReactMarkdown components={markdownComponents}>
+            {contentText}
+          </ReactMarkdown>
         </div>
       )}
     </div>
