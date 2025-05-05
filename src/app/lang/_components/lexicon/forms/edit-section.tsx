@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
+import type { UpdateLexicalSectionPropertiesInput } from "~/server/mutations";
 import { type LexicalSection, type Word } from "~/types/word";
 import { editLexicalSectionProperties } from "../../../_actions/word";
 import { CustomTextSectionForm } from "./custom-text-section-form";
@@ -36,13 +37,10 @@ export function EditSection({
     setOpen(false);
   }
 
-  async function handleSubmit(values: any) {
+  async function handleSubmit(input: UpdateLexicalSectionPropertiesInput) {
     setIsSaving(true);
     try {
-      await editLexicalSectionProperties(section.id, {
-        sectionType: section.sectionType,
-        properties: values,
-      } as any);
+      await editLexicalSectionProperties(section.id, input);
       toast.success("Section updated");
       setOpen(false);
       if (afterEdit) afterEdit();
@@ -98,7 +96,7 @@ function SectionFormSwitcher({
   section: LexicalSection;
   word: Word;
   isSaving: boolean;
-  onSubmit: (values: any) => void;
+  onSubmit: (input: UpdateLexicalSectionPropertiesInput) => void;
   onCancel: () => void;
 }) {
   switch (section.sectionType) {
@@ -108,7 +106,12 @@ function SectionFormSwitcher({
           word={word}
           mode="edit"
           initialValues={section.properties}
-          onSubmit={onSubmit}
+          onSubmit={(values) =>
+            onSubmit({
+              sectionType: "definition",
+              properties: values,
+            })
+          }
           onCancel={onCancel}
           disabled={isSaving}
         />
@@ -119,7 +122,12 @@ function SectionFormSwitcher({
           word={word}
           mode="edit"
           initialValues={section.properties}
-          onSubmit={onSubmit}
+          onSubmit={(values) =>
+            onSubmit({
+              sectionType: "pronunciation",
+              properties: values,
+            })
+          }
           onCancel={onCancel}
           disabled={isSaving}
         />
@@ -130,7 +138,12 @@ function SectionFormSwitcher({
           word={word}
           mode="edit"
           initialValues={section.properties}
-          onSubmit={onSubmit}
+          onSubmit={(values) =>
+            onSubmit({
+              sectionType: "etymology",
+              properties: values,
+            })
+          }
           onCancel={onCancel}
           disabled={isSaving}
         />
@@ -141,7 +154,12 @@ function SectionFormSwitcher({
           word={word}
           mode="edit"
           initialValues={section.properties}
-          onSubmit={onSubmit}
+          onSubmit={(values) =>
+            onSubmit({
+              sectionType: "custom_text",
+              properties: values,
+            })
+          }
           onCancel={onCancel}
           disabled={isSaving}
         />
