@@ -76,7 +76,7 @@ export function DefinitionSectionForm({
   const { lexicalCategories } = useLexicalCategories(word.conlangId);
 
   function handleAddExample() {
-    if (newExample.trim()) {
+    if (newExample.trim() && fields.length < 10) {
       append({ value: newExample.trim() });
       setNewExample("");
     }
@@ -186,12 +186,12 @@ export function DefinitionSectionForm({
                       handleAddExample();
                     }
                   }}
-                  disabled={disabled}
+                  disabled={disabled || fields.length >= 10}
                 />
                 <Button
                   type="button"
                   variant="outline"
-                  disabled={!newExample || disabled}
+                  disabled={!newExample || disabled || fields.length >= 10}
                   onClick={handleAddExample}
                 >
                   Add
