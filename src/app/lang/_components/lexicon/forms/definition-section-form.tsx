@@ -96,7 +96,6 @@ export function DefinitionSectionForm({
       <form
         className="flex flex-col gap-4"
         onSubmit={form.handleSubmit(handleSubmit)}
-        aria-disabled={disabled}
       >
         <FormField
           control={form.control}

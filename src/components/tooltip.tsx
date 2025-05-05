@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { TooltipContent, TooltipRoot, TooltipTrigger } from "./ui/tooltip";
 
 interface TooltipProps {

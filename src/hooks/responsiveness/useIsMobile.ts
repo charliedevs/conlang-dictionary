@@ -10,6 +10,6 @@ import useMediaQuery from "./useMediaQuery";
  *   const isMobile = useIsMobile();
  *   const isCustomMobile = useIsMobile(600);
  */
-export default function useIsMobile(maxWidth: number = 768): boolean {
+export default function useIsMobile(maxWidth = 768): boolean {
   return useMediaQuery(`(max-width: ${maxWidth}px)`);
 }

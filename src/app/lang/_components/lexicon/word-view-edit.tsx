@@ -23,7 +23,7 @@ import { ArrowTurnLeft } from "~/components/icons/arrow-turn-left";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
-import { type LexicalSection, type Word } from "~/types/word";
+import type { LexicalSection, Word } from "~/types/word";
 import { updateSectionOrders } from "../../_actions/word";
 import { AddSectionDialog } from "./forms/add-section";
 import { DeleteSection } from "./forms/delete-section";
@@ -47,6 +47,7 @@ export function WordViewEdit(props: { word: Word }) {
   } = useSortableSections(props.word);
 
   function handleExitEditMode() {
+    if (!searchParams) return;
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.delete("edit");
     router.push(`?${newParams.toString()}`);
@@ -169,8 +170,6 @@ function SortableSection(props: {
     transition,
     isDragging,
   } = useSortable({ id: props.section.id, disabled: props.isUpdating });
-
-  const [isEditing, setIsEditing] = useState(false);
 
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 

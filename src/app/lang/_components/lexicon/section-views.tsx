@@ -29,10 +29,7 @@ function DefinitionSection({
   return (
     <div>
       <h3 className="mb-2 text-lg font-bold">
-        {title ||
-          (lexicalCategoryId
-            ? `Category ID: ${lexicalCategoryId}`
-            : "Definition")}
+        {title && title.trim() !== "" ? title : "Definition"}
       </h3>
       {definitionText && (
         <div className="text-pretty text-sm [&_ol]:list-inside [&_ol]:list-decimal">
@@ -61,7 +58,9 @@ function PronunciationSection({
     section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{title || "Pronunciation"}</h3>
+      <h3 className="mb-2 text-lg font-bold">
+        {title && title.trim() !== "" ? title : "Pronunciation"}
+      </h3>
       {pronunciationText && (
         <div className="mt-2 text-pretty text-sm">
           <ReactMarkdown>{pronunciationText}</ReactMarkdown>
@@ -91,7 +90,9 @@ function EtymologySection({
   const { title, etymologyText } = section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{title || "Etymology"}</h3>
+      <h3 className="mb-2 text-lg font-bold">
+        {title && title.trim() !== "" ? title : "Etymology"}
+      </h3>
       {etymologyText && (
         <div className="text-pretty text-sm">
           <ReactMarkdown>{etymologyText}</ReactMarkdown>
@@ -109,7 +110,9 @@ function CustomTextSection({
   const { title, contentText } = section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{title ?? "Custom Section"}</h3>
+      <h3 className="mb-2 text-lg font-bold">
+        {title && title.trim() !== "" ? title : "Custom Section"}
+      </h3>
       {contentText && (
         <div className="text-pretty text-sm">
           <ReactMarkdown>{contentText}</ReactMarkdown>
@@ -127,7 +130,9 @@ function CustomFieldsSection({
   const { title, customFields } = section.properties;
   return (
     <div>
-      <h3 className="mb-2 text-lg font-bold">{title || "Custom Fields"}</h3>
+      <h3 className="mb-2 text-lg font-bold">
+        {title && title.trim() !== "" ? title : "Custom Fields"}
+      </h3>
       <table className="text-sm">
         <tbody>
           {customFields &&

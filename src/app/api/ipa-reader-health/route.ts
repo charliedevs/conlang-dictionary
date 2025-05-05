@@ -1,5 +1,5 @@
 let lastCheck: number | null = null;
-let lastResult: boolean = false;
+let lastResult = false;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
 export async function GET() {
