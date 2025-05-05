@@ -49,7 +49,7 @@ function DefinitionSection({
         </div>
       )}
       {Array.isArray(examples) && examples.length > 0 && (
-        <ul className="m-2 list-disc pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
+        <ul className="ml-1 pl-1 text-xs italic text-primary/80 sm:text-[0.85rem] md:ml-2 md:p-3 md:pl-2 md:text-sm">
           {examples.map((ex: string, i: number) => (
             <li key={i} className="pb-2">
               {ex}
@@ -81,13 +81,18 @@ function PronunciationSection({
         </div>
       )}
       {ipa && (
-        <div>
+        <div className="text-sm">
           IPA: <span className="font-mono">{ipa}</span>
           {displayLinkForIPA && <IPAReaderLink ipa={ipa} />}
         </div>
       )}
       {audioUrl && (
-        <audio controls src={audioUrl} preload="metadata" className="mt-2">
+        <audio
+          controls
+          src={audioUrl}
+          preload="metadata"
+          className="mt-2 text-sm"
+        >
           Your browser does not support the audio element.
         </audio>
       )}
