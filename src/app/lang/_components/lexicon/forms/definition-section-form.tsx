@@ -172,8 +172,10 @@ export function DefinitionSectionForm({
           control={form.control}
           name="examples"
           render={() => (
-            <FormItem>
-              <FormLabel>Examples (optional)</FormLabel>
+            <fieldset className="flex flex-col gap-2 rounded-md border border-muted bg-muted/40 p-2">
+              <legend className="mb-2 px-1 text-sm font-semibold text-muted-foreground">
+                Examples (optional)
+              </legend>
               <div className="mb-2 flex gap-2">
                 <Input
                   placeholder="Add example sentence"
@@ -198,7 +200,7 @@ export function DefinitionSectionForm({
               </div>
               <ul className="list-disc pl-5">
                 {fields.map((field, idx) => (
-                  <li key={field.id} className="flex items-center gap-2">
+                  <li key={field.id} className="mb-2 flex items-center gap-2">
                     <FormField
                       control={form.control}
                       name={`examples.${idx}.value` as const}
@@ -223,7 +225,7 @@ export function DefinitionSectionForm({
                 ))}
               </ul>
               <FormMessage />
-            </FormItem>
+            </fieldset>
           )}
         />
         <div className="flex justify-end gap-2">

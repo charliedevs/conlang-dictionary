@@ -40,13 +40,13 @@ function DefinitionSection({
         </div>
       )}
       {Array.isArray(examples) && examples.length > 0 && (
-        <ol className="m-2 list-decimal pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
+        <ul className="m-2 list-disc pl-2 text-[0.825rem] text-primary/80 sm:text-[0.85rem] md:ml-4 md:p-3 md:pl-4 md:text-sm">
           {examples.map((ex: string, i: number) => (
             <li key={i} className="pb-2">
               {ex}
             </li>
           ))}
-        </ol>
+        </ul>
       )}
     </div>
   );
@@ -62,15 +62,15 @@ function PronunciationSection({
   return (
     <div>
       <h3 className="mb-2 text-lg font-bold">{title || "Pronunciation"}</h3>
+      {pronunciationText && (
+        <div className="mt-2 text-pretty text-sm">
+          <ReactMarkdown>{pronunciationText}</ReactMarkdown>
+        </div>
+      )}
       {ipa && (
         <div>
           IPA: <span className="font-mono">{ipa}</span>
           {displayLinkForIPA && <IPAReaderLink ipa={ipa} />}
-        </div>
-      )}
-      {pronunciationText && (
-        <div className="mt-2 text-pretty text-sm">
-          <ReactMarkdown>{pronunciationText}</ReactMarkdown>
         </div>
       )}
       {audioUrl && (
