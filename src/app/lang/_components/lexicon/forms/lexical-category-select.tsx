@@ -103,7 +103,7 @@ export const LexicalCategorySelect = forwardRef<
         }}
         title="Add Part of Speech"
         content={
-          <>
+          <div className="flex flex-col gap-2 md:gap-4 md:px-2 md:pt-6">
             <Input
               placeholder="New part of speech..."
               onChange={(e) => setNewCategory(e.target.value)}
@@ -121,7 +121,7 @@ export const LexicalCategorySelect = forwardRef<
             >
               Save
             </Button>
-          </>
+          </div>
         }
       />
     </>

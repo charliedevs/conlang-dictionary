@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -56,20 +57,24 @@ export function DeleteWord(props: { word: Word; afterDelete: () => void }) {
             Are you sure you want to delete this word?
           </DialogDescription>
         </DialogHeader>
-        <Button
-          variant="destructive"
-          onClick={handleDelete}
-          disabled={isDeleting}
-        >
-          {isDeleting ? "Deleting..." : "Delete"}
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => setOpen(false)}
-          disabled={isDeleting}
-        >
-          Cancel
-        </Button>
+        <DialogFooter className="mt-4 flex flex-col gap-2">
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="w-full"
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={isDeleting}
+            className="w-full"
+          >
+            Cancel
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

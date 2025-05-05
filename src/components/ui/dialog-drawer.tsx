@@ -52,7 +52,7 @@ export function DialogDrawer(props: {
         {Boolean(props.trigger) && (
           <DialogTrigger asChild>{props.trigger}</DialogTrigger>
         )}
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="">
           <DialogHeader>
             <DialogTitle>{props.title}</DialogTitle>
             {props.description && (
