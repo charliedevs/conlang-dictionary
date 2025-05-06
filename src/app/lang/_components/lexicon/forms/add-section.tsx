@@ -89,7 +89,7 @@ export function AddSectionDialog({
           Add Section
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-lg p-0">
+      <DialogContent className="w-full max-w-lg p-0 md:max-w-xl lg:max-w-2xl">
         <AddSectionForm
           word={word}
           onSectionAdded={() => {

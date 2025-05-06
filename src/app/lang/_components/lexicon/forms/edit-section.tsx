@@ -64,7 +64,7 @@ export function EditSection({
           <Edit2Icon className="size-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-lg p-0">
+      <DialogContent className="w-full max-w-lg p-0 md:max-w-xl lg:max-w-2xl">
         <div className="flex flex-col gap-4 p-4">
           <DialogHeader>
             <DialogTitle>Edit {section.sectionType} Section</DialogTitle>
