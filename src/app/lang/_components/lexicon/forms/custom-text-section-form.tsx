@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { htmlToMarkdown } from "~/lib/strings";
 import { type Word } from "~/types/word";
 
 const customTextFormProps = z.object({
@@ -51,7 +52,10 @@ export function CustomTextSectionForm({
   });
 
   function handleSubmit(values: CustomTextSectionFormValues) {
-    onSubmit?.(values);
+    onSubmit?.({
+      ...values,
+      contentText: htmlToMarkdown(values.contentText),
+    });
   }
 
   return (

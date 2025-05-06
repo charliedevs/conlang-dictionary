@@ -1,3 +1,4 @@
+import { markdownToHtml } from "~/lib/strings";
 import {
   type CustomFieldsSectionProperties,
   type CustomTextSectionProperties,
@@ -14,38 +15,66 @@ import {
  */
 export function parseLexicalSection(section: LexicalSectionDb): LexicalSection {
   switch (section.sectionType) {
-    case "definition":
+    case "definition": {
+      const props = section.properties as DefinitionSectionProperties;
       return {
         id: section.id,
         wordId: section.wordId,
         order: section.order,
         sectionType: "definition",
-        properties: section.properties as DefinitionSectionProperties,
+        properties: {
+          ...props,
+          definitionText: props.definitionText
+            ? markdownToHtml(props.definitionText)
+            : "",
+        },
       };
-    case "pronunciation":
+    }
+    case "pronunciation": {
+      const props = section.properties as PronunciationSectionProperties;
       return {
         id: section.id,
         wordId: section.wordId,
         order: section.order,
         sectionType: "pronunciation",
-        properties: section.properties as PronunciationSectionProperties,
+        properties: {
+          ...props,
+          pronunciationText: props.pronunciationText
+            ? markdownToHtml(props.pronunciationText)
+            : "",
+        },
       };
-    case "etymology":
+    }
+    case "etymology": {
+      const props = section.properties as EtymologySectionProperties;
       return {
         id: section.id,
         wordId: section.wordId,
         order: section.order,
         sectionType: "etymology",
-        properties: section.properties as EtymologySectionProperties,
+        properties: {
+          ...props,
+          etymologyText: props.etymologyText
+            ? markdownToHtml(props.etymologyText)
+            : "",
+        },
       };
-    case "custom_text":
+    }
+    case "custom_text": {
+      const props = section.properties as CustomTextSectionProperties;
       return {
         id: section.id,
         wordId: section.wordId,
         order: section.order,
         sectionType: "custom_text",
-        properties: section.properties as CustomTextSectionProperties,
+        properties: {
+          ...props,
+          contentText: props.contentText
+            ? markdownToHtml(props.contentText)
+            : "",
+        },
       };
+    }
     case "custom_fields":
       return {
         id: section.id,

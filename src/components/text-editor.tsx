@@ -9,7 +9,6 @@ import {
   StrikethroughIcon,
 } from "lucide-react";
 import { forwardRef, type ReactNode } from "react";
-import { Markdown } from "tiptap-markdown";
 import { cn } from "~/lib/utils";
 import { Separator } from "./ui/separator";
 import { Toggle } from "./ui/toggle";
@@ -50,6 +49,11 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
       },
       extensions: [
         StarterKit.configure({
+          paragraph: {
+            HTMLAttributes: {
+              class: "prose prose-sm mb-1",
+            },
+          },
           ...(showOrderedList && {
             orderedList: {
               HTMLAttributes: {
@@ -64,30 +68,11 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
           },
         }),
         Typography,
-        Markdown.configure({
-          html: true, // Allow HTML input/output
-          tightLists: true, // No <p> inside <li> in markdown output
-          tightListClass: "tight", // Add class to <ul> allowing you to remove <p> margins when tight
-          bulletListMarker: "-", // <li> prefix in markdown output
-          linkify: true, // Create links from "https://..." text
-          breaks: true, // New lines (\n) in markdown input are converted to <br>
-          transformPastedText: true, // Allow to paste markdown text in the editor
-          transformCopiedText: false, // Copied text is transformed to markdown
-        }),
       ],
       content: value,
       onUpdate: ({ editor }) => {
-        const markdownStorage = editor.storage.markdown as
-          | MarkdownStorage
-          | undefined;
-        if (
-          markdownStorage &&
-          typeof markdownStorage.getMarkdown === "function"
-        ) {
-          onChange(markdownStorage.getMarkdown().trim());
-        } else {
-          onChange(editor.getHTML());
-        }
+        const html = editor.getHTML();
+        onChange(html);
       },
       editable: !disabled,
     });

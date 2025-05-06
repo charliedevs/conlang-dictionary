@@ -1,15 +1,6 @@
-import ReactMarkdown from "react-markdown";
+import parseHtml from "html-react-parser";
 import { IPAReaderLink } from "~/components/ipa-reader-link";
 import type { LexicalSection } from "~/types/word";
-
-// Custom components for ReactMarkdown to ensure proper nested list styling
-const markdownComponents = {
-  ul: ({ node, ...props }: any) => <ul className="list-disc pl-2" {...props} />,
-  ol: ({ node, ...props }: any) => (
-    <ol className="list-decimal pl-2" {...props} />
-  ),
-  li: ({ node, ...props }: any) => <li className="ml-2" {...props} />,
-} as const;
 
 export function renderSection(section: LexicalSection) {
   switch (section.sectionType) {
@@ -42,16 +33,14 @@ function DefinitionSection({
         {title && title.trim() !== "" ? title : "Definition"}
       </h3>
       {definitionText && (
-        <div className="text-pretty text-sm">
-          <ReactMarkdown components={markdownComponents}>
-            {definitionText}
-          </ReactMarkdown>
+        <div className="prose prose-slate prose-sm dark:prose-invert text-pretty text-sm">
+          {parseHtml(definitionText)}
         </div>
       )}
       {Array.isArray(examples) && examples.length > 0 && (
-        <ul className="ml-1 pl-1 text-xs italic text-primary/80 sm:text-[0.85rem] md:ml-2 md:p-3 md:pl-2 md:text-sm">
+        <ul className="ml-1 pl-1 text-xs italic text-primary/80 sm:text-[0.85rem] md:ml-2 md:p-1 md:pl-2 md:text-sm">
           {examples.map((ex: string, i: number) => (
-            <li key={i} className="pb-2">
+            <li key={i} className="pb-1">
               {ex}
             </li>
           ))}
@@ -74,10 +63,8 @@ function PronunciationSection({
         {title && title.trim() !== "" ? title : "Pronunciation"}
       </h3>
       {pronunciationText && (
-        <div className="mt-2 text-pretty text-sm">
-          <ReactMarkdown components={markdownComponents}>
-            {pronunciationText}
-          </ReactMarkdown>
+        <div className="prose prose-slate prose-sm dark:prose-invert mt-2 text-pretty text-sm">
+          {parseHtml(pronunciationText)}
         </div>
       )}
       {ipa && (
@@ -113,10 +100,8 @@ function EtymologySection({
         {title && title.trim() !== "" ? title : "Etymology"}
       </h3>
       {etymologyText && (
-        <div className="text-pretty text-sm">
-          <ReactMarkdown components={markdownComponents}>
-            {etymologyText}
-          </ReactMarkdown>
+        <div className="prose prose-slate prose-sm dark:prose-invert text-pretty text-sm">
+          {parseHtml(etymologyText)}
         </div>
       )}
     </div>
@@ -135,10 +120,8 @@ function CustomTextSection({
         {title && title.trim() !== "" ? title : "Custom Section"}
       </h3>
       {contentText && (
-        <div className="text-pretty text-sm">
-          <ReactMarkdown components={markdownComponents}>
-            {contentText}
-          </ReactMarkdown>
+        <div className="prose prose-slate prose-sm dark:prose-invert text-pretty text-sm">
+          {parseHtml(contentText)}
         </div>
       )}
     </div>

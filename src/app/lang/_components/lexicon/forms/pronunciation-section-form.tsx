@@ -21,6 +21,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { useIPAReaderHealth } from "~/hooks/data/useIPAReaderHealth";
 import useIsMobile from "~/hooks/responsiveness/useIsMobile";
+import { htmlToMarkdown } from "~/lib/strings";
 import { type Word } from "~/types/word";
 
 const pronunciationFormProps = z
@@ -79,7 +80,10 @@ export function PronunciationSectionForm({
   });
 
   function handleSubmit(values: PronunciationSectionFormValues) {
-    onSubmit?.(values);
+    onSubmit?.({
+      ...values,
+      pronunciationText: htmlToMarkdown(values.pronunciationText ?? ""),
+    });
   }
 
   const isMobile = useIsMobile();

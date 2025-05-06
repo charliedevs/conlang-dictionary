@@ -17,6 +17,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
+import { htmlToMarkdown } from "~/lib/strings";
 import { type Word } from "~/types/word";
 import { LexicalCategorySelect } from "./lexical-category-select";
 
@@ -86,6 +87,7 @@ export function DefinitionSectionForm({
     // Map { value: string }[] to string[]
     const mapped = {
       ...values,
+      definitionText: htmlToMarkdown(values.definitionText),
       examples: values.examples?.map((ex) => ex.value).filter(Boolean),
     };
     onSubmit?.(mapped);
@@ -158,7 +160,7 @@ export function DefinitionSectionForm({
               <FormControl>
                 <TextEditor
                   {...field}
-                  className="min-h-[80px] bg-background"
+                  className="min-h-[80px] bg-background md:max-h-[400px]"
                   showOrderedList
                   disabled={disabled}
                 />
