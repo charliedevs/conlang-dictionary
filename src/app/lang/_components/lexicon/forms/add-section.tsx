@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { type InsertLexicalSectionInput } from "~/server/mutations";
 import { type SectionType, type Word } from "~/types/word";
+import { CustomFieldsSectionForm } from "./custom-fields-section-form";
 import { CustomTextSectionForm } from "./custom-text-section-form";
 import { DefinitionSectionForm } from "./definition-section-form";
 import { EtymologySectionForm } from "./etymology-section-form";
@@ -148,22 +149,25 @@ export function AddSectionForm({
         </div>
         <Separator />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {SECTION_TYPES.map(({ type, label, icon: Icon, description }) => (
-            <Button
-              key={type}
-              variant="outline"
-              className="flex h-auto min-h-24 flex-col items-start gap-1 border-2 border-muted p-4 text-left hover:border-primary"
-              onClick={() => setSelectedType(type)}
-            >
-              <div className="mb-1 flex items-center gap-2">
-                <Icon className="h-5 w-5 text-primary" />
-                <span className="text-base font-bold">{label}</span>
-              </div>
-              <span className="text-xs text-muted-foreground">
-                {description}
-              </span>
-            </Button>
-          ))}
+          {SECTION_TYPES.map(({ type, label, icon: Icon, description }) => {
+            if (type === "custom_fields") return null; // TODO: Integrate custom fields form later
+            return (
+              <Button
+                key={type}
+                variant="outline"
+                className="flex h-auto min-h-24 flex-col items-start gap-1 border-2 border-muted p-4 text-left hover:border-primary"
+                onClick={() => setSelectedType(type)}
+              >
+                <div className="mb-1 flex items-center gap-2">
+                  <Icon className="h-5 w-5 text-primary" />
+                  <span className="text-base font-bold">{label}</span>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {description}
+                </span>
+              </Button>
+            );
+          })}
         </div>
         <div className="mt-4 flex justify-end">
           {onCancel && (
@@ -292,7 +296,26 @@ function SectionFormSwitcher({
         />
       );
     case "custom_fields":
-      return <div>[Custom Fields Section Form goes here]</div>;
+      return (
+        <CustomFieldsSectionForm
+          word={word}
+          mode="add"
+          onCancel={onCancel}
+          onSubmit={(values) =>
+            onSectionFormSubmit({
+              sectionType: "custom_fields",
+              wordId: word.id,
+              properties: {
+                title: values.title,
+                customFields: Object.fromEntries(
+                  (values.customFields ?? []).map((f) => [f.key, f.value]),
+                ),
+              },
+            })
+          }
+          disabled={isAdding}
+        />
+      );
     default:
       return <div>Unknown section type</div>;
   }
