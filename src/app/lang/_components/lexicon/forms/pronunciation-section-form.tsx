@@ -24,8 +24,8 @@ import { htmlToMarkdown } from "~/lib/strings";
 import { type Word } from "~/types/word";
 
 const ipaEntrySchema = z.object({
-  label: z.string().min(1, "Label required"),
-  value: z.string().min(1, "IPA value required"),
+  label: z.string().optional(),
+  value: z.string().min(1, "IPA value required").trim(),
 });
 
 const pronunciationFormProps = z
@@ -46,9 +46,8 @@ const pronunciationFormProps = z
     if (!hasIPA && !data.pronunciationText?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message:
-          "Either at least one IPA entry or Pronunciation Text is required.",
-        path: ["ipaEntries"],
+        message: "Either an IPA entry or Pronunciation Text is required.",
+        path: ["pronunciationText"],
       });
     }
   });
