@@ -19,9 +19,14 @@ export type DefinitionSectionProperties = {
   examples?: string[];
 };
 
+export type IPAEntry = {
+  label: string;
+  value: string;
+};
+
 export type PronunciationSectionProperties = {
   title?: string;
-  ipa?: string;
+  ipaEntries?: IPAEntry[];
   audioUrl?: string;
   region?: string;
   phonemeIds?: string[];

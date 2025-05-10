@@ -1,10 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { InfoIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { InfoIcon, PlusIcon, XIcon } from "lucide-react";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { OpenPage } from "~/components/icons/open-page";
 import { TextEditor } from "~/components/text-editor";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
@@ -24,25 +23,32 @@ import useIsMobile from "~/hooks/responsiveness/useIsMobile";
 import { htmlToMarkdown } from "~/lib/strings";
 import { type Word } from "~/types/word";
 
+const ipaEntrySchema = z.object({
+  label: z.string().min(1, "Label required"),
+  value: z.string().min(1, "IPA value required"),
+});
+
 const pronunciationFormProps = z
   .object({
     title: z.string().optional(),
     pronunciationText: z.string().optional().default(""),
-    ipa: z.string().optional(),
+    ipaEntries: z.array(ipaEntrySchema).optional(),
     audioUrl: z.union([
       z.string().trim().url("Invalid URL").optional(),
       z.literal(""),
     ]),
     region: z.string().optional(),
     displayLinkForIPA: z.boolean().optional().default(false),
-    //phonemeIds: z.string().optional(), // TODO: Integrate later as Phonology is built out
   })
   .superRefine((data, ctx) => {
-    if (!data.ipa?.trim() && !data.pronunciationText?.trim()) {
+    const hasIPA =
+      data.ipaEntries && data.ipaEntries.some((e) => e.value.trim());
+    if (!hasIPA && !data.pronunciationText?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Either IPA or Pronunciation Text is required.",
-        path: ["ipa"],
+        message:
+          "Either at least one IPA entry or Pronunciation Text is required.",
+        path: ["ipaEntries"],
       });
     }
   });
@@ -72,12 +78,22 @@ export function PronunciationSectionForm({
     defaultValues: {
       title: initialValues.title ?? "",
       pronunciationText: initialValues.pronunciationText ?? "",
-      ipa: initialValues.ipa ?? "",
+      ipaEntries: initialValues.ipaEntries ?? [],
       audioUrl: initialValues.audioUrl ?? "",
       region: initialValues.region ?? "",
       displayLinkForIPA: initialValues.displayLinkForIPA ?? false,
     },
   });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "ipaEntries",
+  });
+
+  function handleAddIPAEntry() {
+    const nextLabel = fields.length === 0 ? "IPA" : `IPA ${fields.length + 1}`;
+    append({ label: nextLabel, value: "" });
+  }
 
   function handleSubmit(values: PronunciationSectionFormValues) {
     onSubmit?.({
@@ -88,8 +104,9 @@ export function PronunciationSectionForm({
 
   const isMobile = useIsMobile();
   const ipaReaderIsUp = useIPAReaderHealth();
-  const ipaValue = form.watch("ipa");
-  const isCheckboxDisabled = disabled || !ipaValue?.trim();
+  const ipaEntries = form.watch("ipaEntries");
+  const isCheckboxDisabled =
+    disabled || !(ipaEntries && ipaEntries.some((e) => e.value.trim()));
 
   return (
     <Form {...form}>
@@ -141,33 +158,76 @@ export function PronunciationSectionForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="ipa"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>IPA</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="e.g. /ˈmaʊ̯̃ʔn̩/"
+          <fieldset className="mt-2 flex flex-col gap-2">
+            <legend className="mb-2 text-sm font-medium">IPA Entries</legend>
+            <ul>
+              {fields.map((field, idx) => (
+                <li key={field.id} className="mb-2 flex items-center gap-2">
+                  <FormItem className="flex flex-col">
+                    <FormLabel className="text-xs text-muted-foreground">
+                      Label (optional)
+                    </FormLabel>
+                    <FormControl>
+                      <FormField
+                        control={form.control}
+                        name={`ipaEntries.${idx}.label`}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder={`IPA${idx === 0 ? "" : ` ${idx + 1}`}`}
+                            disabled={disabled}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </FormItem>
+                  <span className="-mb-5 -ml-1 text-muted-foreground">:</span>
+                  <FormItem className="ml-2 flex flex-col">
+                    <FormLabel className="text-xs text-muted-foreground">
+                      IPA
+                    </FormLabel>
+                    <FormControl>
+                      <FormField
+                        control={form.control}
+                        name={`ipaEntries.${idx}.value`}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder="e.g. /ˈmaʊ̯̃ʔn̩/"
+                            disabled={disabled}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </FormItem>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => remove(idx)}
                     disabled={disabled}
-                  />
-                </FormControl>
-                <FormDescription className="group/link">
-                  <a
-                    href="https://ipa.typeit.org/full/"
-                    target="_blank"
-                    className="flex items-center justify-end gap-1 text-xs text-blue-600 underline group-hover/link:text-blue-500"
+                    className="-mb-5"
                   >
-                    Get IPA symbols
-                    <OpenPage className="h-3 w-3 text-primary opacity-70 group-hover/link:opacity-100" />
-                  </a>
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                    <XIcon className="h-4 w-4" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleAddIPAEntry}
+                disabled={disabled}
+                className="text-xs"
+              >
+                <PlusIcon className="size-4 text-green-700" />
+                Add IPA Entry
+              </Button>
+            </div>
+            <FormMessage />
+          </fieldset>
         </fieldset>
         <fieldset className="flex flex-col gap-4 rounded-md border border-muted bg-muted/40 p-4">
           <legend className="mb-2 px-1 text-sm font-semibold text-muted-foreground">

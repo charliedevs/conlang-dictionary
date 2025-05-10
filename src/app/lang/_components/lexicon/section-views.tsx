@@ -55,8 +55,14 @@ function PronunciationSection({
 }: {
   section: Extract<LexicalSection, { sectionType: "pronunciation" }>;
 }) {
-  const { title, ipa, audioUrl, region, pronunciationText, displayLinkForIPA } =
-    section.properties;
+  const {
+    title,
+    ipaEntries,
+    audioUrl,
+    region,
+    pronunciationText,
+    displayLinkForIPA,
+  } = section.properties;
   return (
     <div>
       <h3 className="mb-2 text-lg font-bold">
@@ -67,12 +73,35 @@ function PronunciationSection({
           {parseHtml(pronunciationText)}
         </div>
       )}
-      {ipa && (
-        <div className="text-sm">
-          IPA: <span className="font-mono">{ipa}</span>
-          {displayLinkForIPA && <IPAReaderLink ipa={ipa} />}
-        </div>
-      )}
+      {ipaEntries &&
+        ipaEntries.length > 0 &&
+        (ipaEntries.length === 1 ? (
+          <div className="mt-2 flex items-baseline gap-1 text-sm">
+            <span className="font-semibold text-muted-foreground">
+              {ipaEntries?.[0]?.label ?? "IPA"}:
+            </span>
+            <span className="font-mono">{ipaEntries?.[0]?.value ?? ""}</span>
+            {displayLinkForIPA && ipaEntries?.[0]?.value && (
+              <span className="-mb-3">
+                <IPAReaderLink ipa={ipaEntries[0].value} />
+              </span>
+            )}
+          </div>
+        ) : (
+          <ul className="mt-2 list-disc pl-5 text-sm">
+            {ipaEntries?.map((entry, idx) => (
+              <li key={idx} className="flex items-center gap-2">
+                <span className="font-semibold text-muted-foreground">
+                  {entry?.label ?? "IPA"}:
+                </span>
+                <span className="font-mono">{entry?.value ?? ""}</span>
+                {displayLinkForIPA && entry?.value && (
+                  <IPAReaderLink ipa={entry.value} />
+                )}
+              </li>
+            ))}
+          </ul>
+        ))}
       {audioUrl && (
         <audio
           controls
