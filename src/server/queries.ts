@@ -315,3 +315,41 @@ export async function getLexicalCategoriesForConlang(conlangId: number) {
   return lexicalCategories;
 }
 // #endregion
+
+// #region Lexical Sections
+/**
+ * Returns all unique custom field keys used in lexicalSections for a given conlang.
+ * Only considers sections with sectionType = 'custom_fields'.
+ */
+export async function getCustomFieldKeysForConlang(
+  conlangId: number,
+): Promise<string[]> {
+  // Get all word IDs for the conlang
+  const wordIds = await db.query.words.findMany({
+    where: (model, { eq }) => eq(model.conlangId, conlangId),
+    columns: { id: true },
+  });
+  if (!wordIds.length) return [];
+  const wordIdList = wordIds.map((w) => w.id);
+
+  // Get all lexicalSections with sectionType 'custom_fields' for these words
+  const sections = await db.query.lexicalSections.findMany({
+    where: (model, { inArray, eq }) =>
+      inArray(model.wordId, wordIdList) &&
+      eq(model.sectionType, "custom_fields"),
+    columns: { properties: true },
+  });
+
+  // Aggregate all keys from properties.customFields
+  const keySet = new Set<string>();
+  for (const section of sections) {
+    const customFields = (
+      section.properties as { customFields?: Record<string, string> }
+    )?.customFields;
+    if (customFields && typeof customFields === "object") {
+      Object.keys(customFields).forEach((key) => keySet.add(key));
+    }
+  }
+  return Array.from(keySet);
+}
+// #endregion
