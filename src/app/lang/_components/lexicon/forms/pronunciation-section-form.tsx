@@ -1,13 +1,19 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { InfoIcon, PlusIcon, XIcon } from "lucide-react";
+import { ChevronsUpDown, InfoIcon, PlusIcon, XIcon } from "lucide-react";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { TextEditor } from "~/components/text-editor";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible";
 import {
   Form,
   FormControl,
@@ -21,6 +27,7 @@ import { Input } from "~/components/ui/input";
 import { useIPAReaderHealth } from "~/hooks/data/useIPAReaderHealth";
 import useIsMobile from "~/hooks/responsiveness/useIsMobile";
 import { htmlToMarkdown } from "~/lib/strings";
+import { cn } from "~/lib/utils";
 import { type Word } from "~/types/word";
 
 const ipaEntrySchema = z.object({
@@ -107,6 +114,8 @@ export function PronunciationSectionForm({
   const isCheckboxDisabled =
     disabled || !(ipaEntries && ipaEntries.some((e) => e.value.trim()));
 
+  const [isAudioExpanded, setIsAudioExpanded] = useState(false);
+
   return (
     <Form {...form}>
       <form
@@ -163,7 +172,12 @@ export function PronunciationSectionForm({
               {fields.map((field, idx) => (
                 <li key={field.id} className="mb-2 flex items-center gap-2">
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-xs text-muted-foreground">
+                    <FormLabel
+                      className={cn(
+                        "text-xs text-muted-foreground",
+                        idx > 0 && "sr-only",
+                      )}
+                    >
                       Label (optional)
                     </FormLabel>
                     <FormControl>
@@ -180,9 +194,13 @@ export function PronunciationSectionForm({
                       />
                     </FormControl>
                   </FormItem>
-                  <span className="-mb-5 -ml-1 text-muted-foreground">:</span>
                   <FormItem className="ml-2 flex flex-col">
-                    <FormLabel className="text-xs text-muted-foreground">
+                    <FormLabel
+                      className={cn(
+                        "text-xs text-muted-foreground",
+                        idx > 0 && "sr-only",
+                      )}
+                    >
                       IPA
                     </FormLabel>
                     <FormControl>
@@ -205,7 +223,7 @@ export function PronunciationSectionForm({
                     variant="ghost"
                     onClick={() => remove(idx)}
                     disabled={disabled}
-                    className="-mb-5"
+                    className={idx === 0 ? "-mb-5" : ""}
                   >
                     <XIcon className="h-4 w-4" />
                   </Button>
@@ -228,89 +246,107 @@ export function PronunciationSectionForm({
             <FormMessage />
           </fieldset>
         </fieldset>
-        <fieldset className="flex flex-col gap-4 rounded-md border border-muted bg-muted/40 p-4">
-          <legend className="mb-2 px-1 text-sm font-semibold text-muted-foreground">
-            Audio Playback
-          </legend>
-          {ipaReaderIsUp && (
-            <FormField
-              control={form.control}
-              name="displayLinkForIPA"
-              render={({ field }) => (
-                <FormItem className="flex flex-col space-y-0">
-                  <div className="flex flex-row items-center gap-2">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={isCheckboxDisabled}
-                      />
-                    </FormControl>
-                    <FormLabel className="mb-0 flex items-center gap-1">
-                      Display link for IPA playback?
-                      {!isMobile ? (
-                        <Tooltip
-                          content={
-                            <span>
+        {/* Audio Playback (Collapsible) */}
+        <Collapsible open={isAudioExpanded} onOpenChange={setIsAudioExpanded}>
+          <fieldset
+            className={cn(
+              "flex flex-col gap-4 rounded-md",
+              isAudioExpanded && "border border-muted bg-muted/40 p-4",
+            )}
+          >
+            <legend className="mb-2 flex items-center gap-1 px-1 text-sm font-semibold text-muted-foreground">
+              Audio Playback
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <ChevronsUpDown className="h-4 w-4" />
+                  <span className="sr-only">Toggle</span>
+                </Button>
+              </CollapsibleTrigger>
+            </legend>
+            <CollapsibleContent asChild>
+              <>
+                {ipaReaderIsUp && (
+                  <FormField
+                    control={form.control}
+                    name="displayLinkForIPA"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col space-y-0">
+                        <div className="flex flex-row items-center gap-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              disabled={isCheckboxDisabled}
+                            />
+                          </FormControl>
+                          <FormLabel className="mb-0 flex items-center gap-1">
+                            Display link for IPA playback?
+                            {!isMobile ? (
+                              <Tooltip
+                                content={
+                                  <span>
+                                    Shows icon linking to{" "}
+                                    <a
+                                      href="https://ipa-reader.com"
+                                      target="_blank"
+                                      className="underline"
+                                    >
+                                      ipa-reader.com
+                                    </a>
+                                  </span>
+                                }
+                                side="right"
+                              >
+                                <InfoIcon className="inline h-[1em] w-[1em] align-text-bottom text-muted-foreground transition-colors hover:text-primary" />
+                              </Tooltip>
+                            ) : null}
+                          </FormLabel>
+                        </div>
+                        {isMobile ? (
+                          <FormDescription className="!mt-2 flex items-center text-xs text-muted-foreground">
+                            <InfoIcon className="inline h-[1em] w-[1em] align-text-bottom" />
+                            <span className="!ml-1">
                               Shows icon linking to{" "}
                               <a
                                 href="https://ipa-reader.com"
                                 target="_blank"
-                                className="underline"
+                                className="inline underline"
                               >
                                 ipa-reader.com
                               </a>
                             </span>
-                          }
-                          side="right"
-                        >
-                          <InfoIcon className="inline h-[1em] w-[1em] align-text-bottom text-muted-foreground transition-colors hover:text-primary" />
-                        </Tooltip>
-                      ) : null}
-                    </FormLabel>
-                  </div>
-                  {isMobile ? (
-                    <FormDescription className="!mt-2 flex items-center text-xs text-muted-foreground">
-                      <InfoIcon className="inline h-[1em] w-[1em] align-text-bottom" />
-                      <span className="!ml-1">
-                        Shows icon linking to{" "}
-                        <a
-                          href="https://ipa-reader.com"
-                          target="_blank"
-                          className="inline underline"
-                        >
-                          ipa-reader.com
-                        </a>
-                      </span>
-                    </FormDescription>
-                  ) : null}
-                </FormItem>
-              )}
-            />
-          )}
-          <FormField
-            control={form.control}
-            name="audioUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Audio URL (optional)</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="url"
-                    placeholder="Paste audio file URL"
-                    disabled={disabled}
+                          </FormDescription>
+                        ) : null}
+                      </FormItem>
+                    )}
                   />
-                </FormControl>
-                <FormDescription className="text-xs text-muted-foreground">
-                  Provide a link to an audio file and an audio player will
-                  appear under your word.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </fieldset>
+                )}
+                <FormField
+                  control={form.control}
+                  name="audioUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Audio URL (optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="url"
+                          placeholder="Paste audio file URL"
+                          disabled={disabled}
+                        />
+                      </FormControl>
+                      <FormDescription className="text-xs text-muted-foreground">
+                        Provide a link to an audio file and an audio player will
+                        appear under your word.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            </CollapsibleContent>
+          </fieldset>
+        </Collapsible>
         <div className="flex justify-end gap-2">
           {onCancel && (
             <Button
