@@ -41,7 +41,7 @@ export type CustomTextSectionProperties = {
 
 export type CustomFieldsSectionProperties = {
   title?: string;
-  customFields: Record<string, unknown>;
+  customFields: Record<string, string>;
 };
 
 export type LexicalSectionDb = typeof lexicalSections.$inferSelect;
