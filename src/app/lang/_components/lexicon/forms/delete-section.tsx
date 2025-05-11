@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/dialog";
 import { type LexicalSection } from "~/types/word";
 import { removeLexicalSection } from "../../../_actions/word";
+import { SECTION_TYPE_UI } from "./add-section";
 
 export function DeleteSection({
   section,
@@ -58,7 +59,7 @@ export function DeleteSection({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Delete {section.sectionType} section on{" "}
+            Delete {SECTION_TYPE_UI[section.sectionType].label} section on{" "}
             <span className="font-bold text-primary/90">{wordText}</span>?
           </DialogTitle>
           <DialogDescription>
