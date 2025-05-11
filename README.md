@@ -25,8 +25,11 @@ _Read more about conlangs at [conlang.org](https://conlang.org)._
 
 Track current priorities for work.
 
-- [ ] Edit Custom Sections
-- [ ] More freedom for text formatting inside word sections
+- [x] Edit Custom Sections
+- [x] More freedom for text formatting inside word sections
+- [x] Add pronunciation section
+- [x] Search conlangs
+- [ ] Add custom fields (key/values) and tags to words
 
 ## Features
 
