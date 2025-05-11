@@ -43,6 +43,15 @@ export function sanitizeHtmlInput(dirty: string, options?: IOptions): string {
     allowedSchemes: ["http", "https", "mailto"],
     allowedSchemesAppliedToAttributes: ["href", "src", "cite"],
     disallowedTagsMode: "discard",
+    transformTags: {
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: {
+          ...attribs,
+          rel: "noopener noreferrer",
+        },
+      }),
+    },
     ...options,
   });
 }
