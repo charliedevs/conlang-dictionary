@@ -38,7 +38,7 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
       editorProps: {
         attributes: {
           class: cn(
-            "min-h-[150px] max-h-[300px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-transparent px-3 py-2 border-b-0 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
+            "min-h-[150px] max-h-[300px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-background px-3 py-2 border-b-0 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
             className,
           ),
         },
@@ -47,7 +47,7 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
         StarterKit.configure({
           paragraph: {
             HTMLAttributes: {
-              class: "prose prose-sm mb-1",
+              class: "prose prose-sm mb-1 dark:prose-invert",
             },
           },
           ...(showOrderedList && {

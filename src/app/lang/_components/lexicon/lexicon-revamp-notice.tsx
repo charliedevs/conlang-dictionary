@@ -27,7 +27,7 @@ export function LexiconRevampNotice({ conlangId }: LexiconRevampNoticeProps) {
   if (!show) return null;
 
   return (
-    <div className="mb-4 flex items-center justify-between gap-2 rounded-md border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-900">
+    <div className="mb-4 flex items-center justify-between gap-2 rounded-md border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-900 dark:border-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">
       <div className="flex items-center gap-2">
         <MessageCircleWarningIcon className="-mt-0.5 self-start" />
         <span>
@@ -39,7 +39,7 @@ export function LexiconRevampNotice({ conlangId }: LexiconRevampNoticeProps) {
       <Button
         variant="outline"
         size="sm"
-        className="ml-4 border-yellow-300 bg-yellow-100 text-yellow-900 hover:bg-yellow-200"
+        className="ml-4 border-yellow-300 bg-yellow-100 text-yellow-900 hover:bg-yellow-200 dark:border-yellow-800 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700"
         onClick={handleDismiss}
       >
         Dismiss
