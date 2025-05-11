@@ -74,7 +74,7 @@ export const AddWordForm = (props: {
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="not-sr-only ml-1 flex h-10 items-center gap-1 md:sr-only"
+          className="ml-1 flex h-10 items-center gap-1"
         >
           <PlusIcon className="size-4" /> Add
         </Button>

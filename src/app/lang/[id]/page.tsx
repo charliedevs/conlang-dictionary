@@ -9,6 +9,7 @@ export type LanguagePageSearchParams = {
   view?: string;
   word?: string;
   edit?: string;
+  q?: string;
 };
 
 interface LanguageTabsProps {
