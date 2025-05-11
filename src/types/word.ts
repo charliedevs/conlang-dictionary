@@ -20,7 +20,7 @@ export type DefinitionSectionProperties = {
 };
 
 export type IPAEntry = {
-  label: string;
+  label?: string;
   value: string;
 };
 
