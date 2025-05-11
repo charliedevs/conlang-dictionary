@@ -8,6 +8,7 @@ import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { type LanguagePageSearchParams } from "../../[id]/page";
 import { AddWordForm } from "./forms/add-word";
+import { LexiconRevampNotice } from "./lexicon-revamp-notice";
 import { WordList } from "./word-list";
 import { WordView } from "./word-view";
 
@@ -46,6 +47,7 @@ export function Lexicon(props: {
   const isConlangOwner = props.conlang.ownerId === auth().userId;
   return (
     <div id="lexicon" className="flex flex-col">
+      {isConlangOwner && <LexiconRevampNotice conlangId={props.conlang.id} />}
       <div
         id="actions"
         className="mt-3 flex items-center justify-between gap-2 p-1 md:mt-0"
