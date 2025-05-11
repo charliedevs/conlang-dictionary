@@ -15,6 +15,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { htmlToMarkdown } from "~/lib/strings";
+import { sanitizeHtmlInput } from "~/lib/utils";
 import { type Word } from "~/types/word";
 
 const etymologyFormProps = z.object({
@@ -54,7 +55,7 @@ export function EtymologySectionForm({
   function handleSubmit(values: EtymologySectionFormValues) {
     onSubmit?.({
       ...values,
-      etymologyText: htmlToMarkdown(values.etymologyText),
+      etymologyText: htmlToMarkdown(sanitizeHtmlInput(values.etymologyText)),
     });
   }
 

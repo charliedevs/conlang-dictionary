@@ -15,6 +15,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { htmlToMarkdown } from "~/lib/strings";
+import { sanitizeHtmlInput } from "~/lib/utils";
 import { type Word } from "~/types/word";
 
 const customTextFormProps = z.object({
@@ -54,7 +55,7 @@ export function CustomTextSectionForm({
   function handleSubmit(values: CustomTextSectionFormValues) {
     onSubmit?.({
       ...values,
-      contentText: htmlToMarkdown(values.contentText),
+      contentText: htmlToMarkdown(sanitizeHtmlInput(values.contentText)),
     });
   }
 

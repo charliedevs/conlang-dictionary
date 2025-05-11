@@ -27,7 +27,7 @@ import { Input } from "~/components/ui/input";
 import { useIPAReaderHealth } from "~/hooks/data/useIPAReaderHealth";
 import useIsMobile from "~/hooks/responsiveness/useIsMobile";
 import { htmlToMarkdown } from "~/lib/strings";
-import { cn } from "~/lib/utils";
+import { cn, sanitizeHtmlInput } from "~/lib/utils";
 import { type Word } from "~/types/word";
 
 const ipaEntrySchema = z.object({
@@ -104,7 +104,9 @@ export function PronunciationSectionForm({
   function handleSubmit(values: PronunciationSectionFormValues) {
     onSubmit?.({
       ...values,
-      pronunciationText: htmlToMarkdown(values.pronunciationText ?? ""),
+      pronunciationText: htmlToMarkdown(
+        sanitizeHtmlInput(values.pronunciationText ?? ""),
+      ),
     });
   }
 

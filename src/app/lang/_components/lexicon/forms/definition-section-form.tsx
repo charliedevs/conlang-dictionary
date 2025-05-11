@@ -18,6 +18,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
 import { htmlToMarkdown } from "~/lib/strings";
+import { sanitizeHtmlInput } from "~/lib/utils";
 import { type Word } from "~/types/word";
 import { LexicalCategorySelect } from "./lexical-category-select";
 
@@ -85,9 +86,11 @@ export function DefinitionSectionForm({
 
   function handleSubmit(values: DefinitionSectionProperties) {
     // Map { value: string }[] to string[]
+    const sanitizedHtml = sanitizeHtmlInput(values.definitionText);
+    const markdown = htmlToMarkdown(sanitizedHtml);
     const mapped = {
       ...values,
-      definitionText: htmlToMarkdown(values.definitionText),
+      definitionText: markdown,
       examples: values.examples?.map((ex) => ex.value).filter(Boolean),
     };
     onSubmit?.(mapped);

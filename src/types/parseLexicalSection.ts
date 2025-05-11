@@ -1,4 +1,5 @@
 import { markdownToHtml } from "~/lib/strings";
+import { sanitizeHtmlInput } from "~/lib/utils";
 import {
   type CustomFieldsSectionProperties,
   type CustomTextSectionProperties,
@@ -25,7 +26,7 @@ export function parseLexicalSection(section: LexicalSectionDb): LexicalSection {
         properties: {
           ...props,
           definitionText: props.definitionText
-            ? markdownToHtml(props.definitionText)
+            ? sanitizeHtmlInput(markdownToHtml(props.definitionText))
             : "",
         },
       };
@@ -40,7 +41,7 @@ export function parseLexicalSection(section: LexicalSectionDb): LexicalSection {
         properties: {
           ...props,
           pronunciationText: props.pronunciationText
-            ? markdownToHtml(props.pronunciationText)
+            ? sanitizeHtmlInput(markdownToHtml(props.pronunciationText))
             : "",
         },
       };
@@ -55,7 +56,7 @@ export function parseLexicalSection(section: LexicalSectionDb): LexicalSection {
         properties: {
           ...props,
           etymologyText: props.etymologyText
-            ? markdownToHtml(props.etymologyText)
+            ? sanitizeHtmlInput(markdownToHtml(props.etymologyText))
             : "",
         },
       };
@@ -70,7 +71,7 @@ export function parseLexicalSection(section: LexicalSectionDb): LexicalSection {
         properties: {
           ...props,
           contentText: props.contentText
-            ? markdownToHtml(props.contentText)
+            ? sanitizeHtmlInput(markdownToHtml(props.contentText))
             : "",
         },
       };
