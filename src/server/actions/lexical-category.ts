@@ -1,9 +1,7 @@
 "use server";
 
-import {
-  getLexicalCategoriesForConlang,
-  insertLexicalCategory,
-} from "../queries";
+import { insertLexicalCategory } from "../mutations";
+import { getLexicalCategoriesForConlang } from "../queries";
 
 export interface CreateLexicalCategory {
   conlangId: number;
@@ -19,7 +17,8 @@ export async function createLexicalCategory(lc: CreateLexicalCategory) {
     throw new Error("Part of speech already exists");
   }
   try {
-    await insertLexicalCategory(lc);
+    const inserted = await insertLexicalCategory(lc);
+    return { id: inserted.id, category: inserted.category };
   } catch (error) {
     console.error("Error:", error);
     throw new Error("Error adding part of speech.");

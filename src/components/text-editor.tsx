@@ -1,3 +1,4 @@
+import Typography from "@tiptap/extension-typography";
 import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {
@@ -18,6 +19,7 @@ interface TextEditorProps {
   showOrderedList?: boolean;
   customToolbarActions?: ReactNode;
   className?: string;
+  disabled?: boolean;
 }
 
 export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
@@ -28,6 +30,7 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
       showOrderedList = false,
       customToolbarActions,
       className,
+      disabled = false,
     },
     ref,
   ) => {
@@ -35,13 +38,18 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
       editorProps: {
         attributes: {
           class: cn(
-            "min-h-[150px] max-h-[300px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-transparent px-3 py-2 border-b-0 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
+            "min-h-[150px] max-h-[300px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-background px-3 py-2 border-b-0 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
             className,
           ),
         },
       },
       extensions: [
         StarterKit.configure({
+          paragraph: {
+            HTMLAttributes: {
+              class: "prose prose-sm mb-1 dark:prose-invert",
+            },
+          },
           ...(showOrderedList && {
             orderedList: {
               HTMLAttributes: {
@@ -55,19 +63,27 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
             },
           },
         }),
+        Typography,
       ],
       content: value,
       onUpdate: ({ editor }) => {
-        onChange(editor.getHTML());
+        const html = editor.getHTML();
+        onChange(html);
       },
+      editable: !disabled,
     });
 
     return (
-      <div id="textEditor" ref={ref}>
-        <EditorContent editor={editor} />
-        {editor ? (
+      <div
+        id="textEditor"
+        ref={ref}
+        className={disabled ? "pointer-events-none opacity-50" : ""}
+      >
+        <EditorContent editor={editor} disabled={disabled} />
+        {editor && !disabled ? (
           <RichTextEditorToolbar
             editor={editor}
+            showOrderedList={showOrderedList}
             customToolbarActions={customToolbarActions}
           />
         ) : null}

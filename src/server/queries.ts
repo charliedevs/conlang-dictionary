@@ -3,21 +3,11 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 
 import { and, eq } from "drizzle-orm";
+import { parseLexicalSection } from "~/types/parseLexicalSection";
 import { type TagColor, type TagType } from "~/types/tag";
-import { type WordSection } from "~/types/word";
 import analyticsServerClient from "./analytics";
 import { db } from "./db";
-import {
-  conlangs,
-  customSections,
-  definitionSections,
-  definitions,
-  lexicalCategories,
-  tags,
-  wordSections,
-  words,
-  wordsToTags,
-} from "./db/schema";
+import { conlangs, tags, words, wordsToTags } from "./db/schema";
 
 // #region CONLANGS
 export async function getMyConlangs() {
@@ -41,16 +31,16 @@ export async function getPublicConlangs() {
   return conlangs;
 }
 
-export async function getConlangById(id: number) {
-  const { userId } = auth();
-
+export async function getConlangById(id: number, { skipAuth = false } = {}) {
   const conlang = await db.query.conlangs.findFirst({
     where: (model, { eq }) => eq(model.id, id),
   });
   if (!conlang) throw new Error("Conlang not found");
 
-  if (!conlang.isPublic && conlang.ownerId !== userId)
-    throw new Error("Unauthorized");
+  if (!skipAuth && !conlang.isPublic) {
+    const { userId } = auth();
+    if (conlang.ownerId !== userId) throw new Error("Unauthorized");
+  }
 
   return conlang;
 }
@@ -156,19 +146,15 @@ export async function getWordsByConlangId(conlangId: number) {
     orderBy: (model, { asc }) => [asc(model.text)],
     with: {
       tags: { with: { tag: true } },
-      wordSections: {
-        with: {
-          customSection: true,
-          definitionSection: {
-            with: { definitions: true, lexicalCategory: true },
-          },
-        },
+      lexicalSections: {
+        orderBy: (model, { asc }) => [asc(model.order)],
       },
     },
   });
   const wordsWithTags = words.map((w) => ({
     ...w,
     tags: w.tags.map((t) => t.tag),
+    lexicalSections: w.lexicalSections.map(parseLexicalSection),
   }));
   return wordsWithTags;
 }
@@ -178,19 +164,17 @@ export async function getWordById(id: number) {
     where: (model, { eq }) => eq(model.id, id),
     with: {
       tags: { with: { tag: true } },
-      wordSections: {
+      lexicalSections: {
         orderBy: (model, { asc }) => [asc(model.order)],
-        with: {
-          customSection: true,
-          definitionSection: {
-            with: { definitions: true, lexicalCategory: true },
-          },
-        },
       },
     },
   });
   if (!word) throw new Error(`Word with id ${id} not found`);
-  const wordWithTags = { ...word, tags: word.tags.map((t) => t.tag) };
+  const wordWithTags = {
+    ...word,
+    tags: word.tags.map((t) => t.tag),
+    lexicalSections: word.lexicalSections.map(parseLexicalSection),
+  };
   return wordWithTags;
 }
 
@@ -321,276 +305,6 @@ export async function removeWordTagRelation(wordId: number, tagId: number) {
 }
 // #endregion
 
-// #region SECTIONS
-export async function getWordSections(wordId: number) {
-  const wordSections = await db.query.wordSections.findMany({
-    where: (model, { eq }) => eq(model.wordId, wordId),
-    orderBy: (model, { asc }) => [asc(model.order)],
-    with: {
-      definitionSection: {
-        with: { definitions: true, lexicalCategory: true },
-      },
-      customSection: true,
-    },
-  });
-  return wordSections;
-}
-
-export interface WordSectionInsert {
-  wordId: number;
-  title?: string;
-}
-export async function insertWordSection(s: WordSectionInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const wordSection = await db
-    .insert(wordSections)
-    .values({
-      ...s,
-    })
-    .returning();
-
-  if (!wordSection[0]) throw new Error("Word section not created");
-
-  return wordSection[0];
-}
-
-export interface WordSectionUpdate {
-  id: number;
-  title?: string;
-}
-export async function updateWordSection(s: WordSectionUpdate) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const wordSection = await db
-    .update(wordSections)
-    .set({
-      title: s.title,
-    })
-    .where(eq(wordSections.id, s.id))
-    .returning();
-
-  if (!wordSection[0]) throw new Error("Word section not updated");
-
-  return wordSection[0];
-}
-
-export interface WordSectionOrderUpdate {
-  id: number;
-  order: number;
-}
-
-export async function updateWordSectionOrders(
-  updates: WordSectionOrderUpdate[],
-) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const results: Partial<WordSection>[] = [];
-
-  await db.transaction(async (tx) => {
-    for (const update of updates) {
-      const [updated] = await tx
-        .update(wordSections)
-        .set({ order: update.order })
-        .where(eq(wordSections.id, update.id))
-        .returning();
-
-      if (updated) results.push(updated);
-    }
-  });
-
-  return results;
-}
-
-export async function getCustomSections(wordSectionId: number) {
-  const customSections = await db.query.customSections.findMany({
-    where: (model, { eq }) => eq(model.wordSectionId, wordSectionId),
-  });
-
-  return customSections;
-}
-
-export interface CustomSectionInsert {
-  wordSectionId: number;
-  text: string;
-}
-export async function insertCustomSection(s: CustomSectionInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const customSection = await db
-    .insert(customSections)
-    .values({
-      ...s,
-    })
-    .returning();
-
-  if (!customSection[0]) throw new Error("Custom section not created");
-
-  return customSection[0];
-}
-
-export interface CustomSectionUpdate {
-  id: number;
-  text: string;
-}
-export async function updateCustomSection(s: CustomSectionUpdate) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const customSection = await db
-    .update(customSections)
-    .set({
-      text: s.text,
-    })
-    .where(eq(customSections.id, s.id))
-    .returning();
-
-  if (!customSection[0]) throw new Error("Custom section not updated");
-
-  return customSection[0];
-}
-
-export async function getDefinitionSections(wordSectionId: number) {
-  const definitionSections = await db.query.definitionSections.findMany({
-    where: (model, { eq }) => eq(model.wordSectionId, wordSectionId),
-    orderBy: (model, { asc }) => [asc(model.lexicalCategoryId)],
-    with: { lexicalCategory: true },
-  });
-
-  return definitionSections;
-}
-
-export interface DefinitionSectionInsert {
-  wordSectionId: number;
-  lexicalCategoryId: number;
-}
-export async function insertDefinitionSection(s: DefinitionSectionInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const definitionSection = await db
-    .insert(definitionSections)
-    .values({
-      ...s,
-    })
-    .returning();
-
-  if (!definitionSection[0]) throw new Error("Definition section not created");
-
-  return definitionSection[0];
-}
-
-export interface DefinitionSectionUpdate {
-  id: number;
-  lexicalCategoryId: number;
-}
-export async function updateDefinitionSection(s: DefinitionSectionUpdate) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const definitionSection = await db
-    .update(definitionSections)
-    .set({
-      lexicalCategoryId: s.lexicalCategoryId,
-    })
-    .where(eq(definitionSections.id, s.id))
-    .returning();
-
-  if (!definitionSection[0]) throw new Error("Definition section not updated");
-
-  return definitionSection[0];
-}
-
-export async function getDefinitions(definitionSectionId: number) {
-  const definitions = await db.query.definitions.findMany({
-    where: (model, { eq }) =>
-      eq(model.definitionSectionId, definitionSectionId),
-    orderBy: (model, { asc }) => [asc(model.text)],
-  });
-  return definitions;
-}
-
-export interface DefinitionInsert {
-  definitionSectionId: number;
-  text: string;
-}
-export async function insertDefinition(d: DefinitionInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const definition = await db
-    .insert(definitions)
-    .values({
-      ...d,
-    })
-    .returning();
-
-  if (!definition[0]) throw new Error("Definition not created");
-
-  return definition[0];
-}
-
-export interface DefinitionUpdate {
-  id: number;
-  text: string;
-}
-export async function updateDefinition(d: DefinitionUpdate) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const definition = await db
-    .update(definitions)
-    .set({
-      text: d.text,
-    })
-    .where(eq(definitions.id, d.id))
-    .returning();
-
-  if (!definition[0]) throw new Error("Definition not updated");
-  return definition[0];
-}
-
-export async function deleteDefinition(id: number) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  await db.delete(definitions).where(eq(definitions.id, id));
-}
-
-export async function deleteWordSection(id: number) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  // First delete any related definition sections and their definitions
-  const definitionSectionsToDelete = await db.query.definitionSections.findMany(
-    {
-      where: eq(definitionSections.wordSectionId, id),
-    },
-  );
-
-  for (const definitionSection of definitionSectionsToDelete) {
-    // Delete all definitions in this section
-    await db
-      .delete(definitions)
-      .where(eq(definitions.definitionSectionId, definitionSection.id));
-    // Delete the definition section
-    await db
-      .delete(definitionSections)
-      .where(eq(definitionSections.id, definitionSection.id));
-  }
-
-  // Delete any related custom sections
-  await db.delete(customSections).where(eq(customSections.wordSectionId, id));
-
-  // Finally delete the word section itself
-  await db.delete(wordSections).where(eq(wordSections.id, id));
-}
-// #endregion
-
 // #region Lexical Categories
 export async function getLexicalCategoriesForConlang(conlangId: number) {
   const lexicalCategories = await db.query.lexicalCategories.findMany({
@@ -600,23 +314,42 @@ export async function getLexicalCategoriesForConlang(conlangId: number) {
 
   return lexicalCategories;
 }
+// #endregion
 
-export interface LexicalCategoryInsert {
-  category: string;
-  conlangId: number;
-}
-export async function insertLexicalCategory(l: LexicalCategoryInsert) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
+// #region Lexical Sections
+/**
+ * Returns all unique custom field keys used in lexicalSections for a given conlang.
+ * Only considers sections with sectionType = 'custom_fields'.
+ */
+export async function getCustomFieldKeysForConlang(
+  conlangId: number,
+): Promise<string[]> {
+  // Get all word IDs for the conlang
+  const wordIds = await db.query.words.findMany({
+    where: (model, { eq }) => eq(model.conlangId, conlangId),
+    columns: { id: true },
+  });
+  if (!wordIds.length) return [];
+  const wordIdList = wordIds.map((w) => w.id);
 
-  const lexicalCategory = await db
-    .insert(lexicalCategories)
-    .values({
-      ...l,
-      ownerId: userId,
-    })
-    .returning();
+  // Get all lexicalSections with sectionType 'custom_fields' for these words
+  const sections = await db.query.lexicalSections.findMany({
+    where: (model, { inArray, eq }) =>
+      inArray(model.wordId, wordIdList) &&
+      eq(model.sectionType, "custom_fields"),
+    columns: { properties: true },
+  });
 
-  if (!lexicalCategory[0]) throw new Error("Lexical category not created");
+  // Aggregate all keys from properties.customFields
+  const keySet = new Set<string>();
+  for (const section of sections) {
+    const customFields = (
+      section.properties as { customFields?: Record<string, string> }
+    )?.customFields;
+    if (customFields && typeof customFields === "object") {
+      Object.keys(customFields).forEach((key) => keySet.add(key));
+    }
+  }
+  return Array.from(keySet);
 }
 // #endregion

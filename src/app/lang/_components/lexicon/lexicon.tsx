@@ -7,15 +7,37 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { type LanguagePageSearchParams } from "../../[id]/page";
-import { AddWordForm } from "./add-word";
+import { AddWordForm } from "./forms/add-word";
+import { LexiconRevampNotice } from "./lexicon-revamp-notice";
 import { WordList } from "./word-list";
+import { WordSearchInput } from "./word-search-input";
 import { WordView } from "./word-view";
 
-function ViewAllWordsButton() {
+function ViewAllWordsButton(props: {
+  conlangId: number;
+  searchParams: LanguagePageSearchParams;
+}) {
+  const newParams = new URLSearchParams(props.searchParams);
+  newParams.delete("word");
   return (
-    <Button variant="ghost" className="not-sr-only md:sr-only">
-      <ChevronLeftIcon className="mr-1 size-4" /> All Words
-    </Button>
+    <Link href={`/lang/${props.conlangId}/?${newParams.toString()}`}>
+      <Button variant="ghost" className="not-sr-only md:sr-only">
+        <ChevronLeftIcon className="mr-1 size-4" /> All Words
+      </Button>
+    </Link>
+  );
+}
+
+function SearchWords(props: { wordId?: number }) {
+  return (
+    <div
+      className={cn(
+        "not-sr-only flex w-full items-end justify-start",
+        props.wordId && "sr-only md:not-sr-only",
+      )}
+    >
+      <WordSearchInput />
+    </div>
   );
 }
 
@@ -23,7 +45,7 @@ function AddWord(props: { conlangId: number; wordId?: number }) {
   return (
     <div
       className={cn(
-        "not-sr-only flex w-full justify-center md:block",
+        "not-sr-only flex w-full justify-end",
         props.wordId && "sr-only md:not-sr-only",
       )}
     >
@@ -44,19 +66,25 @@ export function Lexicon(props: {
   searchParams: LanguagePageSearchParams;
 }) {
   const isConlangOwner = props.conlang.ownerId === auth().userId;
+  const wordSelected = Boolean(props.wordId);
   return (
     <div id="lexicon" className="flex flex-col">
+      {isConlangOwner && wordSelected && (
+        <LexiconRevampNotice conlangId={props.conlang.id} />
+      )}
       <div
         id="actions"
-        className="mt-3 flex items-center justify-between gap-2 p-1 md:mt-0"
+        className="mt-3 flex w-full items-center justify-between gap-2 p-1 md:mt-0"
       >
+        <SearchWords wordId={props.wordId} />
+        {wordSelected && (
+          <ViewAllWordsButton
+            conlangId={props.conlang.id}
+            searchParams={props.searchParams}
+          />
+        )}
         {isConlangOwner && (
           <AddWord conlangId={props.conlang.id} wordId={props.wordId} />
-        )}
-        {Boolean(props.wordId) && (
-          <Link href={`/lang/${props.conlang.id}/?view=lexicon`}>
-            <ViewAllWordsButton />
-          </Link>
         )}
       </div>
       <div className="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
@@ -67,7 +95,11 @@ export function Lexicon(props: {
           )}
         >
           <Suspense fallback={<div className="h-full">Loading...</div>}>
-            <WordList conlang={props.conlang} selectedWordId={props.wordId} />
+            <WordList
+              conlang={props.conlang}
+              selectedWordId={props.wordId}
+              searchParams={props.searchParams}
+            />
           </Suspense>
         </aside>
         <article className="relative py-5">
@@ -90,6 +122,7 @@ export function Lexicon(props: {
                   <WordList
                     conlang={props.conlang}
                     selectedWordId={props.wordId}
+                    searchParams={props.searchParams}
                   />
                 </Suspense>
               </div>

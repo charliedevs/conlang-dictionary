@@ -9,7 +9,7 @@ import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { type Word } from "~/types/word";
-import { editWord } from "../../_actions/word";
+import { editWord } from "../../../_actions/word";
 
 export const EditWordButton = (props: { onClick: () => void }) => {
   return (
@@ -17,7 +17,7 @@ export const EditWordButton = (props: { onClick: () => void }) => {
       onClick={props.onClick}
       variant="ghost"
       size="sm"
-      className="size-6 p-1 transition-all md:opacity-0 md:group-hover/header:opacity-100"
+      className="size-6 p-1"
     >
       <Edit2Icon className="size-5" />
     </Button>
