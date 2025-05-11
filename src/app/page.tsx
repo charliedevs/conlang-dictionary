@@ -135,6 +135,14 @@ export default function HomePage() {
             <RecentConlangs />
           </Suspense>
         </div>
+        <div className="mt-4 flex w-full justify-center">
+          <Link
+            href="/search"
+            className="inline-flex items-center rounded-md bg-dictionary px-4 py-2 text-sm font-semibold text-white shadow transition-colors hover:bg-dictionary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:bg-dictionary dark:text-white dark:hover:bg-dictionary/80"
+          >
+            View All Conlangs
+          </Link>
+        </div>
       </div>
       <div id="callToAction" className="group w-full rounded-xl bg-accent p-8">
         <h2 className="mb-4 flex items-center justify-between gap-1 text-start text-xl font-semibold tracking-tight md:gap-8 md:text-xl">
