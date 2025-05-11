@@ -24,7 +24,7 @@ function DefinitionSection({
 }: {
   section: Extract<LexicalSection, { sectionType: "definition" }>;
 }) {
-  const { title, lexicalCategoryId, definitionText, examples } =
+  const { title, /* lexicalCategoryId, */ definitionText, examples } =
     section.properties;
 
   return (

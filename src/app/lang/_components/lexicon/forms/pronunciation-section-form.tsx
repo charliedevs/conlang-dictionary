@@ -48,8 +48,7 @@ const pronunciationFormProps = z
     displayLinkForIPA: z.boolean().optional().default(false),
   })
   .superRefine((data, ctx) => {
-    const hasIPA =
-      data.ipaEntries && data.ipaEntries.some((e) => e.value.trim());
+    const hasIPA = data.ipaEntries?.some((e) => e.value.trim());
     if (!hasIPA && !data.pronunciationText?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -114,7 +113,7 @@ export function PronunciationSectionForm({
   const ipaReaderIsUp = useIPAReaderHealth();
   const ipaEntries = form.watch("ipaEntries");
   const isCheckboxDisabled =
-    disabled || !(ipaEntries && ipaEntries.some((e) => e.value.trim()));
+    disabled || !ipaEntries?.some((e) => e.value.trim());
 
   const [isAudioExpanded, setIsAudioExpanded] = useState(false);
 

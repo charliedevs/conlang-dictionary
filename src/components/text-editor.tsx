@@ -22,10 +22,6 @@ interface TextEditorProps {
   disabled?: boolean;
 }
 
-interface MarkdownStorage {
-  getMarkdown: () => string;
-}
-
 export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
   (
     {

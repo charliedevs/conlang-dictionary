@@ -61,7 +61,7 @@ export function CustomFieldsSectionForm({
   const [keySuggestions, setKeySuggestions] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch(`/api/custom-field-keys?conlangId=${word.conlangId}`)
+    void fetch(`/api/custom-field-keys?conlangId=${word.conlangId}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) setKeySuggestions(data);
@@ -79,7 +79,7 @@ export function CustomFieldsSectionForm({
         key,
         value,
       })),
-    } as any);
+    });
   }
 
   return (

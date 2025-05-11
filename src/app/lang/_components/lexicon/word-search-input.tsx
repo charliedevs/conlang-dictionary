@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChangeEvent, useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type ChangeEvent } from "react";
 import { Input } from "~/components/ui/input";
 
 export function WordSearchInput() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const q = searchParams.get("q") || "";
+  const q = searchParams.get("q") ?? "";
   const [searchInput, setSearchInput] = useState(q);
 
   // Sync local state with query param when it changes (e.g., browser nav)
@@ -17,7 +17,7 @@ export function WordSearchInput() {
   }, [q]);
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value.slice(0, 20);
+    const value = e.target.value.slice(0, 20) ?? "";
     setSearchInput(value);
 
     const newParams = new URLSearchParams(searchParams.toString());
