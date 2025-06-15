@@ -314,6 +314,33 @@ export async function getLexicalCategoriesForConlang(conlangId: number) {
 
   return lexicalCategories;
 }
+
+export async function getLexicalCategoryWordCounts(conlangId: number) {
+  const words = await db.query.words.findMany({
+    where: (model, { eq }) => eq(model.conlangId, conlangId),
+    with: {
+      lexicalSections: {
+        where: (model, { eq }) => eq(model.sectionType, "definition"),
+      },
+    },
+  });
+
+  const categoryCounts = new Map<number, number>();
+
+  for (const word of words) {
+    for (const section of word.lexicalSections) {
+      const properties = section.properties as { lexicalCategoryId?: number };
+      if (properties.lexicalCategoryId) {
+        categoryCounts.set(
+          properties.lexicalCategoryId,
+          (categoryCounts.get(properties.lexicalCategoryId) ?? 0) + 1,
+        );
+      }
+    }
+  }
+
+  return categoryCounts;
+}
 // #endregion
 
 // #region Lexical Sections
