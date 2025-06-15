@@ -11,7 +11,7 @@ interface LexicalCategoriesProps {
 
 export async function LexicalCategories(props: LexicalCategoriesProps) {
   const params = new URLSearchParams(props.searchParams);
-  params.delete("section");
+  params.delete("grammar");
 
   return (
     <div className="flex flex-col gap-2 md:gap-4">

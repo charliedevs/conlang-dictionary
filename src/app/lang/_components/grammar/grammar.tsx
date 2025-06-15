@@ -12,7 +12,7 @@ export function Grammar(props: {
   searchParams: LanguagePageSearchParams;
 }) {
   const isConlangOwner = props.conlang.ownerId === auth().userId;
-  const selectedSection = props.searchParams.section;
+  const selectedSection = props.searchParams.grammar;
 
   return (
     <div id="grammar" className="flex flex-col">

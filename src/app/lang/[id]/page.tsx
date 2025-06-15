@@ -11,8 +11,28 @@ export type LanguagePageSearchParams = {
   word?: string;
   edit?: string;
   q?: string;
-  section?: string;
+  grammar?: string;
 };
+
+function constructTabUrl(
+  conlangId: number,
+  tab: string,
+  currentParams: LanguagePageSearchParams,
+) {
+  const params = new URLSearchParams();
+
+  // Preserve all existing params except 'view'
+  Object.entries(currentParams).forEach(([key, value]) => {
+    if (key !== "view" && value !== undefined) {
+      params.set(key, value);
+    }
+  });
+
+  // Set the new view parameter
+  params.set("view", tab);
+
+  return `/lang/${conlangId}/?${params.toString()}`;
+}
 
 interface LanguageTabsProps {
   conlang: Conlang;
@@ -32,11 +52,7 @@ function LanguageTabs({
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="lexicon" className="p-0">
           <Link
-            href={
-              wordId
-                ? `/lang/${conlang.id}/?view=lexicon&word=${wordId}`
-                : `/lang/${conlang.id}/?view=lexicon`
-            }
+            href={constructTabUrl(conlang.id, "lexicon", searchParams)}
             className="h-full w-full px-3 py-1.5"
           >
             Lexicon
@@ -44,11 +60,7 @@ function LanguageTabs({
         </TabsTrigger>
         <TabsTrigger value="phonology" className="p-0">
           <Link
-            href={
-              wordId
-                ? `/lang/${conlang.id}/?view=phonology&word=${wordId}`
-                : `/lang/${conlang.id}/?view=phonology`
-            }
+            href={constructTabUrl(conlang.id, "phonology", searchParams)}
             className="h-full w-full px-3 py-1.5"
           >
             Phonology
@@ -56,11 +68,7 @@ function LanguageTabs({
         </TabsTrigger>
         <TabsTrigger value="grammar" className="p-0">
           <Link
-            href={
-              wordId
-                ? `/lang/${conlang.id}/?view=grammar&word=${wordId}`
-                : `/lang/${conlang.id}/?view=grammar`
-            }
+            href={constructTabUrl(conlang.id, "grammar", searchParams)}
             className="h-full w-full px-3 py-1.5"
           >
             Grammar

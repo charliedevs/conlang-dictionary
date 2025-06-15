@@ -22,7 +22,7 @@ export async function GrammarNav(props: GrammarNavProps) {
         <ul role="list" className="space-y-1 p-1 md:p-2">
           {sections.map((section) => {
             const params = new URLSearchParams(props.searchParams);
-            params.set("section", section.id);
+            params.set("grammar", section.id);
             return (
               <li key={section.id}>
                 <Link
