@@ -7,15 +7,30 @@ import {
 } from "~/server/queries";
 import { type Conlang } from "~/types/conlang";
 import { type LanguagePageSearchParams } from "../../[id]/page";
+import { LexicalCategoryView } from "./lexical-category-view";
 
 interface LexicalCategoriesProps {
   conlang: Conlang;
-  searchParams?: LanguagePageSearchParams;
+  searchParams: LanguagePageSearchParams;
 }
 
 export async function LexicalCategories(props: LexicalCategoriesProps) {
   const params = new URLSearchParams(props.searchParams);
   params.delete("grammar");
+
+  const selectedCategoryId = props.searchParams?.category
+    ? Number(props.searchParams.category)
+    : undefined;
+
+  if (selectedCategoryId) {
+    return (
+      <LexicalCategoryView
+        conlang={props.conlang}
+        categoryId={selectedCategoryId}
+        searchParams={props.searchParams}
+      />
+    );
+  }
 
   const [lexicalCategories, wordCounts] = await Promise.all([
     getLexicalCategoriesForConlang(props.conlang.id),
@@ -25,12 +40,12 @@ export async function LexicalCategories(props: LexicalCategoriesProps) {
   return (
     <div className="flex flex-col gap-2 md:gap-4">
       <div className="flex items-center gap-1">
-        <Link href={`/lang/${props.conlang.id}/?${params.toString()}`}>
-          <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href={`/lang/${props.conlang.id}/?${params.toString()}`}>
             <ChevronLeftIcon className="size-4" />
             <div className="sr-only">Back</div>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <h2 className="text-sm font-medium">Lexical Categories</h2>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

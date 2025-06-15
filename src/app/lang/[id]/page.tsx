@@ -12,6 +12,7 @@ export type LanguagePageSearchParams = {
   edit?: string;
   q?: string;
   grammar?: string;
+  category?: string;
 };
 
 function constructTabUrl(
