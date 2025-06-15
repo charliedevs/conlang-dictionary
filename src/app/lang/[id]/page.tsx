@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { getConlangById, getPublicConlangs } from "~/server/queries";
 import { type Conlang } from "~/types/conlang";
+import { Grammar } from "../_components/grammar/grammar";
 import { Lexicon } from "../_components/lexicon/lexicon";
 
 export type LanguagePageSearchParams = {
@@ -10,6 +11,7 @@ export type LanguagePageSearchParams = {
   word?: string;
   edit?: string;
   q?: string;
+  section?: string;
 };
 
 interface LanguageTabsProps {
@@ -78,7 +80,9 @@ function LanguageTabs({
         <div className="my-2">Phonology (coming soon)</div>
       </TabsContent>
       <TabsContent value="grammar">
-        <div className="my-2">Grammar (coming soon)</div>
+        <div className="my-2">
+          <Grammar conlang={conlang} searchParams={searchParams} />
+        </div>
       </TabsContent>
     </Tabs>
   );
