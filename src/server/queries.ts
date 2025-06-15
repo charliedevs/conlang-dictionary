@@ -325,21 +325,27 @@ export async function getLexicalCategoryWordCounts(conlangId: number) {
     },
   });
 
-  const categoryCounts = new Map<number, number>();
+  const categoryCounts = new Map<number, Set<number>>();
 
   for (const word of words) {
     for (const section of word.lexicalSections) {
       const properties = section.properties as { lexicalCategoryId?: number };
       if (properties.lexicalCategoryId) {
-        categoryCounts.set(
-          properties.lexicalCategoryId,
-          (categoryCounts.get(properties.lexicalCategoryId) ?? 0) + 1,
-        );
+        if (!categoryCounts.has(properties.lexicalCategoryId)) {
+          categoryCounts.set(properties.lexicalCategoryId, new Set());
+        }
+        categoryCounts.get(properties.lexicalCategoryId)?.add(word.id);
       }
     }
   }
 
-  return categoryCounts;
+  // Convert Sets to counts
+  const counts = new Map<number, number>();
+  for (const [categoryId, wordIds] of categoryCounts) {
+    counts.set(categoryId, wordIds.size);
+  }
+
+  return counts;
 }
 // #endregion
 
