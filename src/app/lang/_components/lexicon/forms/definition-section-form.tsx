@@ -192,6 +192,7 @@ export function DefinitionSectionForm({
                     }
                   }}
                   disabled={disabled || fields.length >= 10}
+                  className="font-unicode"
                 />
                 <Button
                   type="button"
@@ -211,7 +212,11 @@ export function DefinitionSectionForm({
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormControl>
-                            <Input {...field} disabled={disabled} />
+                            <Input
+                              {...field}
+                              disabled={disabled}
+                              className="font-unicode"
+                            />
                           </FormControl>
                         </FormItem>
                       )}

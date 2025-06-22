@@ -33,12 +33,12 @@ function DefinitionSection({
         {title && title.trim() !== "" ? title : "Definition"}
       </h3>
       {definitionText && (
-        <div className="prose prose-slate prose-sm dark:prose-invert text-pretty text-sm">
+        <div className="font-unicode prose prose-sm prose-slate text-pretty text-sm dark:prose-invert">
           {parseHtml(definitionText)}
         </div>
       )}
       {Array.isArray(examples) && examples.length > 0 && (
-        <ul className="ml-1 pl-1 text-xs italic text-primary/80 sm:text-[0.85rem] md:ml-2 md:p-1 md:pl-2 md:text-sm">
+        <ul className="font-unicode ml-1 pl-1 text-xs italic text-primary/80 sm:text-[0.85rem] md:ml-2 md:p-1 md:pl-2 md:text-sm">
           {examples.map((ex: string, i: number) => (
             <li key={i} className="pb-1">
               {ex}
@@ -69,7 +69,7 @@ function PronunciationSection({
         {title && title.trim() !== "" ? title : "Pronunciation"}
       </h3>
       {pronunciationText && (
-        <div className="prose prose-slate prose-sm dark:prose-invert mt-2 text-pretty text-sm">
+        <div className="font-unicode prose prose-sm prose-slate mt-2 text-pretty text-sm dark:prose-invert">
           {parseHtml(pronunciationText)}
         </div>
       )}
@@ -80,7 +80,9 @@ function PronunciationSection({
             <span className="font-semibold text-muted-foreground">
               {ipaEntries?.[0]?.label ?? "IPA"}:
             </span>
-            <span className="font-mono">{ipaEntries?.[0]?.value ?? ""}</span>
+            <span className="font-unicode font-mono">
+              {ipaEntries?.[0]?.value ?? ""}
+            </span>
             {displayLinkForIPA && ipaEntries?.[0]?.value && (
               <span className="-mb-3">
                 <IPAReaderLink ipa={ipaEntries[0].value} />
@@ -94,7 +96,9 @@ function PronunciationSection({
                 <span className="font-semibold text-muted-foreground">
                   {entry?.label ?? "IPA"}:
                 </span>
-                <span className="font-mono">{entry?.value ?? ""}</span>
+                <span className="font-unicode font-mono">
+                  {entry?.value ?? ""}
+                </span>
                 {displayLinkForIPA && entry?.value && (
                   <IPAReaderLink ipa={entry.value} />
                 )}
@@ -129,7 +133,7 @@ function EtymologySection({
         {title && title.trim() !== "" ? title : "Etymology"}
       </h3>
       {etymologyText && (
-        <div className="prose prose-slate prose-sm dark:prose-invert text-pretty text-sm">
+        <div className="font-unicode prose prose-sm prose-slate text-pretty text-sm dark:prose-invert">
           {parseHtml(etymologyText)}
         </div>
       )}
@@ -149,7 +153,7 @@ function CustomTextSection({
         {title && title.trim() !== "" ? title : "Custom Section"}
       </h3>
       {contentText && (
-        <div className="prose prose-slate prose-sm dark:prose-invert text-pretty text-sm">
+        <div className="font-unicode prose prose-sm prose-slate text-pretty text-sm dark:prose-invert">
           {parseHtml(contentText)}
         </div>
       )}

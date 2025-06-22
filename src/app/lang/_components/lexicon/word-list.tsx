@@ -60,7 +60,7 @@ export async function WordList(props: WordListProps) {
             key={word.id}
             href={`/lang/${props.conlang.id}/?${params.toString()}`}
             className={cn(
-              "inline-block w-full max-w-[200px] items-center overflow-x-hidden text-ellipsis rounded-md border border-transparent py-3 text-lg hover:underline md:py-1 md:text-base md:text-muted-foreground",
+              "font-unicode inline-block w-full max-w-[200px] items-center overflow-x-hidden text-ellipsis rounded-md border border-transparent py-3 text-lg hover:underline md:py-1 md:text-base md:text-muted-foreground",
               props.selectedWordId === word.id
                 ? "font-semibold md:text-primary"
                 : "",

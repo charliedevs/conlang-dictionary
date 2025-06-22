@@ -71,7 +71,7 @@ export const EditWordForm = (props: {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input {...field} className="text-lg" />
+                <Input {...field} className="font-unicode text-lg" />
               </FormControl>
             </FormItem>
           )}

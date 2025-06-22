@@ -35,7 +35,7 @@ export async function WordView(props: {
     <div id="word" className="flex flex-col gap-1">
       <div id="word-header" className="flex items-center justify-between gap-2">
         <div className="flex w-full items-center justify-between gap-2">
-          <h2 className="text-2xl font-medium">{word.text}</h2>
+          <h2 className="font-unicode text-2xl font-medium">{word.text}</h2>
           {props.isConlangOwner && !isEditMode && (
             <Link href={`?${editSearchParams.toString()}`}>
               <Button variant="ghost" size="sm" className="h-8">

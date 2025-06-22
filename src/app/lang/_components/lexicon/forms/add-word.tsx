@@ -66,6 +66,7 @@ export const AddWordForm = (props: {
                     <CornerDownLeftIcon className="relative -right-3 size-4 opacity-50" />
                   }
                   {...field}
+                  className="font-unicode"
                 />
               </FormControl>
             </FormItem>

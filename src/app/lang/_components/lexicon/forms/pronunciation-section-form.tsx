@@ -213,6 +213,7 @@ export function PronunciationSectionForm({
                             {...field}
                             placeholder="e.g. /ˈmaʊ̯̃ʔn̩/"
                             disabled={disabled}
+                            className="font-unicode"
                           />
                         )}
                       />
