@@ -5,10 +5,12 @@ import {
   type Row as RowType,
   type VisibilityState,
 } from "@tanstack/react-table";
+import { Download } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { toast } from "sonner";
 
 import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
 import { DocumentText } from "~/components/icons/document-text";
@@ -28,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/data/useUsers";
+import { downloadConlangExport } from "~/lib/conlang-export/trigger-download";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 
@@ -171,6 +174,24 @@ export function ConlangTable(props: {
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Edit</span>
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void downloadConlangExport(conlangId, "json").catch(
+                      (error: unknown) => {
+                        toast.error(
+                          error instanceof Error
+                            ? error.message
+                            : "Export failed.",
+                        );
+                      },
+                    );
+                  }}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  <span>Export as JSON</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => alert("Delete not implemented")}
                   className="text-red-700 focus:bg-red-800/10 focus:text-red-700"
