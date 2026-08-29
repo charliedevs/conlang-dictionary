@@ -9,7 +9,7 @@ import { Download } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 
 import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
@@ -45,6 +45,19 @@ export function ConlangTable(props: {
   const { data: userList, isLoading } = useUsers({
     userId: props.conlangs.map((conlang) => conlang.ownerId),
   });
+
+  const handleExport = useCallback(
+    async (conlangId: number, format: "json" | "markdown") => {
+      try {
+        await downloadConlangExport(conlangId, format);
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Export failed.",
+        );
+      }
+    },
+    [],
+  );
 
   const columns: ColumnDef<Conlang>[] = useMemo(
     () => [
@@ -177,19 +190,20 @@ export function ConlangTable(props: {
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    void downloadConlangExport(conlangId, "json").catch(
-                      (error: unknown) => {
-                        toast.error(
-                          error instanceof Error
-                            ? error.message
-                            : "Export failed.",
-                        );
-                      },
-                    );
+                    void handleExport(conlangId, "json");
                   }}
                 >
                   <Download className="mr-2 h-4 w-4" />
                   <span>Export as JSON</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void handleExport(conlangId, "markdown");
+                  }}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  <span>Export as Markdown</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -222,7 +236,7 @@ export function ConlangTable(props: {
         },
       },
     ],
-    [isLoading, router, userList],
+    [isLoading, router, userList, handleExport],
   );
 
   const handleRowClick = (row: RowType<Conlang>) => {

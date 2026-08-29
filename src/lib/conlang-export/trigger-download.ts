@@ -5,7 +5,7 @@
  */
 export async function downloadConlangExport(
   conlangId: number,
-  format: "json",
+  format: "json" | "markdown",
 ) {
   const res = await fetch(
     `/api/conlang/export?conlangId=${conlangId}&format=${format}`,
@@ -23,7 +23,9 @@ export async function downloadConlangExport(
 
   const blob = await res.blob();
   const disposition = res.headers.get("Content-Disposition") ?? "";
-  const filename = /filename="([^"]+)"/.exec(disposition)?.[1] ?? `conlang.${format}`;
+  const extension = format === "markdown" ? "md" : "json";
+  const filename =
+    /filename="([^"]+)"/.exec(disposition)?.[1] ?? `conlang.${extension}`;
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
