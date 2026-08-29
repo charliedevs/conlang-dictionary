@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import { getUsers } from "~/hooks/data/useUsers";
 import { getMyConlangs } from "~/server/queries";
 import { ConlangTable } from "./_components/conlang-table";
+import { ImportConlangDialog } from "./_components/import-conlang-dialog";
 import { NewConlangForm } from "./_components/new-conlang-form";
 
 export const dynamic = "force-dynamic";
@@ -49,9 +50,12 @@ export default async function DashboardPage() {
                 View and manage your languages here.
               </p>
             </div>
-            <Link href="/lang/new">
-              <Button variant="outline">Create a new conlang</Button>
-            </Link>
+            <div className="flex gap-2">
+              <ImportConlangDialog />
+              <Link href="/lang/new">
+                <Button variant="outline">Create a new conlang</Button>
+              </Link>
+            </div>
           </div>
           <HydrationBoundary state={dehydrate(queryClient)}>
             <ConlangTable
