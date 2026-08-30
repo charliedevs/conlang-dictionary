@@ -1,6 +1,4 @@
-import { ChevronLeftIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
+import { ShapesIcon } from "lucide-react";
 import {
   getLexicalCategoriesForConlang,
   getLexicalCategoryWordCounts,
@@ -8,16 +6,23 @@ import {
 import { type Conlang } from "~/types/conlang";
 import { type LanguagePageSearchParams } from "../../[id]/page";
 import { LexicalCategoryView } from "./lexical-category-view";
+import {
+  GrammarEmptyState,
+  GrammarSectionHeader,
+  ListPanel,
+  RowLink,
+} from "./grammar-ui";
 
 interface LexicalCategoriesProps {
   conlang: Conlang;
   searchParams: LanguagePageSearchParams;
 }
 
-export async function LexicalCategories(props: LexicalCategoriesProps) {
-  const params = new URLSearchParams(props.searchParams);
-  params.delete("grammar");
+function wordCountLabel(count: number) {
+  return count === 1 ? "1 word" : `${count} words`;
+}
 
+export async function LexicalCategories(props: LexicalCategoriesProps) {
   const selectedCategoryId = props.searchParams?.category
     ? Number(props.searchParams.category)
     : undefined;
@@ -32,50 +37,54 @@ export async function LexicalCategories(props: LexicalCategoriesProps) {
     );
   }
 
+  const backParams = new URLSearchParams(props.searchParams);
+  backParams.delete("grammar");
+  const backHref = `/lang/${props.conlang.id}/?${backParams.toString()}`;
+
   const [lexicalCategories, wordCounts] = await Promise.all([
     getLexicalCategoriesForConlang(props.conlang.id),
     getLexicalCategoryWordCounts(props.conlang.id),
   ]);
 
   return (
-    <div className="flex flex-col gap-2 md:gap-4">
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={`/lang/${props.conlang.id}/?${params.toString()}`}>
-            <ChevronLeftIcon className="size-4" />
-            <div className="sr-only">Back</div>
-          </Link>
-        </Button>
-        <h2 className="text-sm font-medium">Lexical Categories</h2>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {lexicalCategories.map((category) => {
-          const categoryParams = new URLSearchParams(props.searchParams);
-          categoryParams.set("grammar", "lexicalcategories");
-          categoryParams.set("category", category.id.toString());
+    <div className="flex flex-col gap-4">
+      <GrammarSectionHeader
+        title="Lexical Categories"
+        backHref={backHref}
+        backLabel="Back to Grammar"
+        meta={
+          lexicalCategories.length > 0
+            ? `${lexicalCategories.length} total`
+            : undefined
+        }
+      />
 
-          return (
-            <Link
-              key={category.id}
-              href={`/lang/${props.conlang.id}/?${categoryParams.toString()}`}
-              className="flex flex-col gap-2 rounded-lg border p-4 transition-colors hover:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              role="button"
-              aria-label={`View words in ${category.category}`}
-              aria-describedby={`category-count-${category.id}`}
-            >
-              <div className="text-sm font-medium text-muted-foreground">
-                {category.category}
-              </div>
-              <div
-                id={`category-count-${category.id}`}
-                className="text-2xl font-bold"
-              >
-                {wordCounts.get(category.id) ?? 0}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+      {lexicalCategories.length === 0 ? (
+        <GrammarEmptyState
+          icon={<ShapesIcon className="size-5" />}
+          title="No lexical categories yet"
+          description="Lexical categories are the parts of speech — noun, verb, adjective — you assign to a word's definition. Add a definition to a word and choose its category to see it grouped here."
+        />
+      ) : (
+        <ListPanel>
+          {lexicalCategories.map((category) => {
+            const categoryParams = new URLSearchParams(props.searchParams);
+            categoryParams.set("grammar", "lexicalcategories");
+            categoryParams.set("category", category.id.toString());
+            const count = wordCounts.get(category.id) ?? 0;
+
+            return (
+              <RowLink
+                key={category.id}
+                href={`/lang/${props.conlang.id}/?${categoryParams.toString()}`}
+                label={category.category}
+                meta={wordCountLabel(count)}
+                ariaLabel={`View ${wordCountLabel(count)} in ${category.category}`}
+              />
+            );
+          })}
+        </ListPanel>
+      )}
     </div>
   );
 }
