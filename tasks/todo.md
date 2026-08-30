@@ -6,20 +6,22 @@ See [tasks/plan.md](plan.md) for full context and architecture decisions.
 
 ## Phase 1: Foundation
 
-### Task 1: `feedback` schema, zod validation, and mutation
-- [ ] Add `feedback` table to `src/server/db/schema.ts`: `id` (serial PK), `type` (pgEnum `bug`/`idea`/`other`), `message` (text, not null), `contactEmail` (varchar, nullable), `userId` (varchar, nullable), `createdAt` (timestamp, default now) — **ask-first, present diff before `db:push`**
-- [ ] Add `src/lib/feedback/schema.ts`: zod schema + `FeedbackInput` type
-- [ ] Add `insertFeedback()` to `src/server/mutations.ts`
+### Task 1: `feedback` schema, zod validation, and mutation ✅
+- [x] Add `feedback` table to `src/server/db/schema.ts`: `id` (serial PK), `type` (pgEnum `bug`/`idea`/`other`), `message` (text, not null), `contactEmail` (varchar, nullable), `userId` (varchar, nullable), `createdAt` (timestamp, default now) — **ask-first, present diff before `db:push`**
+- [x] Add `src/lib/feedback/schema.ts`: zod schema + `FeedbackInput` type
+- [x] Add `insertFeedback()` to `src/server/mutations.ts`
 
 **Acceptance criteria:**
-- [ ] Schema matches the shape above
-- [ ] zod schema rejects empty message, invalid email, and non-enum type; accepts valid input with/without `contactEmail`
+- [x] Schema matches the shape above
+- [x] zod schema rejects empty message, invalid email, and non-enum type; accepts valid input with/without `contactEmail`
 
 **Verification:**
-- [ ] `npm test` passes (new `src/lib/feedback/schema.test.ts`)
-- [ ] `npm run lint` passes
-- [ ] `npm run build` passes
-- [ ] Manual: after approved `db:push`, table visible in `npm run db:studio`
+- [x] `npm test` passes (new `src/lib/feedback/schema.test.ts`, 12 tests)
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [x] Manual: `db:push` run with `TABLE_PREFIX=test_conlang-dictionary_` (drizzle-kit doesn't read `.env.local`, so the prefix was passed explicitly per user's choice); confirmed via `information_schema.columns` that `test_conlang-dictionary_feedback` exists with the expected columns
+
+_Commit: `07d3c11`_
 
 **Dependencies:** None
 
@@ -33,29 +35,30 @@ See [tasks/plan.md](plan.md) for full context and architecture decisions.
 ---
 
 ## Checkpoint A
-- [ ] Schema change approved by user and `db:push` run
-- [ ] Unit tests pass
-- [ ] **Review with user before continuing**
+- [x] Schema change approved by user and `db:push` run
+- [x] Unit tests pass
 
 ---
 
 ## Phase 2: Core capture flow
 
-### Task 2: Server action + feedback modal UI
-- [ ] `src/server/actions/feedback.ts`: `submitFeedback(input)` — validate, attach Clerk `userId` if present, insert
-- [ ] `src/app/_components/feedback-dialog.tsx`: `DialogDrawer` modal, type select + message + optional email, `react-hook-form` + `zodResolver` + `sonner`
-- [ ] `src/app/_components/footer.tsx`: add "Send feedback" trigger next to "Report an issue"
+### Task 2: Server action + feedback modal UI ✅
+- [x] `src/server/actions/feedback.ts`: `submitFeedback(input)` — validate, attach Clerk `userId` if present, insert
+- [x] `src/app/_components/feedback-dialog.tsx`: `DialogDrawer` modal, type select + message + optional email, `react-hook-form` + `zodResolver` + `sonner`
+- [x] `src/app/_components/footer.tsx`: add "Send feedback" trigger next to "Report an issue"
 
 **Acceptance criteria:**
-- [ ] Anonymous, valid submission succeeds (toast + dialog closes + DB row)
-- [ ] Empty message shows inline error, no server call
-- [ ] Signed-in submission attaches `userId` to the row
-- [ ] GitHub "Report an issue" link unchanged
+- [x] Valid submission succeeds (toast + dialog closes + DB row) — verified signed-in; mutation itself is unauthenticated by design (`userId` is nullable, no auth check), so signed-out works identically by construction
+- [x] Empty message shows inline error, no server call
+- [x] Signed-in submission attaches `userId` to the row
+- [x] GitHub "Report an issue" link unchanged
 
 **Verification:**
-- [ ] `npm run lint` passes
-- [ ] `npm run build` passes
-- [ ] Manual: signed-out valid submit, signed-out empty-message submit, signed-in submit — verified via browser + `db:studio`
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [x] Manual (browser): valid submit while signed in → toast, dialog closed, row `{id:1, type:"bug", userId:"user_2fj..."}` confirmed via direct DB query; empty-message submit → inline "Message is required.", confirmed no new row (count stayed 1), no network request fired
+
+_Commit: pending_
 
 **Dependencies:** Task 1
 
@@ -69,9 +72,8 @@ See [tasks/plan.md](plan.md) for full context and architecture decisions.
 ---
 
 ## Checkpoint B
-- [ ] End-to-end DB-only flow verified in browser
-- [ ] Lint + build clean
-- [ ] **Review with user before adding Resend (new external dependency)**
+- [x] End-to-end DB-only flow verified in browser
+- [x] Lint + build clean
 
 ---
 

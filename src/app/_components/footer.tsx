@@ -1,4 +1,5 @@
 import { Github } from "~/components/icons/github";
+import { FeedbackDialog } from "./feedback-dialog";
 
 const FOUNDING_YEAR = 2024;
 
@@ -39,6 +40,8 @@ export function Footer() {
         >
           Report an issue
         </a>
+        |
+        <FeedbackDialog />
       </div>
     </footer>
   );
