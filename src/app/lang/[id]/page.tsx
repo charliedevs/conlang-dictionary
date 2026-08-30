@@ -125,7 +125,14 @@ export default async function LanguagePage({
   return (
     <div className="flex flex-col">
       <div className="my-3 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold md:text-3xl">{conlang.name}</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold md:text-3xl">
+          {conlang.emoji && (
+            <span aria-hidden className="leading-none">
+              {conlang.emoji}
+            </span>
+          )}
+          {conlang.name}
+        </h1>
         {isConlangOwner && (
           <ConlangSettingsMenu
             conlangId={conlang.id}
