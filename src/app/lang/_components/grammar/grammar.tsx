@@ -1,4 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
+import { isOwner } from "~/lib/auth/is-owner";
+import { getCurrentUser } from "~/server/auth/current-user";
 import { Suspense } from "react";
 import { type Conlang } from "~/types/conlang";
 import { type LanguagePageSearchParams } from "../../[id]/page";
@@ -12,7 +13,7 @@ export async function Grammar(props: {
   searchParams: LanguagePageSearchParams;
 }) {
   const selectedSection = props.searchParams.grammar;
-  const isOwner = props.conlang.ownerId === (await auth()).userId;
+  const owner = isOwner(props.conlang, await getCurrentUser());
 
   return (
     <div id="grammar" className="flex flex-col">
@@ -30,7 +31,7 @@ export async function Grammar(props: {
               <LexicalCategories
                 conlang={props.conlang}
                 searchParams={props.searchParams}
-                isOwner={isOwner}
+                isOwner={owner}
               />
             ) : (
               <GrammarDashboard

@@ -1,4 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
+import { isOwner } from "~/lib/auth/is-owner";
+import { getCurrentUser } from "~/server/auth/current-user";
 import { ArrowLeftIcon, ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -64,7 +65,7 @@ export async function Lexicon(props: {
   wordId?: number;
   searchParams: LanguagePageSearchParams;
 }) {
-  const isConlangOwner = props.conlang.ownerId === (await auth()).userId;
+  const isConlangOwner = isOwner(props.conlang, await getCurrentUser());
   const wordSelected = Boolean(props.wordId);
   return (
     <div id="lexicon" className="flex flex-col">

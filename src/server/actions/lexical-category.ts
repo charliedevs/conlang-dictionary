@@ -1,7 +1,8 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { isOwner } from "~/lib/auth/is-owner";
 import { normalizeCategoryName } from "~/lib/lexical-categories/defaults";
+import { requireCurrentUser } from "../auth/current-user";
 import { insertLexicalCategory } from "../mutations";
 import { getConlangById, getLexicalCategoriesForConlang } from "../queries";
 
@@ -12,10 +13,9 @@ export interface CreateLexicalCategory {
 
 /** Throws unless the signed-in user owns the target conlang. */
 async function assertConlangOwner(conlangId: number) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
   const conlang = await getConlangById(conlangId, { skipAuth: true });
-  if (conlang.ownerId !== userId) throw new Error("Unauthorized");
+  if (!isOwner(conlang, user)) throw new Error("Unauthorized");
 }
 
 export async function createLexicalCategory(lc: CreateLexicalCategory) {

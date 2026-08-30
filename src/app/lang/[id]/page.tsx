@@ -1,4 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
+import { isOwner } from "~/lib/auth/is-owner";
+import { getCurrentUser } from "~/server/auth/current-user";
 import { TabsContent } from "@radix-ui/react-tabs";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -121,7 +122,7 @@ export default async function LanguagePage({
     console.error("Error:", error);
     return <div className="py-5 text-center">Language not found.</div>;
   }
-  const isConlangOwner = conlang.ownerId === (await auth()).userId;
+  const isConlangOwner = isOwner(conlang, await getCurrentUser());
   return (
     <div className="flex flex-col">
       <div className="my-3 flex items-center justify-between gap-4">

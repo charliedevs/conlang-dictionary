@@ -1,22 +1,22 @@
 import "server-only";
 
-import { auth } from "@clerk/nextjs/server";
-
 import { and, eq } from "drizzle-orm";
+import { isOwner } from "~/lib/auth/is-owner";
 import { countWordsByCategory } from "~/lib/lexical-categories/membership";
 import { parseLexicalSection } from "~/types/parseLexicalSection";
 import { type TagColor, type TagType } from "~/types/tag";
 import analyticsServerClient from "./analytics";
+import { getCurrentUser, requireCurrentUser } from "./auth/current-user";
+import { ownedByUser } from "./auth/ownership";
 import { db } from "./db";
 import { conlangs, tags, words, wordsToTags } from "./db/schema";
 
 // #region CONLANGS
 export async function getMyConlangs() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
 
   const conlangs = await db.query.conlangs.findMany({
-    where: (model, { eq }) => eq(model.ownerId, userId),
+    where: (model) => ownedByUser(model.ownerUserId, model.ownerId, user),
     orderBy: (model, { desc }) => desc(model.createdAt),
   });
 
@@ -39,8 +39,8 @@ export async function getConlangById(id: number, { skipAuth = false } = {}) {
   if (!conlang) throw new Error("Conlang not found");
 
   if (!skipAuth && !conlang.isPublic) {
-    const { userId } = await auth();
-    if (conlang.ownerId !== userId) throw new Error("Unauthorized");
+    const user = await getCurrentUser();
+    if (!isOwner(conlang, user)) throw new Error("Unauthorized");
   }
 
   return conlang;
@@ -70,8 +70,7 @@ export async function createConlang(
   emoji?: string,
   isPublic = false,
 ) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
 
   const conlang = await db
     .insert(conlangs)
@@ -80,14 +79,15 @@ export async function createConlang(
       description,
       emoji,
       isPublic,
-      ownerId: userId,
+      ownerId: user.clerkUserId ?? user.id,
+      ownerUserId: user.id,
     })
     .returning();
 
   if (!conlang[0]) throw new Error("Conlang not created");
 
   analyticsServerClient.capture({
-    distinctId: userId,
+    distinctId: user.id,
     event: "conlang created",
     properties: {
       conlangId: conlang[0].id,
@@ -106,8 +106,7 @@ export async function updateConlang(
   emoji?: string,
   isPublic?: boolean,
 ) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
 
   const conlang = await db
     .update(conlangs)
@@ -118,7 +117,12 @@ export async function updateConlang(
       isPublic,
       updatedAt: new Date(),
     })
-    .where(and(eq(conlangs.id, id), eq(conlangs.ownerId, userId)))
+    .where(
+      and(
+        eq(conlangs.id, id),
+        ownedByUser(conlangs.ownerUserId, conlangs.ownerId, user),
+      ),
+    )
     .returning();
 
   if (!conlang[0]) throw new Error("Conlang not updated");
@@ -127,15 +131,19 @@ export async function updateConlang(
 }
 
 export async function deleteConlang(id: number) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
 
   await db
     .delete(conlangs)
-    .where(and(eq(conlangs.id, id), eq(conlangs.ownerId, userId)));
+    .where(
+      and(
+        eq(conlangs.id, id),
+        ownedByUser(conlangs.ownerUserId, conlangs.ownerId, user),
+      ),
+    );
 
   analyticsServerClient.capture({
-    distinctId: userId,
+    distinctId: user.id,
     event: "conlang deleted",
     properties: {
       conlangId: id,
@@ -189,8 +197,7 @@ export interface WordInsert {
 }
 
 export async function insertWord(w: WordInsert) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   const word = await db
     .insert(words)
@@ -212,8 +219,7 @@ export interface WordUpdate {
 }
 
 export async function updateWord(w: WordUpdate) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   const word = await db
     .update(words)
@@ -228,8 +234,7 @@ export async function updateWord(w: WordUpdate) {
 }
 
 export async function deleteWord(id: number) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   await db.delete(words).where(eq(words.id, id));
 }
@@ -246,11 +251,10 @@ export async function getAllWordTags() {
 }
 
 export async function getWordTagsForUser() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
 
   const userTags = await db.query.tags.findMany({
-    where: (model, { eq }) => eq(model.createdBy, userId),
+    where: (model) => ownedByUser(model.createdByUserId, model.createdBy, user),
     orderBy: (model, { asc }) => [asc(model.text)],
   });
 
@@ -264,14 +268,14 @@ export interface TagInsert {
 }
 
 export async function insertTag(t: TagInsert) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
 
   const tag = await db
     .insert(tags)
     .values({
       ...t,
-      createdBy: userId,
+      createdBy: user.clerkUserId ?? user.id,
+      createdByUserId: user.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     })
@@ -283,8 +287,7 @@ export async function insertTag(t: TagInsert) {
 }
 
 export async function addWordTagRelation(wordId: number, tagId: number) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   const word = await db
     .insert(wordsToTags)
@@ -298,8 +301,7 @@ export async function addWordTagRelation(wordId: number, tagId: number) {
 }
 
 export async function removeWordTagRelation(wordId: number, tagId: number) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   const word = await db
     .delete(wordsToTags)

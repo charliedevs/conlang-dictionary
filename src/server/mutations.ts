@@ -1,7 +1,7 @@
 import "server-only";
 
-import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
+import { requireCurrentUser } from "./auth/current-user";
 import { planTagsToCreate } from "~/lib/conlang-export/plan-import";
 import type {
   ConlangExport,
@@ -41,8 +41,7 @@ export type InsertLexicalSectionInput = {
 };
 
 export async function insertLexicalSection(input: InsertLexicalSectionInput) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   if (!input.wordId || !input.sectionType || !input.properties) {
     throw new Error("Missing required fields");
@@ -71,8 +70,7 @@ export interface LexicalSectionOrderUpdate {
 export async function updateLexicalSectionOrders(
   updates: LexicalSectionOrderUpdate[],
 ) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   const results: Partial<typeof lexicalSections.$inferSelect>[] = [];
 
@@ -100,8 +98,7 @@ export async function updateLexicalSectionProperties(
   sectionId: string,
   input: UpdateLexicalSectionPropertiesInput,
 ) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   const updated = await db
     .update(lexicalSections)
@@ -114,8 +111,7 @@ export async function updateLexicalSectionProperties(
 }
 
 export async function deleteLexicalSection(sectionId: string) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  await requireCurrentUser();
 
   const deleted = await db
     .delete(lexicalSections)
@@ -136,14 +132,14 @@ export interface LexicalCategoryInsert {
 }
 
 export async function insertLexicalCategory(l: LexicalCategoryInsert) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
 
   const lexicalCategory = await db
     .insert(lexicalCategories)
     .values({
       ...l,
-      ownerId: userId,
+      ownerId: user.clerkUserId ?? user.id,
+      ownerUserId: user.id,
     })
     .returning();
 
@@ -195,8 +191,7 @@ export async function importConlang(input: {
   conlangName: string;
   data: ConlangExport;
 }) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireCurrentUser();
 
   return await db.transaction(async (tx) => {
     const newConlang = await insertOneOrThrow(
@@ -207,7 +202,8 @@ export async function importConlang(input: {
           description: input.data.conlang.description ?? "",
           emoji: input.data.conlang.emoji,
           isPublic: false,
-          ownerId: userId,
+          ownerId: user.clerkUserId ?? user.id,
+          ownerUserId: user.id,
         })
         .returning(),
       "Failed to create conlang",
@@ -221,7 +217,8 @@ export async function importConlang(input: {
           .values({
             category: category.category,
             conlangId: newConlang.id,
-            ownerId: userId,
+            ownerId: user.clerkUserId ?? user.id,
+            ownerUserId: user.id,
           })
           .returning(),
         "Failed to create lexical category",
@@ -246,7 +243,8 @@ export async function importConlang(input: {
             text: tag.text,
             type: "word",
             color: tag.color,
-            createdBy: userId,
+            createdBy: user.clerkUserId ?? user.id,
+            createdByUserId: user.id,
             createdAt: new Date(),
             updatedAt: new Date(),
           })
@@ -303,6 +301,7 @@ export interface FeedbackInsert {
   contactEmail?: string;
   /** Attached opportunistically when the submitter happens to be signed in; feedback itself requires no auth. */
   userId?: string | null;
+  submittedByUserId?: string | null;
 }
 
 export async function insertFeedback(input: FeedbackInsert) {
@@ -314,6 +313,7 @@ export async function insertFeedback(input: FeedbackInsert) {
         message: input.message,
         contactEmail: input.contactEmail ? input.contactEmail : null,
         userId: input.userId ?? null,
+        submittedByUserId: input.submittedByUserId ?? null,
       })
       .returning(),
     "Failed to save feedback",

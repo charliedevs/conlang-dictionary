@@ -317,20 +317,32 @@ real outcome.
 
 ---
 
-### Task 2.4: `getCurrentUser()` and call-site migration
-- [ ] `src/server/auth/current-user.ts` — resolve `await auth()` → `users` row via `resolve-user.ts`, create on first sight, refresh `displayName`/`imageUrl`
-- [ ] Configure Clerk session token claims (dashboard): `{"email": "{{user.primary_email_address}}", "email_verified": "{{user.email_verified}}"}`
-- [ ] Fall back to `(await clerkClient()).users.getUser()` when claims absent — needed during cutover for in-flight old-instance tokens
-- [ ] Convert ~25 `const { userId } = auth()` sites to `getCurrentUser()`, using `user.id` against the new columns
-- [ ] Switch PostHog `distinctId` to `user.id` in `queries.ts` and `_analytics/provider.tsx`
+### Task 2.4: `getCurrentUser()` and call-site migration DONE
+- [x] `src/server/auth/current-user.ts` resolves the Clerk session to a local `users` row, creating or reclaiming on first sight
+- [x] Reads `email` / `email_verified` from session claims, falling back to a Clerk fetch when absent
+- [x] `src/lib/auth/is-owner.ts` (+ 7 tests, written failing first)
+- [x] `src/server/auth/ownership.ts` builds the query-level owner predicate
+- [x] All 25 call sites migrated off `auth()`; only `middleware.ts` and the soon-to-be-deleted `/api/users` still import Clerk directly
+- [x] PostHog `distinctId` switched to `user.id`
+- [x] Writes populate both the new and legacy ownership columns
 
-**Acceptance criteria:**
-- [ ] All ownership reads/writes go through `users.id`
-- [ ] Unauthenticated paths (public conlangs, feedback form) still work with no user
+**Design change: reads match on either column.** The plan had Phase 3 backfill production and then
+deploy. Users keep creating conlangs between those two steps using the old code, which writes only
+`ownerId`. Those rows would have a null `ownerUserId` and become invisible to their owners the moment
+the new code deployed. Reads now match `ownerUserId` OR the legacy `ownerId`, so deploy ordering
+cannot lose anyone. The fallback is removed with the legacy columns.
+
+**Verified with a live simulation:** set a conlang's `ownerUserId` to null (the exact
+backfill-to-deploy scenario), confirmed the dual-read still finds it and an `ownerUserId`-only query
+does not, then restored it.
+
+**Failing closed:** a conflict from `resolveUser` logs and returns null rather than linking. An
+identity with no email logs and returns null rather than surfacing a raw NOT NULL violation.
 
 **Verification:**
-- [ ] `npm run lint && npm run build && npm test`
-- [ ] Manual: create a conlang → new row has both `ownerId` and `ownerUserId` populated
+- [x] 179 tests pass, lint clean, typecheck clean, build succeeds
+- [x] Signed-out browser pass: homepage with owner attribution, `/lang/1` lexicon and grammar, `/lang`, `/search`, `/sign-in` all 200 with no console errors
+- [ ] **Signed-in pass still needed** (user action): dashboard, create, edit, delete
 
 **Dependencies:** Task 2.3
 

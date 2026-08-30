@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "~/server/auth/current-user";
 import { feedbackSchema, type FeedbackInput } from "~/lib/feedback/schema";
 import { sendFeedbackNotification } from "../email";
 import { insertFeedback } from "../mutations";
@@ -17,13 +17,14 @@ export async function submitFeedback(input: SubmitFeedbackInput) {
   }
 
   const parsed = feedbackSchema.parse(input);
-  const { userId } = await auth();
+  const user = await getCurrentUser();
 
   const saved = await insertFeedback({
     type: parsed.type,
     message: parsed.message,
     contactEmail: parsed.contactEmail,
-    userId,
+    userId: user?.clerkUserId ?? null,
+    submittedByUserId: user?.id ?? null,
   });
 
   try {
