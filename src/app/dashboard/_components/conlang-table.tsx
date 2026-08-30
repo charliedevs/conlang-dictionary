@@ -5,19 +5,21 @@ import {
   type Row as RowType,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { Download } from "lucide-react";
+import {
+  Download,
+  FileText,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
-import { DocumentText } from "~/components/icons/document-text";
-import { EllipsisHorizontal } from "~/components/icons/ellipsis-horizontal";
 import { Eye } from "~/components/icons/eye";
 import { EyeSlash } from "~/components/icons/eye-slash";
-import { Pencil } from "~/components/icons/pencil";
-import { Trash } from "~/components/icons/trash";
 import { Button } from "~/components/ui/button";
 import { DataTable } from "~/components/ui/data-table";
 import {
@@ -44,32 +46,39 @@ function RowActions(props: { conlangId: number; conlangName: string }) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => e.stopPropagation()}
+          >
             <span className="sr-only">Actions for {conlangName}</span>
-            <EllipsisHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
           <DropdownMenuLabel>{conlangName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => alert("Conlang page not implemented")}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/lang/${conlangId}`);
+            }}
           >
-            <DocumentText className="mr-2 h-4 w-4" />
+            <FileText className="mr-2 h-4 w-4 shrink-0" />
             <span>View</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={(e) => {
-              router.push(`/lang/edit/${conlangId}`);
               e.stopPropagation();
+              router.push(`/lang/edit/${conlangId}`);
             }}
           >
             <Pencil className="mr-2 h-4 w-4 shrink-0" />
             <div className="flex flex-col">
               <span>Edit Details</span>
               <span className="text-xs text-muted-foreground">
-                Name, emoji & description
+                Name, emoji &amp; description
               </span>
             </div>
           </DropdownMenuItem>
@@ -79,16 +88,18 @@ function RowActions(props: { conlangId: number; conlangName: string }) {
               setExportOpen(true);
             }}
           >
-            <Download className="mr-2 h-4 w-4" />
+            <Download className="mr-2 h-4 w-4 shrink-0" />
             <span>Export</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => alert("Delete not implemented")}
-            className="text-red-700 focus:bg-red-800/10 focus:text-red-700"
-          >
-            <Trash className="mr-2 h-4 w-4" />
-            <span>Delete</span>
+          <DropdownMenuItem disabled onClick={(e) => e.stopPropagation()}>
+            <Trash2 className="mr-2 h-4 w-4 shrink-0" />
+            <div className="flex flex-col">
+              <span>Delete</span>
+              <span className="text-xs text-muted-foreground">
+                Coming soon
+              </span>
+            </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -224,7 +235,8 @@ export function ConlangTable(props: {
             <Link href={`/lang/${row.original.id}`}>
               <Button
                 variant="ghost"
-                className="h-8 w-8 rounded-full p-0 text-slate-400 transition-colors ease-in hover:bg-slate-500/10 hover:text-slate-700 group-hover:text-slate-700"
+                size="icon"
+                className="rounded-full text-muted-foreground hover:bg-accent hover:text-accent-foreground group-hover:text-accent-foreground"
               >
                 <span className="sr-only">Open menu for {conlangName}</span>
                 <ArrowRightCircle className="h-7 w-7" />
