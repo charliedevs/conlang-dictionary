@@ -117,19 +117,28 @@ _Commit: pending_
 
 ## Phase 4: Spam hardening
 
-### Task 4: Rate limiting + honeypot
-- [ ] `submitFeedback`: check `ratelimit.limit(\`feedback_${ip}\`)` before validating/inserting
-- [ ] `submitFeedback`: accept `honeypot`; if filled, return apparent success without DB write or email
-- [ ] `feedback-dialog.tsx`: render honeypot field visually hidden, wired into payload
+### Task 4: Rate limiting + honeypot ✅ (rate-limit threshold unverifiable in this sandbox — see note)
+- [x] `submitFeedback`: check `ratelimit.limit(\`feedback_${ip}\`)` before validating/inserting
+- [x] `submitFeedback`: accept `honeypot`; if filled, return apparent success without DB write or email
+- [x] `feedback-dialog.tsx`: render honeypot field visually hidden, wired into payload
 
 **Acceptance criteria:**
-- [ ] Over-limit submissions show a friendly error, no crash
-- [ ] Honeypot-filled submissions appear to succeed but create no row and send no email
+- [ ] Over-limit submissions show a friendly error, no crash — **not confirmable here**, see note below
+- [x] Honeypot-filled submissions appear to succeed but create no row and send no email — confirmed live
 
 **Verification:**
-- [ ] `npm run lint` passes
-- [ ] `npm run build` passes
-- [ ] Manual: honeypot-filled submit verified inert; 11+ rapid submissions trigger rate-limit error
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [x] Manual: honeypot-filled submit → dialog closed normally (apparent success), DB row count unchanged, confirmed via direct query
+- [ ] Manual: 11+ rapid submissions trigger rate-limit error — **blocked by an environment issue, not this code** (see below)
+
+**Found and fixed along the way:** `.env`/`.env.local` had `UPSTASH_REDIS_REST_URL`/`TOKEN` wrapped in doubled quotes (`=""https://...""`), a pre-existing typo that's been dormant since nothing called `ratelimit.ts` before this task. Fixed with the user's approval (stripped the extra quotes in both files, not committed — they're gitignored).
+
+**Still blocking full verification:** after that fix, calls to the configured Upstash host (`usw2-regular-polecat-31793.upstash.io`) fail with DNS `ENOTFOUND` — this looks like a stale/deleted Upstash Redis database, not a formatting issue, and is outside what I can fix (needs the Upstash dashboard). Because of this, `ratelimit.limit()` never gets a real answer back in this sandbox, so I can't observe the true "blocks after 10" behavior end-to-end. What I *did* confirm: the call site doesn't crash the feature (submissions still complete) when Upstash is unreachable, and the integration matches Upstash's documented API exactly. Re-verify the actual threshold once the Upstash database is confirmed reachable.
+
+**Also verified as a side effect:** a real Resend email send now works — `RESEND_API_KEY`/`FEEDBACK_NOTIFY_EMAIL` were added to `.env.local`/`.env` (by the user, mid-task), and the post-fix test submission (row id 11) logged no send error, unlike the earlier "not configured" run. Ask the user to confirm the email actually landed in their inbox.
+
+_Commit: pending_
 
 **Dependencies:** Task 3
 
@@ -142,6 +151,6 @@ _Commit: pending_
 ---
 
 ## Checkpoint: Complete
-- [ ] All `SPEC.md` success criteria met
-- [ ] Full test suite, lint, build all pass
-- [ ] Ready for final review
+- [x] All `SPEC.md` success criteria met, except the rate-limit threshold itself (unverifiable here — see Task 4 note; Upstash database appears unreachable/stale)
+- [x] Full test suite, lint, build all pass
+- [x] Ready for final review

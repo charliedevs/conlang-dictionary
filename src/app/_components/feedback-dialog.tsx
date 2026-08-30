@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -27,6 +27,8 @@ import { Textarea } from "~/components/ui/textarea";
 import { feedbackSchema, type FeedbackInput } from "~/lib/feedback/schema";
 import { submitFeedback } from "~/server/actions/feedback";
 
+const HONEYPOT_FIELD_NAME = "website";
+
 const feedbackTypeLabels: Record<FeedbackInput["type"], string> = {
   bug: "Bug report",
   idea: "Idea",
@@ -36,6 +38,7 @@ const feedbackTypeLabels: Record<FeedbackInput["type"], string> = {
 export function FeedbackDialog() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FeedbackInput>({
     resolver: zodResolver(feedbackSchema),
@@ -49,7 +52,7 @@ export function FeedbackDialog() {
   async function onSubmit(values: FeedbackInput) {
     setIsSubmitting(true);
     try {
-      await submitFeedback(values);
+      await submitFeedback({ ...values, honeypot: honeypotRef.current?.value });
       toast.success("Thanks for the feedback!");
       form.reset();
       setOpen(false);
@@ -85,6 +88,21 @@ export function FeedbackDialog() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex flex-col gap-4 md:px-2 md:pt-2"
             >
+              {/* Honeypot: hidden from real users, but a plain form field a naive bot may fill in. */}
+              <div
+                aria-hidden="true"
+                className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden"
+              >
+                <label htmlFor={HONEYPOT_FIELD_NAME}>Leave this field empty</label>
+                <input
+                  ref={honeypotRef}
+                  id={HONEYPOT_FIELD_NAME}
+                  name={HONEYPOT_FIELD_NAME}
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
               <FormField
                 control={form.control}
                 name="type"
