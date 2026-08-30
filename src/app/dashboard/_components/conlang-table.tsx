@@ -5,18 +5,21 @@ import {
   type Row as RowType,
   type VisibilityState,
 } from "@tanstack/react-table";
+import {
+  Download,
+  FileText,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
-import { DocumentText } from "~/components/icons/document-text";
-import { EllipsisHorizontal } from "~/components/icons/ellipsis-horizontal";
 import { Eye } from "~/components/icons/eye";
 import { EyeSlash } from "~/components/icons/eye-slash";
-import { Pencil } from "~/components/icons/pencil";
-import { Trash } from "~/components/icons/trash";
 import { Button } from "~/components/ui/button";
 import { DataTable } from "~/components/ui/data-table";
 import {
@@ -29,9 +32,86 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/data/useUsers";
 import { cn } from "~/lib/utils";
+import { ExportConlangDialog } from "~/components/conlang/export-conlang-dialog";
 import { type Conlang } from "~/types/conlang";
 
 export const dynamic = "force-dynamic";
+
+function RowActions(props: { conlangId: number; conlangName: string }) {
+  const router = useRouter();
+  const [exportOpen, setExportOpen] = useState(false);
+  const { conlangId, conlangName } = props;
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="sr-only">Actions for {conlangName}</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-64">
+          <DropdownMenuLabel>{conlangName}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/lang/${conlangId}`);
+            }}
+          >
+            <FileText className="mr-2 h-4 w-4 shrink-0" />
+            <span>View</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/lang/edit/${conlangId}`);
+            }}
+          >
+            <Pencil className="mr-2 h-4 w-4 shrink-0" />
+            <div className="flex flex-col">
+              <span>Edit Details</span>
+              <span className="text-xs text-muted-foreground">
+                Name, emoji &amp; description
+              </span>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setExportOpen(true);
+            }}
+          >
+            <Download className="mr-2 h-4 w-4 shrink-0" />
+            <span>Export</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem disabled onClick={(e) => e.stopPropagation()}>
+            <Trash2 className="mr-2 h-4 w-4 shrink-0" />
+            <div className="flex flex-col">
+              <span>Delete</span>
+              <span className="text-xs text-muted-foreground">
+                Coming soon
+              </span>
+            </div>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ExportConlangDialog
+        conlangId={conlangId}
+        conlangName={conlangName}
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+      />
+    </>
+  );
+}
 
 export function ConlangTable(props: {
   conlangs: Conlang[];
@@ -140,48 +220,12 @@ export function ConlangTable(props: {
       },
       {
         id: "actions",
-        cell: ({ row }) => {
-          const conlangId = row.original.id;
-          const conlangName = row.original.name;
-
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu for {conlangName}</span>
-                  <EllipsisHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>{conlangName}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => alert("Conlang page not implemented")}
-                >
-                  <DocumentText className="mr-2 h-4 w-4" />
-                  <span>View</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    router.push(`/lang/edit/${conlangId}`);
-                    e.stopPropagation();
-                  }}
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  <span>Edit</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => alert("Delete not implemented")}
-                  className="text-red-700 focus:bg-red-800/10 focus:text-red-700"
-                >
-                  <Trash className="mr-2 h-4 w-4" />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        },
+        cell: ({ row }) => (
+          <RowActions
+            conlangId={row.original.id}
+            conlangName={row.original.name}
+          />
+        ),
       },
       {
         id: "open",
@@ -191,7 +235,8 @@ export function ConlangTable(props: {
             <Link href={`/lang/${row.original.id}`}>
               <Button
                 variant="ghost"
-                className="h-8 w-8 rounded-full p-0 text-slate-400 transition-colors ease-in hover:bg-slate-500/10 hover:text-slate-700 group-hover:text-slate-700"
+                size="icon"
+                className="rounded-full text-muted-foreground hover:bg-accent hover:text-accent-foreground group-hover:text-accent-foreground"
               >
                 <span className="sr-only">Open menu for {conlangName}</span>
                 <ArrowRightCircle className="h-7 w-7" />
@@ -201,7 +246,7 @@ export function ConlangTable(props: {
         },
       },
     ],
-    [isLoading, router, userList],
+    [isLoading, userList],
   );
 
   const handleRowClick = (row: RowType<Conlang>) => {
