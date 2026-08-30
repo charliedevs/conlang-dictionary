@@ -209,23 +209,43 @@ this change adds were formatted, to keep the commit free of unrelated churn.
 
 *All of Phase 2 runs with `TABLE_PREFIX=test_conlang-dictionary_`.*
 
-### Task 2.1: Pure decision functions (TDD — tests first)
-- [ ] `src/lib/auth/resolve-user.test.ts` written **before** the implementation
-- [ ] `src/lib/auth/resolve-user.ts` → `existing-by-clerk-id` | `reclaim-by-email` | `create-new` | `conflict`
-- [ ] `src/lib/auth/backfill-record.test.ts` written **before** the implementation
-- [ ] `src/lib/auth/backfill-record.ts` → Clerk API user → `users` insert
+### Task 2.1: Pure decision functions (TDD — tests first) ✅
+- [x] `src/lib/auth/resolve-user.test.ts` written and confirmed **failing** first
+- [x] `src/lib/auth/resolve-user.ts` → `existing` | `reclaim` | `create` | `conflict`
+- [x] `src/lib/auth/backfill-record.test.ts` written and confirmed **failing** first
+- [x] `src/lib/auth/backfill-record.ts` → `ExportedUser` → `UserRecord`
 
-**Acceptance criteria (test cases):**
-- [ ] Clerk-ID match beats email match
-- [ ] **Unverified email never reclaims** (account-takeover guard)
-- [ ] Two rows sharing an email → `conflict`, never a silent pick
-- [ ] Email normalised for case and whitespace before comparison
-- [ ] Missing primary email; multiple emails; Apple private-relay address; absent username
+**Design refinement:** the plan said `backfill-record` maps a *raw Clerk API user*, but Task 2.3
+reads from the Phase 0 snapshot and `src/lib/clerk-export/extract-user.ts` already owns the API
+shape. Mapping `ExportedUser → UserRecord` instead avoids duplicating that parsing and keeps the
+backfill reproducible from a file rather than dependent on Clerk being reachable.
+
+**Acceptance criteria:**
+- [x] Clerk-id match beats email match — a changed email must not fork an account
+- [x] **Unverified email never reclaims** (the account-takeover guard); no email never reclaims
+- [x] Two rows sharing an email → `conflict` with candidate ids, never a silent pick
+- [x] Email normalised for case and whitespace on **both** sides
+- [x] Supplied rows are re-filtered, not trusted — a caller's wrong collation or stale parameter
+      cannot hand somebody another user's account
+- [x] Blank clerk id fails closed to `conflict` rather than creating
+- [x] Reclaim reports `previousClerkUserId` so every link can be audit-logged
+- [x] No-email accounts still produce a `users` record — they own conlangs, and the ownership
+      mapping is what keeps those attached to anything
+- [x] `emailVerified` can never be true without an email
+- [x] Over-long values are **reported** (`tooLong`), not silently truncated — a silent truncation
+      would abort the whole backfill transaction at insert time
 
 **Verification:**
-- [ ] `npm test` passes; no DB or network in these tests
+- [x] `npm test` — 166 tests, 15 files (25 new)
+- [x] `npm run lint`, `npx tsc --noEmit`, `npm run build` all clean
+- [x] `prettier --check` clean on the new files
+- [x] **Validated against the real 478-user snapshot:** 0 records exceed column limits, 0 missing
+      clerk ids, 1 null email (the known Apple account), 477 verified
+- [x] **Simulated the cutover end to end** — replayed all 478 users arriving with brand-new
+      production clerk ids: **477 `reclaim`, 1 `create`, 0 `conflict`**. The single `create` is
+      `user_2v84exbI7p1g5lWuXJeEdtYfaIC`, exactly the account already identified as unreachable
 
-**Dependencies:** None
+**Dependencies:** none — no schema, no permissions, no I/O
 
 ---
 
