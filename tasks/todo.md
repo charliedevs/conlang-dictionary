@@ -79,23 +79,23 @@ _Commit: pending_
 
 ## Phase 3: Email notification
 
-### Task 3: Resend email notification
-- [ ] Add `resend` dependency — **ask-first before `npm install`**
-- [ ] Add `RESEND_API_KEY`, `FEEDBACK_NOTIFY_EMAIL` to `src/env.js` + `.env.example`
-- [ ] `src/lib/feedback/build-notification-email.ts`: pure `FeedbackInput → { subject, text }`
-- [ ] `src/server/email.ts`: Resend client + `sendFeedbackNotification()`
-- [ ] Wire into `submitFeedback`, wrapped so email failure doesn't fail the submission
+### Task 3: Resend email notification ✅
+- [x] Add `resend` dependency — **ask-first before `npm install`** (approved)
+- [x] Add `RESEND_API_KEY`, `FEEDBACK_NOTIFY_EMAIL` to `src/env.js` + `.env.example` — made optional (no real Resend account exists yet); unconfigured is treated as a send failure, same graceful path as any other email error
+- [x] `src/lib/feedback/build-notification-email.ts`: pure `FeedbackInput → { subject, text }`
+- [x] `src/server/email.ts`: Resend client + `sendFeedbackNotification()`
+- [x] Wire into `submitFeedback`, wrapped so email failure doesn't fail the submission
 
 **Acceptance criteria:**
-- [ ] Real email arrives at `FEEDBACK_NOTIFY_EMAIL` with type/message/contact/timestamp
-- [ ] Address never appears client-side
-- [ ] Submission still succeeds if the email send throws
+- [ ] Real email arrives at `FEEDBACK_NOTIFY_EMAIL` — **not yet verifiable: no Resend account/API key exists yet.** Everything up to the send call is verified; a real send needs the user to create a Resend account and set `RESEND_API_KEY`/`FEEDBACK_NOTIFY_EMAIL`.
+- [x] Address never appears client-side — confirmed via `grep` over `.next/static/`, zero matches; `email.ts` is also guarded by `server-only`
+- [x] Submission still succeeds if the email send throws — confirmed live (see verification)
 
 **Verification:**
-- [ ] `npm test` passes (new `build-notification-email.test.ts`)
-- [ ] `npm run lint` passes
-- [ ] `npm run build` passes
-- [ ] Manual: one real end-to-end email received; verified not exposed via view-source/network tab; broken API key still allows submission to succeed
+- [x] `npm test` passes (new `build-notification-email.test.ts`, 7 tests; 93 total)
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [x] Manual: submitted feedback with `RESEND_API_KEY` unset (the actual current state, not a simulated broken key) → DB row `id:2` created with `contactEmail` saved, dialog closed, server log shows the expected caught-and-logged `"Feedback email not sent: ... is not configured"` error, submission still returned success to the client
 
 **Dependencies:** Task 2
 
@@ -110,8 +110,8 @@ _Commit: pending_
 ---
 
 ## Checkpoint C
-- [ ] Email notification verified end-to-end
-- [ ] Lint + build clean
+- [x] Email notification code path verified end-to-end (unconfigured-key fallback); real send pending a Resend account
+- [x] Lint + build clean
 
 ---
 
