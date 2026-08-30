@@ -6,8 +6,15 @@ import { z } from "zod";
 
 import { Edit2Icon, SaveIcon, XIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { WORD_TEXT_MAX_LENGTH } from "~/lib/form-limits";
 import { type Word } from "~/types/word";
 import { editWord } from "../../../_actions/word";
 
@@ -26,7 +33,13 @@ export const EditWordButton = (props: { onClick: () => void }) => {
 
 const editWordSchema = z.object({
   id: z.number(),
-  text: z.string().min(1, "Word text required."),
+  text: z
+    .string()
+    .min(1, "Word text required.")
+    .max(
+      WORD_TEXT_MAX_LENGTH,
+      `Word text must be ${WORD_TEXT_MAX_LENGTH} characters or fewer.`,
+    ),
 });
 
 export const EditWordForm = (props: {
@@ -63,16 +76,21 @@ export const EditWordForm = (props: {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex items-center gap-1"
+        className="flex items-start gap-1"
       >
         <FormField
           control={form.control}
           name="text"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex-1">
               <FormControl>
-                <Input {...field} className="font-unicode text-lg" />
+                <Input
+                  {...field}
+                  maxLength={WORD_TEXT_MAX_LENGTH}
+                  className="font-unicode text-lg"
+                />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

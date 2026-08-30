@@ -39,7 +39,7 @@ export async function WordView(props: {
           {props.isConlangOwner && !isEditMode && (
             <Link href={`?${editSearchParams.toString()}`}>
               <Button variant="ghost" size="sm" className="h-8">
-                <Edit2Icon className="mr-2 h-3 w-3" /> Edit
+                <Edit2Icon className="mr-2 h-3 w-3" /> Edit Definitions
               </Button>
             </Link>
           )}

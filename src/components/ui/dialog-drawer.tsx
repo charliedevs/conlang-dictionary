@@ -22,6 +22,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "~/components/ui/drawer";
+import { cn } from "~/lib/utils";
 
 export function DialogDrawer(props: {
   trigger?: ReactNode;
@@ -30,6 +31,13 @@ export function DialogDrawer(props: {
   description?: string;
   onClose?: () => void;
   content: ReactNode;
+  /** Widen the desktop dialog beyond the default max-w-lg, e.g. for forms with richer content. */
+  contentClassName?: string;
+  /**
+   * Skip the drawer's own Cancel button — use when `content` already renders
+   * its own submit/cancel actions, so mobile doesn't show two ways to cancel.
+   */
+  hideDefaultFooter?: boolean;
 }) {
   const [open, setOpen] = useState(props.open ?? false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -52,7 +60,7 @@ export function DialogDrawer(props: {
         {Boolean(props.trigger) && (
           <DialogTrigger asChild>{props.trigger}</DialogTrigger>
         )}
-        <DialogContent className="">
+        <DialogContent className={cn(props.contentClassName)}>
           <DialogHeader>
             <DialogTitle>{props.title}</DialogTitle>
             {props.description && (
@@ -85,11 +93,13 @@ export function DialogDrawer(props: {
           )}
         </DrawerHeader>
         <div className="m-4 flex flex-col gap-8">{props.content}</div>
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
+        {!props.hideDefaultFooter && (
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        )}
       </DrawerContent>
     </Drawer>
   );

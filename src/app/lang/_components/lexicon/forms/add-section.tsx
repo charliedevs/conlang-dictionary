@@ -14,7 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { createLexicalSection } from "~/app/lang/_actions/word";
 import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { DialogDrawer } from "~/components/ui/dialog-drawer";
 import { Separator } from "~/components/ui/separator";
 import { type InsertLexicalSectionInput } from "~/server/mutations";
 import { type SectionType, type Word } from "~/types/word";
@@ -80,26 +80,33 @@ export function AddSectionDialog({
   const [open, setOpen] = useState(false);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-full text-lg md:h-8 md:w-fit md:text-sm"
-        >
-          <PlusIcon className="mr-1 size-4 text-green-600" />
-          Add Section
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="w-full max-w-lg p-0 md:max-w-xl lg:max-w-2xl">
-        <AddSectionForm
-          word={word}
-          onSectionAdded={() => {
-            setOpen(false);
-            onSectionAdded?.();
-          }}
-        />
-      </DialogContent>
-    </Dialog>
+    <>
+      <Button
+        variant="ghost"
+        className="w-full text-lg md:h-8 md:w-fit md:text-sm"
+        onClick={() => setOpen(true)}
+      >
+        <PlusIcon className="mr-1 size-4 text-green-600" />
+        Add Section
+      </Button>
+      <DialogDrawer
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Add a Section"
+        description="Add a definition, pronunciation, or other section to this word."
+        contentClassName="w-full max-w-lg md:max-w-xl lg:max-w-2xl"
+        hideDefaultFooter
+        content={
+          <AddSectionForm
+            word={word}
+            onSectionAdded={() => {
+              setOpen(false);
+              onSectionAdded?.();
+            }}
+          />
+        }
+      />
+    </>
   );
 }
 
@@ -142,8 +149,7 @@ export function AddSectionForm({
 
   if (selectedType === null) {
     return (
-      <div className="flex flex-col gap-4 p-4">
-        <h2 className="mb-1 text-xl font-semibold">Add a Section</h2>
+      <div className="flex flex-col gap-4 md:pt-2">
         <div className="mb-1 text-lg font-medium text-muted-foreground">
           For: <span className="text-foreground">{word.text}</span>
         </div>

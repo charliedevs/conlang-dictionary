@@ -14,12 +14,22 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import {
+  SECTION_RICH_TEXT_MAX_LENGTH,
+  SECTION_TITLE_MAX_LENGTH,
+} from "~/lib/form-limits";
 import { htmlToMarkdown } from "~/lib/strings";
 import { sanitizeHtmlInput } from "~/lib/utils";
 import { type Word } from "~/types/word";
 
 const etymologyFormProps = z.object({
-  title: z.string().optional(),
+  title: z
+    .string()
+    .max(
+      SECTION_TITLE_MAX_LENGTH,
+      `Title must be ${SECTION_TITLE_MAX_LENGTH} characters or fewer.`,
+    )
+    .optional(),
   etymologyText: z
     .string()
     .default("")
@@ -75,6 +85,7 @@ export function EtymologySectionForm({
                 <Input
                   {...field}
                   placeholder="e.g. Etymology"
+                  maxLength={SECTION_TITLE_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>
@@ -94,6 +105,7 @@ export function EtymologySectionForm({
                   value={field.value}
                   className="min-h-[80px] bg-background"
                   showOrderedList
+                  maxLength={SECTION_RICH_TEXT_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>

@@ -8,7 +8,6 @@ import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
 import { type LanguagePageSearchParams } from "../../[id]/page";
 import { AddWordForm } from "./forms/add-word";
-import { LexiconRevampNotice } from "./lexicon-revamp-notice";
 import { WordList } from "./word-list";
 import { WordSearchInput } from "./word-search-input";
 import { WordView } from "./word-view";
@@ -69,12 +68,9 @@ export function Lexicon(props: {
   const wordSelected = Boolean(props.wordId);
   return (
     <div id="lexicon" className="flex flex-col">
-      {isConlangOwner && wordSelected && (
-        <LexiconRevampNotice conlangId={props.conlang.id} />
-      )}
       <div
         id="actions"
-        className="mt-3 flex w-full items-center justify-between gap-2 p-1 md:mt-0"
+        className="mt-3 flex w-full flex-col items-stretch gap-2 p-1 md:mt-0 md:flex-row md:items-center md:justify-between"
       >
         <SearchWords wordId={props.wordId} />
         {wordSelected && (

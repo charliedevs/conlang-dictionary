@@ -18,18 +18,25 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
+import {
+  EXAMPLE_SENTENCE_MAX_LENGTH,
+  SECTION_RICH_TEXT_MAX_LENGTH,
+  SECTION_TITLE_MAX_LENGTH,
+} from "~/lib/form-limits";
 import { htmlToMarkdown } from "~/lib/strings";
 import { sanitizeHtmlInput } from "~/lib/utils";
 import { type LexicalCategory, type Word } from "~/types/word";
 import { LexicalCategorySelect } from "./lexical-category-select";
 
 export const definitionProps = z.object({
-  title: z.string().optional(),
+  title: z.string().max(SECTION_TITLE_MAX_LENGTH).optional(),
   lexicalCategoryId: z.coerce.number({ invalid_type_error: "Required" }),
   definitionText: z
     .string()
     .refine((val) => val !== "", "Definition cannot be empty"),
-  examples: z.array(z.object({ value: z.string() })).optional(),
+  examples: z
+    .array(z.object({ value: z.string().max(EXAMPLE_SENTENCE_MAX_LENGTH) }))
+    .optional(),
 });
 
 export type DefinitionSectionProperties = z.infer<typeof definitionProps>;
@@ -158,6 +165,7 @@ export function DefinitionSectionForm({
                   {...field}
                   className="min-h-[80px] bg-background md:max-h-[400px]"
                   showOrderedList
+                  maxLength={SECTION_RICH_TEXT_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>
@@ -184,6 +192,7 @@ export function DefinitionSectionForm({
                       handleAddExample();
                     }
                   }}
+                  maxLength={EXAMPLE_SENTENCE_MAX_LENGTH}
                   disabled={disabled || fields.length >= 10}
                   className="font-unicode"
                 />
@@ -207,6 +216,7 @@ export function DefinitionSectionForm({
                           <FormControl>
                             <Input
                               {...field}
+                              maxLength={EXAMPLE_SENTENCE_MAX_LENGTH}
                               disabled={disabled}
                               className="font-unicode"
                             />
@@ -240,6 +250,7 @@ export function DefinitionSectionForm({
                 <Input
                   {...field}
                   placeholder="Defaults to the part of speech"
+                  maxLength={SECTION_TITLE_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>

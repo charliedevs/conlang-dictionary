@@ -14,12 +14,22 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import {
+  SECTION_RICH_TEXT_MAX_LENGTH,
+  SECTION_TITLE_MAX_LENGTH,
+} from "~/lib/form-limits";
 import { htmlToMarkdown } from "~/lib/strings";
 import { sanitizeHtmlInput } from "~/lib/utils";
 import { type Word } from "~/types/word";
 
 const customTextFormProps = z.object({
-  title: z.string().refine((val) => val !== "", "Title cannot be empty"),
+  title: z
+    .string()
+    .refine((val) => val !== "", "Title cannot be empty")
+    .refine(
+      (val) => val.length <= SECTION_TITLE_MAX_LENGTH,
+      `Title must be ${SECTION_TITLE_MAX_LENGTH} characters or fewer.`,
+    ),
   contentText: z
     .string()
     .default("")
@@ -75,6 +85,7 @@ export function CustomTextSectionForm({
                 <Input
                   {...field}
                   placeholder="e.g. Notes, Usage, etc."
+                  maxLength={SECTION_TITLE_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>
@@ -94,6 +105,7 @@ export function CustomTextSectionForm({
                   value={field.value}
                   className="min-h-[80px] bg-background"
                   showOrderedList
+                  maxLength={SECTION_RICH_TEXT_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>
