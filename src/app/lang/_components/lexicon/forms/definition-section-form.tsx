@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -19,7 +20,7 @@ import { Input } from "~/components/ui/input";
 import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
 import { htmlToMarkdown } from "~/lib/strings";
 import { sanitizeHtmlInput } from "~/lib/utils";
-import { type Word } from "~/types/word";
+import { type LexicalCategory, type Word } from "~/types/word";
 import { LexicalCategorySelect } from "./lexical-category-select";
 
 export const definitionProps = z.object({
@@ -76,6 +77,7 @@ export function DefinitionSectionForm({
   });
   const [newExample, setNewExample] = useState("");
   const { lexicalCategories } = useLexicalCategories(word.conlangId);
+  const queryClient = useQueryClient();
 
   function handleAddExample() {
     if (newExample.trim() && fields.length < 10) {
@@ -104,23 +106,6 @@ export function DefinitionSectionForm({
       >
         <FormField
           control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Section Title (optional)</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="e.g. Noun, Verb, etc."
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="lexicalCategoryId"
           render={({ field }) => (
             <FormItem>
@@ -132,14 +117,22 @@ export function DefinitionSectionForm({
                   onChange={(val) => {
                     const oldCategoryID = form.getValues("lexicalCategoryId");
                     const newCategoryID = Number(val);
+                    // Read the freshest list from the cache: a just-added
+                    // category isn't in this render's snapshot yet, which would
+                    // otherwise leave the autofilled title blank.
+                    const categories =
+                      queryClient.getQueryData<LexicalCategory[]>([
+                        "lexicalCategories",
+                        word.conlangId,
+                      ]) ??
+                      lexicalCategories.data ??
+                      [];
                     const oldCategory =
-                      lexicalCategories.data?.find(
-                        (c) => c.id === oldCategoryID,
-                      )?.category ?? "";
+                      categories.find((c) => c.id === oldCategoryID)?.category ??
+                      "";
                     const newCategory =
-                      lexicalCategories.data?.find(
-                        (c) => c.id === newCategoryID,
-                      )?.category ?? "";
+                      categories.find((c) => c.id === newCategoryID)?.category ??
+                      "";
                     const currentTitle = form.getValues("title");
 
                     if (!currentTitle || currentTitle == oldCategory) {
@@ -235,6 +228,23 @@ export function DefinitionSectionForm({
               </ul>
               <FormMessage />
             </fieldset>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Section Title (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Defaults to the part of speech"
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
         <div className="flex justify-end gap-2">

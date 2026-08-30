@@ -17,10 +17,13 @@ import {
  * the empty state, the add dialog, and the add-word category picker; the parent
  * supplies `onAdded` to refresh its own view after a change.
  */
+type CreatedCategory = { id: number; category: string };
+
 export function LexicalCategorySuggestions(props: {
   conlangId: number;
   existing: string[];
-  onAdded?: () => void;
+  /** Called with the categories that were created (empty callers may ignore it). */
+  onAdded?: (created: CreatedCategory[]) => void;
   className?: string;
 }) {
   const missing = missingDefaultCategories(props.existing);
@@ -30,13 +33,17 @@ export function LexicalCategorySuggestions(props: {
 
   if (missing.length === 0) return null;
 
-  const run = (name: string, action: () => Promise<unknown>, done: string) => {
+  const run = (
+    name: string,
+    action: () => Promise<CreatedCategory[]>,
+    done: string,
+  ) => {
     setBusyName(name);
     startTransition(async () => {
       try {
-        await action();
+        const created = await action();
         toast.success(done);
-        if (props.onAdded) props.onAdded();
+        if (props.onAdded) props.onAdded(created);
         else router.refresh();
       } catch (error) {
         toast.error(
@@ -53,17 +60,19 @@ export function LexicalCategorySuggestions(props: {
   const addOne = (name: string) =>
     run(
       name,
-      () => createLexicalCategory({ conlangId: props.conlangId, category: name }),
+      async () => [
+        await createLexicalCategory({
+          conlangId: props.conlangId,
+          category: name,
+        }),
+      ],
       `${name} added.`,
     );
 
   const addAll = () =>
     run(
       "__all__",
-      async () => {
-        const created = await createLexicalCategories(props.conlangId, missing);
-        return created;
-      },
+      () => createLexicalCategories(props.conlangId, missing),
       missing.length === 1
         ? "1 part of speech added."
         : `${missing.length} parts of speech added.`,
