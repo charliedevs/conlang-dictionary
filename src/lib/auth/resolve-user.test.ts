@@ -16,7 +16,7 @@ const identity = (o: Partial<ClerkIdentity> = {}): ClerkIdentity => ({
   ...o,
 });
 
-describe("resolveUser — already mapped", () => {
+describe("resolveUser: already mapped", () => {
   it("returns the existing user when the clerk id is already known", () => {
     const existing = row({ clerkUserId: "user_new" });
     const r = resolveUser({
@@ -51,7 +51,7 @@ describe("resolveUser — already mapped", () => {
   });
 });
 
-describe("resolveUser — reclaim after cutover", () => {
+describe("resolveUser: reclaim after cutover", () => {
   it("reclaims a row whose clerk id was never set", () => {
     const orphan = row({ clerkUserId: null });
     const r = resolveUser({
@@ -92,7 +92,7 @@ describe("resolveUser — reclaim after cutover", () => {
   });
 });
 
-describe("resolveUser — the account-takeover guard", () => {
+describe("resolveUser: the account-takeover guard", () => {
   // This is the single most important behaviour in the migration: an unverified
   // address must never grant access to somebody else's conlangs.
   it("never reclaims on an unverified email, even with an exact match", () => {
@@ -165,7 +165,7 @@ describe("resolveUser — the account-takeover guard", () => {
   });
 });
 
-describe("resolveUser — new accounts", () => {
+describe("resolveUser: new accounts", () => {
   it("creates when nothing matches", () => {
     const r = resolveUser({
       identity: identity(),
@@ -176,7 +176,7 @@ describe("resolveUser — new accounts", () => {
   });
 });
 
-describe("resolveUser — invalid input fails closed", () => {
+describe("resolveUser: invalid input fails closed", () => {
   it("reports a conflict rather than creating when the clerk id is blank", () => {
     const r = resolveUser({
       identity: identity({ clerkUserId: "  " }),

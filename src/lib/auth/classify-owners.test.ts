@@ -12,7 +12,7 @@ const identity = (o: Partial<SnapshotIdentity> = {}): SnapshotIdentity => ({
   ...o,
 });
 
-describe("classifyOwners — reclaimable owners", () => {
+describe("classifyOwners: reclaimable owners", () => {
   it("classifies an owner with a verified email as reclaimable", () => {
     const r = classifyOwners({
       owners: [owner("user_a")],
@@ -24,7 +24,7 @@ describe("classifyOwners — reclaimable owners", () => {
   });
 });
 
-describe("classifyOwners — blocking cases", () => {
+describe("classifyOwners: blocking cases", () => {
   it("blocks an owner present in the snapshot with no email", () => {
     const r = classifyOwners({
       owners: [owner("user_a")],
@@ -58,7 +58,7 @@ describe("classifyOwners — blocking cases", () => {
   });
 });
 
-describe("classifyOwners — pre-existing orphans", () => {
+describe("classifyOwners: pre-existing orphans", () => {
   // An account deleted from Clerk is already unreachable today. Counting it as
   // a migration blocker would make a clean cutover look unsafe forever.
   it("treats an owner deleted from Clerk as a pre-existing orphan, not a blocker", () => {
@@ -98,7 +98,7 @@ describe("classifyOwners — pre-existing orphans", () => {
   });
 });
 
-describe("classifyOwners — totals", () => {
+describe("classifyOwners: totals", () => {
   it("puts every owner in exactly one bucket", () => {
     const owners = [owner("a"), owner("b"), owner("c"), owner("d"), owner("e")];
     const r = classifyOwners({

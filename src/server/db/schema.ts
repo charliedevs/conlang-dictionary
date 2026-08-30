@@ -25,18 +25,9 @@ export const createTable = pgTableCreator(
   (name) => `${env.TABLE_PREFIX}${name}`,
 );
 
-// Local user identity — the app's own account record for each person.
-//
-// `clerkUserId` is the ONLY column coupled to Clerk. At the production cutover
-// it is the single column that changes: every user arrives with a new Clerk id,
-// we match them to their existing row by verified email, and rewrite it here.
-// Nothing in `conlang` is rewritten, which is what makes the cutover safe.
-//
-// It is nullable so a row can outlive its Clerk account. `email` is NOT NULL:
-// every sign-in method we keep (Google, GitHub, Discord, email code) supplies
-// an address, and we deliberately do not model the schema around the single
-// legacy Apple account that has none — see the decommissioning task in
-// tasks/plan.md.
+// Local user identity. clerkUserId is the only Clerk-coupled column and is the
+// single column rewritten at the production cutover; it is nullable so a row can
+// outlive its Clerk account.
 export const users = createTable(
   "user",
   {
@@ -54,8 +45,7 @@ export const users = createTable(
   },
   (user) => ({
     userClerkIdIndex: index("user_clerk_id_idx").on(user.clerkUserId),
-    // Matching is case-insensitive (see src/lib/auth/resolve-user.ts), so the
-    // index has to be on the normalised form or it will never be used.
+    // Matching is case-insensitive, so the index must be on the normalised form.
     userEmailIndex: index("user_email_idx").on(sql`lower(${user.email})`),
   }),
 );

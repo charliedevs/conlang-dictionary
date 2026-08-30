@@ -17,7 +17,7 @@ const exported = (o: Partial<ExportedUser> = {}): ExportedUser => ({
   ...o,
 });
 
-describe("toUserRecord — accepted records", () => {
+describe("toUserRecord: accepted records", () => {
   it("carries the identifying fields across", () => {
     const r = toUserRecord(
       exported({
@@ -83,7 +83,7 @@ describe("toUserRecord — accepted records", () => {
   });
 });
 
-describe("toUserRecord — rejected records", () => {
+describe("toUserRecord: rejected records", () => {
   // `users.email` is NOT NULL: we deliberately do not model the schema around
   // legacy accounts with no address. Such a record is reported, never inserted.
   it("rejects a record with no email", () => {
@@ -101,7 +101,7 @@ describe("toUserRecord — rejected records", () => {
     if (!r.ok) expect(r.problems).toEqual(["email is missing"]);
   });
 
-  // varchar(320)/varchar(256) — silently over-long values would abort the whole
+  // varchar(320)/varchar(256) ,  silently over-long values would abort the whole
   // backfill transaction, so they are reported rather than truncated.
   it("rejects an email longer than the column allows", () => {
     const r = toUserRecord(

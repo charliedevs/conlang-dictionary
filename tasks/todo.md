@@ -288,21 +288,30 @@ backfill transaction on a constraint violation. All problems are reported at onc
 
 ---
 
-### Task 2.3: Backfill and audit scripts
-- [ ] `scripts/backfill-users.ts` — idempotent upsert by `clerkUserId` from the **Phase 0 snapshot** (not a live API call, so it's reproducible)
-- [ ] Populate new FK columns by joining old values against `users.clerkUserId`
-- [ ] `scripts/audit-users.ts` — report unmapped owners, unverified emails, duplicate emails
-- [ ] Both print the resolved `TABLE_PREFIX` and row counts before acting
-- [ ] Both require typed confirmation when the prefix is **not** `test_`
-- [ ] Both support `--dry-run`
+### Task 2.3: Backfill and audit scripts DONE
+- [x] `src/lib/auth/plan-ownership-backfill.ts` (+ 6 tests, written failing first)
+- [x] `scripts/snapshot.ts` shared loader so export/backfill/audit never disagree on which file is current
+- [x] `scripts/backfill-users.ts` reads the snapshot, upserts `users`, fills the four FK columns
+- [x] `scripts/audit-users.ts` extended to report the new columns, degrading to "column not present" where the schema has not been applied
+- [x] `--dry-run` on both; a non-test prefix additionally requires `--allow-production`
 
-**Acceptance criteria:**
-- [ ] Re-running the backfill twice produces no duplicates
-- [ ] **Hard gate:** zero unmapped rows in `conlangs`. Orphans in `tags`/`feedback` may stay null
+**Deviation from plan:** the plan asked for a typed interactive confirmation on non-test prefixes.
+Used an explicit `--allow-production` flag instead, so runbook commands stay reproducible and cannot
+be satisfied by a stray keypress. Production is never the default either way.
+
+**Results on `test_conlang-dictionary_`:**
+- 477 records accepted, 1 rejected (`user_2v84exbI7p1g5lWuXJeEdtYfaIC`: email is missing)
+- `conlang.ownerUserId` 10/10, `lexicalCategories.ownerUserId` 35/35, `feedback.submittedByUserId` 12/12
+- Re-ran: still 477 rows, 477 distinct clerk ids, 0 null emails, 0 unmapped conlangs. Idempotent.
+
+**Fixed while testing:** the dry run computed its plan against a `users` table it had not populated,
+so it always reported FAIL. It now stands in for the rows the upsert would create and predicts the
+real outcome.
 
 **Verification:**
-- [ ] `--dry-run` first, every time
-- [ ] `npm run users:audit` reports zero unmapped conlangs on `test_`
+- [x] 172 tests pass, lint clean, typecheck clean, build succeeds
+- [x] Backfill run twice; no duplicates, no nulls
+- [x] Production audit still read-only and unchanged: 7 pre-existing orphans, 1 blocker
 
 **Dependencies:** Task 2.2
 

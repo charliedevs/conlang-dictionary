@@ -1,16 +1,6 @@
-/**
- * Decides whether every conlang owner can survive the Clerk production cutover.
- *
- * The distinction that matters: an owner whose Clerk account was *deleted* is
- * already unreachable today, so the migration does not worsen their position and
- * they must not be counted as a blocker. An owner who is still live in Clerk but
- * absent from our snapshot is a genuine blocker — we would lose someone who can
- * still sign in.
- *
- * Where we cannot tell those apart (no Clerk lookup was performed), the owner is
- * `unclassified` and counts as blocking. Guessing "deleted" would hide real data
- * loss behind a green result.
- */
+// Classifies conlang owners for cutover readiness. An account deleted from Clerk
+// is already unreachable today, so it is reported separately from a live owner
+// we would actually lose. Anything inconclusive counts as blocking.
 
 export interface OwnerRow {
   ownerId: string;
@@ -23,17 +13,11 @@ export interface SnapshotIdentity {
 }
 
 export interface OwnerClassification {
-  /** Verified email in the snapshot — reclaims automatically. */
   reclaimable: OwnerRow[];
-  /** Email present but unverified — will not auto-reclaim. Warning, not blocker. */
   unverified: OwnerRow[];
-  /** In the snapshot but with no email — cannot be matched. Blocking. */
   noEmail: OwnerRow[];
-  /** Absent from the snapshot and confirmed gone from Clerk. Pre-existing orphan. */
   deletedFromClerk: OwnerRow[];
-  /** Absent from the snapshot but still live in Clerk. Blocking. */
   missingButLive: OwnerRow[];
-  /** Absent from the snapshot, Clerk not consulted. Blocking by default. */
   unclassified: OwnerRow[];
   blockingCount: number;
   preExistingOrphanCount: number;
@@ -45,7 +29,6 @@ export interface OwnerClassification {
 export function classifyOwners(input: {
   owners: OwnerRow[];
   snapshot: Map<string, SnapshotIdentity>;
-  /** ownerId → whether the account still exists in Clerk. Absent entries stay unclassified. */
   existsInClerk?: Map<string, boolean>;
 }): OwnerClassification {
   const { owners, snapshot, existsInClerk } = input;

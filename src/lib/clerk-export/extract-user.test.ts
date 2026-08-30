@@ -55,7 +55,7 @@ describe("toIso", () => {
   });
 });
 
-describe("extractUser — email selection", () => {
+describe("extractUser: email selection", () => {
   it("prefers the address named by primary_email_address_id", () => {
     const u = extractUser(
       clerkUser({
@@ -181,7 +181,7 @@ describe("extractUser — email selection", () => {
   });
 });
 
-describe("extractUser — display name", () => {
+describe("extractUser: display name", () => {
   it("joins first and last name", () => {
     expect(
       extractUser(clerkUser({ first_name: "Ada", last_name: "Lovelace" }))
@@ -211,7 +211,7 @@ describe("extractUser — display name", () => {
   });
 });
 
-describe("extractUser — external accounts", () => {
+describe("extractUser: external accounts", () => {
   it("captures provider and provider_user_id for each linked account", () => {
     const u = extractUser(
       clerkUser({

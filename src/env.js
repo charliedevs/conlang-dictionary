@@ -14,9 +14,7 @@ export const env = createEnv({
     TABLE_PREFIX: z.string(),
     RESEND_API_KEY: z.string().optional(),
     FEEDBACK_NOTIFY_EMAIL: z.string().email().optional(),
-    // Clerk reads this from process.env itself; declaring it here makes a
-    // missing or malformed key fail the build instead of failing at runtime.
-    // sk_test_* is a development instance, sk_live_* is production.
+    // Declared here so a missing key fails the build, not runtime.
     CLERK_SECRET_KEY: z.string().startsWith("sk_"),
   },
 
@@ -29,9 +27,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith("pk_"),
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().optional(),
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().optional(),
-    // Fallback, not force: only redirects when there is no redirect_url in the
-    // querystring, so signing in from a conlang page returns there rather than
-    // bouncing the user to the dashboard.
+    // Fallback, not force, so signing in returns to the page you were on.
     NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: z.string().optional(),
     NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: z.string().optional(),
   },

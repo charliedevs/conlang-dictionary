@@ -1,19 +1,12 @@
 /**
- * READ-ONLY audit of conlang ownership against a Clerk identity snapshot.
- *
- * Answers the question the migration depends on: can every conlang owner who
- * can still sign in today be reclaimed after the production cutover?
- *
- * Issues SELECT statements only. Contains no INSERT/UPDATE/DELETE/DDL.
+ * READ-ONLY audit: can every conlang owner still be reclaimed after the cutover?
+ * SELECT statements only. Classification lives in src/lib/auth/classify-owners.ts.
  *
  *   node --env-file=.env.local scripts/audit-users.ts --prefix=test_conlang-dictionary_
  *   node --env-file=.env.local scripts/audit-users.ts --prefix=conlang-dictionary_ --check-clerk
  *
- * The prefix is passed explicitly rather than read from TABLE_PREFIX so that
- * touching production tables is always a deliberate, visible act.
- *
- * The classification itself lives in src/lib/auth/classify-owners.ts and is
- * unit tested; this file is only I/O and rendering.
+ * The prefix is explicit rather than read from TABLE_PREFIX so hitting
+ * production is always deliberate.
  */
 
 import { readFileSync, readdirSync } from "node:fs";
@@ -66,12 +59,12 @@ function latestSnapshot(): { file: string; snapshot: Snapshot } {
   const latest = candidates.at(-1);
   if (!latest)
     throw new Error(
-      "No snapshot in ./backups — run export-clerk-users.ts first",
+      "No snapshot in ./backups, run export-clerk-users.ts first",
     );
   return latest;
 }
 
-/** Resolves whether each id still exists in Clerk. A failed lookup is left absent. */
+// A failed or inconclusive lookup is left absent, so it stays blocking.
 async function checkClerk(ids: string[]): Promise<Map<string, boolean>> {
   const result = new Map<string, boolean>();
   for (const id of ids) {
@@ -81,10 +74,8 @@ async function checkClerk(ids: string[]): Promise<Map<string, boolean>> {
       });
       if (res.status === 404) result.set(id, false);
       else if (res.ok) result.set(id, true);
-      // Any other status is inconclusive: leave it out so it stays `unclassified`
-      // and therefore blocking, rather than assuming it is safely deleted.
     } catch {
-      /* network failure is inconclusive — leave absent */
+      /* network failure is inconclusive, leave absent */
     }
   }
   return result;
@@ -152,22 +143,22 @@ async function main(): Promise<void> {
 
     console.log("=== Owners absent from the snapshot ===");
     if (missing.length === 0)
-      console.log("  none — every conlang owner is in the snapshot");
+      console.log("  none. Every conlang owner is in the snapshot");
     else if (!withClerk)
       console.log(
         `  ${missing.length} unclassified (pass --check-clerk to tell deleted from live)`,
       );
     else {
       console.log(
-        `  ${c.deletedFromClerk.length} deleted from Clerk — PRE-EXISTING orphans, not a migration risk`,
+        `  ${c.deletedFromClerk.length} deleted from Clerk, PRE-EXISTING orphans, not a migration risk`,
       );
       list("deleted", c.deletedFromClerk);
       list(
-        "STILL LIVE in Clerk but missing from snapshot — BLOCKING",
+        "STILL LIVE in Clerk but missing from snapshot, BLOCKING",
         c.missingButLive,
       );
     }
-    list("inconclusive Clerk lookup — treated as BLOCKING", c.unclassified);
+    list("inconclusive Clerk lookup, treated as BLOCKING", c.unclassified);
 
     console.log(
       "\n=== BLOCKING: owners with no email (cannot auto-reclaim) ===",
@@ -207,6 +198,30 @@ async function main(): Promise<void> {
       }
     }
 
+    // New ownership columns, present once Task 2.2's schema has been applied.
+    console.log("");
+    for (const [table, col] of [
+      [prefix + "conlang", "ownerUserId"],
+      [prefix + "lexicalCategories", "ownerUserId"],
+      [prefix + "tag", "createdByUserId"],
+      [prefix + "feedback", "submittedByUserId"],
+    ] as const) {
+      try {
+        const r = await sql<{ total: string; filled: string }[]>`
+          select count(*)::text as total, count(${sql(col)})::text as filled from ${sql(table)}
+        `;
+        const { total, filled } = r[0]!;
+        const gap = Number(total) - Number(filled);
+        const blocking = table === prefix + "conlang" && gap > 0;
+        console.log(
+          `${table}.${col}: ${filled}/${total} mapped` +
+            (gap > 0 ? `, ${gap} unmapped${blocking ? "  BLOCKING" : ""}` : ""),
+        );
+      } catch {
+        console.log(`${table}.${col}: column not present, skipped`);
+      }
+    }
+
     console.log(
       `\nPre-existing orphans (already unreachable today): ${c.preExistingOrphanCount} owner(s), ${c.conlangsPreExistingOrphaned} conlang(s)`,
     );
@@ -215,8 +230,8 @@ async function main(): Promise<void> {
     );
     console.log(
       c.pass
-        ? "\nRESULT: PASS — every conlang with a reachable owner can be reclaimed."
-        : `\nRESULT: FAIL — ${c.blockingCount} live owner(s) need manual recovery before cutover.`,
+        ? "\nRESULT: PASS. Every conlang with a reachable owner can be reclaimed."
+        : `\nRESULT: FAIL. ${c.blockingCount} live owner(s) need manual recovery before cutover.`,
     );
     process.exitCode = c.pass ? 0 : 1;
   } finally {

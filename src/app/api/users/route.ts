@@ -4,7 +4,6 @@ import { getUsersSchema } from "./types";
 
 export async function GET(req: Request) {
   try {
-    // Lookup is by user id only — see ./types.ts for why.
     const url = new URL(req.url);
     const parsedQuery = getUsersSchema.safeParse({
       userId: url.searchParams.getAll("userId"),
@@ -18,8 +17,7 @@ export async function GET(req: Request) {
       );
     }
 
-    // Never call Clerk with an empty filter: getUserList would happily return
-    // an arbitrary page of the entire instance.
+    // An empty filter would make getUserList return an arbitrary page of users.
     if (parsedQuery.data.userId.length === 0) {
       return new Response(JSON.stringify([]));
     }

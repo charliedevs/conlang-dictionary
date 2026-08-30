@@ -1,26 +1,17 @@
 /**
- * Exports every user from the Clerk instance identified by CLERK_SECRET_KEY
- * into a timestamped JSON snapshot under ./backups/.
- *
- * This exists because Clerk development instances cannot export or transfer
- * user data between instances — this snapshot is the only durable record of
- * who our users are, and it is the precondition for the production cutover
- * (see tasks/plan.md, Phase 0).
- *
- * Read-only against Clerk. Touches no database.
+ * Exports every Clerk user to a timestamped JSON snapshot under ./backups/.
+ * Clerk cannot transfer users between instances, so this snapshot is the only
+ * durable record and the precondition for the cutover. Read-only.
  *
  *   node --env-file=.env.local scripts/export-clerk-users.ts --dry-run
- *   node --env-file=.env.local scripts/export-clerk-users.ts
  *
- * Refuses to write if the fetched count disagrees with Clerk's own count;
- * --allow-partial overrides that after the difference has been understood.
+ * Refuses to write on a count mismatch unless --allow-partial.
  */
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-// Relative + explicit .ts extension: this runs under Node's type stripping,
-// which does not resolve the `~/*` tsconfig alias used by app code.
+// Node type stripping needs the .ts extension and cannot resolve the ~/* alias.
 import {
   extractUser,
   instanceKind,
@@ -99,15 +90,15 @@ function render(users: ExportedUser[]): void {
   console.log("\nReclaim readiness:");
   console.log(`  ${s.reclaimable} reclaimable (verified email)`);
   console.log(
-    `  ${s.unverified} unverified email — will NOT auto-reclaim, needs manual recovery`,
+    `  ${s.unverified} unverified email, will NOT auto-reclaim, needs manual recovery`,
   );
-  console.log(`  ${s.noEmail.length} no email at all — cannot be matched`);
+  console.log(`  ${s.noEmail.length} no email at all, cannot be matched`);
   console.log(
-    `  ${s.duplicateEmails.length} email addresses shared by more than one account — will resolve as 'conflict'`,
+    `  ${s.duplicateEmails.length} email addresses shared by more than one account, will resolve as 'conflict'`,
   );
 
   console.log(
-    "\nApple exposure (Apple SSO is being dropped — needs a paid developer account):",
+    "\nApple exposure (Apple SSO is being dropped (needs a paid developer account)):",
   );
   console.log(`  ${s.appleOnly} accounts can sign in ONLY via Apple today`);
   console.log(
@@ -127,8 +118,7 @@ function render(users: ExportedUser[]): void {
     if (s.noEmail.length > 20)
       console.log(`    ...and ${s.noEmail.length - 20} more`);
   }
-  // Addresses themselves are deliberately not printed — this output lands in
-  // terminal scrollback and CI logs. The account ids are enough to investigate.
+  // Addresses are not printed; this output reaches terminal and CI logs.
   if (s.duplicateEmails.length > 0) {
     console.log("\n  Accounts sharing an email address (addresses withheld):");
     for (const d of s.duplicateEmails.slice(0, 20)) {
@@ -150,7 +140,7 @@ async function main(): Promise<void> {
 
   console.log(`Clerk instance: ${kind} (key prefix ${secretKey.slice(0, 8)}…)`);
   console.log(
-    dryRun ? "Mode: DRY RUN — no file will be written\n" : "Mode: export\n",
+    dryRun ? "Mode: DRY RUN, no file will be written\n" : "Mode: export\n",
   );
 
   const { total_count: reported } = await clerkGet<ClerkCount>(
@@ -163,10 +153,8 @@ async function main(): Promise<void> {
 
   render(users);
 
-  // A short snapshot is silently dangerous: audit-users.ts compares production
-  // owners against this file, so a user missing here is reported as "deleted
-  // from Clerk" — i.e. classified as a non-issue — and their conlang quietly
-  // becomes unrecoverable. Refuse to write rather than let that happen.
+  // A user missing here is later reported as "deleted from Clerk", so a short
+  // snapshot silently hides a real loss.
   if (users.length !== reported) {
     const message = `fetched ${users.length} users but Clerk reported ${reported}`;
     if (!allowPartial) {
@@ -175,11 +163,11 @@ async function main(): Promise<void> {
           `Re-run, or pass --allow-partial if you have confirmed the difference is benign.`,
       );
     }
-    console.warn(`\n  WARNING: ${message} — writing anyway (--allow-partial).`);
+    console.warn(`\n  WARNING: ${message}, writing anyway (--allow-partial).`);
   }
 
   if (dryRun) {
-    console.log("\nDry run — nothing written.");
+    console.log("\nDry run, nothing written.");
     return;
   }
 
@@ -200,7 +188,6 @@ async function main(): Promise<void> {
       null,
       2,
     ),
-    // Owner-only: this file contains every user's email address.
     { encoding: "utf8", mode: 0o600 },
   );
 

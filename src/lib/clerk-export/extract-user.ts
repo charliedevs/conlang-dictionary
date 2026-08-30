@@ -1,11 +1,4 @@
-/**
- * Pure transforms for the Clerk identity export (see scripts/export-clerk-users.ts).
- *
- * These carry the migration's data-integrity risk — a mis-picked email address
- * or an optimistic "verified" flag is what would let one user reclaim another
- * user's conlangs after the production cutover — so they live here, free of I/O,
- * and are covered by tests.
- */
+// Pure transforms for the Clerk identity export.
 
 export interface ClerkEmailAddress {
   id: string;
@@ -42,12 +35,6 @@ export interface ExportedUser {
   displayName: string | null;
   imageUrl: string | null;
   providers: string[];
-  /**
-   * The OAuth provider's own subject id per linked account. A secondary reclaim
-   * signal only: whether these survive a change of OAuth client credentials is
-   * NOT established (sources conflict on whether Google's `sub` is unique per
-   * account or pairwise per client id). Verified email remains the primary key.
-   */
   externalAccounts: {
     provider: string;
     providerUserId: string | null;
@@ -57,7 +44,6 @@ export interface ExportedUser {
   lastSignInAt: string | null;
 }
 
-/** sk_test_* is a development instance, sk_live_* is production. */
 export function instanceKind(
   secretKey: string,
 ): "development" | "production" | "unknown" {
@@ -72,14 +58,8 @@ export function toIso(epochMs: number | null | undefined): string | null {
   return new Date(epochMs).toISOString();
 }
 
-/**
- * Picks the primary email, falling back to the first verified address and then
- * to the first address of any kind.
- *
- * `emailVerified` always describes the address actually chosen — never "some
- * address on this account is verified". Reclaim treats an unverified email as
- * unmatchable, so an optimistic flag here would defeat that guard.
- */
+// `emailVerified` describes the address actually chosen, never "some address on
+// this account is verified".
 export function extractUser(user: ClerkApiUser): ExportedUser {
   const emails = user.email_addresses ?? [];
   const primary =

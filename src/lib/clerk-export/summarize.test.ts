@@ -19,7 +19,7 @@ function user(overrides: Partial<ExportedUser> = {}): ExportedUser {
   };
 }
 
-describe("summarizeUsers — reclaim readiness", () => {
+describe("summarizeUsers: reclaim readiness", () => {
   it("counts a verified email as reclaimable", () => {
     const s = summarizeUsers([user()]);
     expect(s.reclaimable).toBe(1);
@@ -51,7 +51,7 @@ describe("summarizeUsers — reclaim readiness", () => {
   });
 });
 
-describe("summarizeUsers — duplicate emails", () => {
+describe("summarizeUsers: duplicate emails", () => {
   it("reports an address shared by two accounts", () => {
     const s = summarizeUsers([
       user({ clerkUserId: "a", email: "same@example.com" }),
@@ -62,7 +62,7 @@ describe("summarizeUsers — duplicate emails", () => {
     ]);
   });
 
-  // Reclaim matches case-insensitively, so detection must too — otherwise a
+  // Reclaim matches case-insensitively, so detection must too, otherwise a
   // genuine collision is reported as two distinct addresses and slips through.
   it("treats addresses differing only in case as duplicates", () => {
     const s = summarizeUsers([
@@ -91,7 +91,7 @@ describe("summarizeUsers — duplicate emails", () => {
   });
 });
 
-describe("summarizeUsers — Apple exposure", () => {
+describe("summarizeUsers: Apple exposure", () => {
   it("counts accounts whose only provider is Apple", () => {
     const s = summarizeUsers([
       user({ clerkUserId: "a", providers: ["oauth_apple"] }),
@@ -140,7 +140,7 @@ describe("summarizeUsers — Apple exposure", () => {
   });
 });
 
-describe("summarizeUsers — provider breakdown", () => {
+describe("summarizeUsers: provider breakdown", () => {
   it("groups accounts by their provider combination", () => {
     const s = summarizeUsers([
       user({ clerkUserId: "a", providers: ["oauth_google"] }),
@@ -173,7 +173,7 @@ describe("summarizeUsers — provider breakdown", () => {
   it("labels accounts with no linked provider", () => {
     const s = summarizeUsers([user({ providers: [] })]);
     expect(s.providerCounts).toEqual([
-      { providers: "(none — email/password)", count: 1 },
+      { providers: "(none: email/password)", count: 1 },
     ]);
   });
 });
