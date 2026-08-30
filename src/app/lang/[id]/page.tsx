@@ -1,8 +1,10 @@
+import { auth } from "@clerk/nextjs/server";
 import { TabsContent } from "@radix-ui/react-tabs";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { getConlangById, getPublicConlangs } from "~/server/queries";
 import { type Conlang } from "~/types/conlang";
+import { ConlangSettingsMenu } from "../_components/conlang-settings-menu";
 import { Lexicon } from "../_components/lexicon/lexicon";
 
 export type LanguagePageSearchParams = {
@@ -106,10 +108,14 @@ export default async function LanguagePage({
     console.error("Error:", error);
     return <div className="py-5 text-center">Language not found.</div>;
   }
+  const isConlangOwner = conlang.ownerId === auth().userId;
   return (
     <div className="flex flex-col">
-      <div className="my-3 flex items-center gap-4 font-semibold">
+      <div className="my-3 flex items-center justify-between gap-4 font-semibold">
         <h1 className="text-2xl md:text-3xl">{conlang.name}</h1>
+        {isConlangOwner && (
+          <ConlangSettingsMenu conlangId={conlang.id} conlangName={conlang.name} />
+        )}
       </div>
       <div className="my-1">
         <LanguageTabs

@@ -30,8 +30,8 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/data/useUsers";
 import { cn } from "~/lib/utils";
+import { ExportConlangDialog } from "~/components/conlang/export-conlang-dialog";
 import { type Conlang } from "~/types/conlang";
-import { ExportConlangDialog } from "./export-conlang-dialog";
 
 export const dynamic = "force-dynamic";
 
@@ -49,7 +49,7 @@ function RowActions(props: { conlangId: number; conlangName: string }) {
             <EllipsisHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align="end" className="w-64">
           <DropdownMenuLabel>{conlangName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -65,8 +65,13 @@ function RowActions(props: { conlangId: number; conlangName: string }) {
               e.stopPropagation();
             }}
           >
-            <Pencil className="mr-2 h-4 w-4" />
-            <span>Edit</span>
+            <Pencil className="mr-2 h-4 w-4 shrink-0" />
+            <div className="flex flex-col">
+              <span>Edit Details</span>
+              <span className="text-xs text-muted-foreground">
+                Name, emoji & description
+              </span>
+            </div>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={(e) => {
