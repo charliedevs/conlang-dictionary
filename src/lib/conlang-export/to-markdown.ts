@@ -4,6 +4,15 @@ import {
   type WordExport,
 } from "~/types/conlang-export";
 
+/**
+ * Falls back to a default label when a section's title is empty or
+ * whitespace-only, instead of rendering a blank `**title**` (which
+ * previously emitted `****`, malformed markdown with no visible header).
+ */
+function resolveTitle(title: string | undefined, fallback: string): string {
+  return title && title.trim() !== "" ? title : fallback;
+}
+
 function renderSection(
   section: LexicalSectionExport,
   categoryNamesByLocalId: Map<number, string>,
@@ -14,7 +23,7 @@ function renderSection(
       const categoryName =
         categoryNamesByLocalId.get(properties.lexicalCategoryId) ??
         "unknown category";
-      const lines = [`**${properties.title ?? categoryName}**`];
+      const lines = [`**${resolveTitle(properties.title, categoryName)}**`];
       if (properties.definitionText) lines.push("", properties.definitionText);
       if (properties.examples?.length) {
         lines.push("", ...properties.examples.map((example) => `> ${example}`));
@@ -23,11 +32,13 @@ function renderSection(
     }
     case "pronunciation": {
       const { properties } = section;
-      const lines = [`**${properties.title ?? "Pronunciation"}**`];
+      const lines = [`**${resolveTitle(properties.title, "Pronunciation")}**`];
       if (properties.ipaEntries?.length) {
         const entries = properties.ipaEntries
           .map((entry) =>
-            entry.label ? `${entry.label}: /${entry.value}/` : `/${entry.value}/`,
+            entry.label
+              ? `${entry.label}: /${entry.value}/`
+              : `/${entry.value}/`,
           )
           .join(", ");
         lines.push("", entries);
@@ -39,19 +50,19 @@ function renderSection(
     }
     case "etymology": {
       const { properties } = section;
-      const lines = [`**${properties.title ?? "Etymology"}**`];
+      const lines = [`**${resolveTitle(properties.title, "Etymology")}**`];
       if (properties.etymologyText) lines.push("", properties.etymologyText);
       return lines.join("\n");
     }
     case "custom_text": {
       const { properties } = section;
-      const lines = [`**${properties.title ?? "Notes"}**`];
+      const lines = [`**${resolveTitle(properties.title, "Notes")}**`];
       if (properties.contentText) lines.push("", properties.contentText);
       return lines.join("\n");
     }
     case "custom_fields": {
       const { properties } = section;
-      const lines = [`**${properties.title ?? "Details"}**`];
+      const lines = [`**${resolveTitle(properties.title, "Details")}**`];
       const entries = Object.entries(properties.customFields);
       if (entries.length) {
         lines.push(

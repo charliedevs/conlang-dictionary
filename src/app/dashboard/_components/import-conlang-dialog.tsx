@@ -45,13 +45,11 @@ function ImportPreview({
           value={conlangName}
           onChange={(e) => onConlangNameChange(e.target.value)}
         />
-        {nameError && (
-          <p className="text-sm text-destructive">{nameError}</p>
-        )}
+        {nameError && <p className="text-sm text-destructive">{nameError}</p>}
       </div>
       <p className="text-sm text-muted-foreground">
-        {wordCount} word{wordCount === 1 ? "" : "s"}, {categoryCount}{" "}
-        categor{categoryCount === 1 ? "y" : "ies"}
+        {wordCount} word{wordCount === 1 ? "" : "s"}, {categoryCount} categor
+        {categoryCount === 1 ? "y" : "ies"}
       </p>
       <Button
         disabled={isSubmitting || conlangName.trim().length === 0}
@@ -105,9 +103,7 @@ export function ImportConlangDialog() {
       if (isApiError(error) && error.code === "DUPLICATE_CONLANG_NAME") {
         setNameError("A conlang with this name already exists.");
       } else {
-        toast.error(
-          error instanceof Error ? error.message : "Import failed.",
-        );
+        toast.error(error instanceof Error ? error.message : "Import failed.");
       }
     } finally {
       setIsSubmitting(false);
@@ -116,12 +112,12 @@ export function ImportConlangDialog() {
 
   return (
     <DialogDrawer
-      trigger={<Button variant="outline">Import a conlang</Button>}
+      trigger={<Button variant="ghost">Import a conlang</Button>}
       title="Import a conlang"
       description="Upload a conlang export file (.json) to bring it into this account."
       onClose={reset}
       content={
-        <div className="flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4">
           <Input
             type="file"
             accept="application/json,.json"

@@ -3,7 +3,10 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { planTagsToCreate } from "~/lib/conlang-export/plan-import";
-import type { ConlangExport, LexicalSectionExport } from "~/types/conlang-export";
+import type {
+  ConlangExport,
+  LexicalSectionExport,
+} from "~/types/conlang-export";
 import type {
   CustomFieldsSectionProperties,
   CustomTextSectionProperties,
@@ -151,6 +154,16 @@ export async function insertLexicalCategory(l: LexicalCategoryInsert) {
 
 // #region Import
 
+/** Awaits a single-row `.returning()` insert, throwing if it came back empty. */
+async function insertOneOrThrow<T>(
+  rows: Promise<T[]>,
+  errorMessage: string,
+): Promise<T> {
+  const [row] = await rows;
+  if (!row) throw new Error(errorMessage);
+  return row;
+}
+
 function remapSectionProperties(
   section: LexicalSectionExport,
   categoryIdByLocalId: Map<number, number>,
@@ -185,29 +198,33 @@ export async function importConlang(input: {
   if (!userId) throw new Error("Unauthorized");
 
   return await db.transaction(async (tx) => {
-    const [newConlang] = await tx
-      .insert(conlangs)
-      .values({
-        name: input.conlangName,
-        description: input.data.conlang.description ?? "",
-        emoji: input.data.conlang.emoji,
-        isPublic: false,
-        ownerId: userId,
-      })
-      .returning();
-    if (!newConlang) throw new Error("Failed to create conlang");
+    const newConlang = await insertOneOrThrow(
+      tx
+        .insert(conlangs)
+        .values({
+          name: input.conlangName,
+          description: input.data.conlang.description ?? "",
+          emoji: input.data.conlang.emoji,
+          isPublic: false,
+          ownerId: userId,
+        })
+        .returning(),
+      "Failed to create conlang",
+    );
 
     const categoryIdByLocalId = new Map<number, number>();
     for (const category of input.data.lexicalCategories) {
-      const [inserted] = await tx
-        .insert(lexicalCategories)
-        .values({
-          category: category.category,
-          conlangId: newConlang.id,
-          ownerId: userId,
-        })
-        .returning();
-      if (!inserted) throw new Error("Failed to create lexical category");
+      const inserted = await insertOneOrThrow(
+        tx
+          .insert(lexicalCategories)
+          .values({
+            category: category.category,
+            conlangId: newConlang.id,
+            ownerId: userId,
+          })
+          .returning(),
+        "Failed to create lexical category",
+      );
       categoryIdByLocalId.set(category.localId, inserted.id);
     }
 
@@ -221,32 +238,36 @@ export async function importConlang(input: {
       new Set(tagIdByText.keys()),
     );
     for (const tag of tagsToCreate) {
-      const [inserted] = await tx
-        .insert(tags)
-        .values({
-          text: tag.text,
-          type: "word",
-          color: tag.color,
-          createdBy: userId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .returning();
-      if (!inserted) throw new Error("Failed to create tag");
+      const inserted = await insertOneOrThrow(
+        tx
+          .insert(tags)
+          .values({
+            text: tag.text,
+            type: "word",
+            color: tag.color,
+            createdBy: userId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning(),
+        "Failed to create tag",
+      );
       tagIdByText.set(tag.text, inserted.id);
     }
 
     for (const word of input.data.words) {
-      const [newWord] = await tx
-        .insert(words)
-        .values({
-          conlangId: newConlang.id,
-          text: word.text,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .returning();
-      if (!newWord) throw new Error("Failed to create word");
+      const newWord = await insertOneOrThrow(
+        tx
+          .insert(words)
+          .values({
+            conlangId: newConlang.id,
+            text: word.text,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning(),
+        "Failed to create word",
+      );
 
       for (const section of word.lexicalSections) {
         await tx.insert(lexicalSections).values({

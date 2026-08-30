@@ -133,6 +133,127 @@ describe("conlangExportToMarkdown", () => {
     expect(md).toContain("verb-root");
   });
 
+  it("falls back to the default pronunciation header when title is empty, instead of rendering an empty bold marker", () => {
+    const md = conlangExportToMarkdown(
+      baseExport({
+        words: [
+          {
+            text: "amar",
+            tags: [],
+            lexicalSections: [
+              {
+                sectionType: "pronunciation",
+                order: 0,
+                properties: { title: "", ipaEntries: [{ value: "ˈɑ.mɑr" }] },
+              },
+            ],
+          },
+        ],
+      }),
+    );
+
+    expect(md).toContain("**Pronunciation**");
+    expect(md).not.toContain("****");
+  });
+
+  it("falls back to the default etymology header when title is whitespace-only", () => {
+    const md = conlangExportToMarkdown(
+      baseExport({
+        words: [
+          {
+            text: "amar",
+            tags: [],
+            lexicalSections: [
+              {
+                sectionType: "etymology",
+                order: 0,
+                properties: { title: "  ", etymologyText: "from Proto-Elvish" },
+              },
+            ],
+          },
+        ],
+      }),
+    );
+
+    expect(md).toContain("**Etymology**");
+    expect(md).not.toContain("****");
+  });
+
+  it("falls back to the default custom_text header when title is empty", () => {
+    const md = conlangExportToMarkdown(
+      baseExport({
+        words: [
+          {
+            text: "amar",
+            tags: [],
+            lexicalSections: [
+              {
+                sectionType: "custom_text",
+                order: 0,
+                properties: { title: "", contentText: "a note" },
+              },
+            ],
+          },
+        ],
+      }),
+    );
+
+    expect(md).toContain("**Notes**");
+    expect(md).not.toContain("****");
+  });
+
+  it("falls back to the default custom_fields header when title is empty", () => {
+    const md = conlangExportToMarkdown(
+      baseExport({
+        words: [
+          {
+            text: "amar",
+            tags: [],
+            lexicalSections: [
+              {
+                sectionType: "custom_fields",
+                order: 0,
+                properties: { title: "", customFields: { register: "formal" } },
+              },
+            ],
+          },
+        ],
+      }),
+    );
+
+    expect(md).toContain("**Details**");
+    expect(md).not.toContain("****");
+  });
+
+  it("falls back to the lexical category name when a definition section's title is empty", () => {
+    const md = conlangExportToMarkdown(
+      baseExport({
+        lexicalCategories: [{ localId: 1, category: "noun" }],
+        words: [
+          {
+            text: "amar",
+            tags: [],
+            lexicalSections: [
+              {
+                sectionType: "definition",
+                order: 0,
+                properties: {
+                  title: "",
+                  lexicalCategoryId: 1,
+                  definitionText: "love",
+                  examples: [],
+                },
+              },
+            ],
+          },
+        ],
+      }),
+    );
+
+    expect(md).toContain("**noun**");
+    expect(md).not.toContain("****");
+  });
+
   it("separates multiple words with their own headings", () => {
     const md = conlangExportToMarkdown(
       baseExport({

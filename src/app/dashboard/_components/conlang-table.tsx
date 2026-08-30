@@ -9,8 +9,7 @@ import { Download } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
-import { toast } from "sonner";
+import { useMemo, useState } from "react";
 
 import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
 import { DocumentText } from "~/components/icons/document-text";
@@ -30,11 +29,73 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useUsers } from "~/hooks/data/useUsers";
-import { downloadConlangExport } from "~/lib/conlang-export/trigger-download";
 import { cn } from "~/lib/utils";
 import { type Conlang } from "~/types/conlang";
+import { ExportConlangDialog } from "./export-conlang-dialog";
 
 export const dynamic = "force-dynamic";
+
+function RowActions(props: { conlangId: number; conlangName: string }) {
+  const router = useRouter();
+  const [exportOpen, setExportOpen] = useState(false);
+  const { conlangId, conlangName } = props;
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Actions for {conlangName}</span>
+            <EllipsisHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuLabel>{conlangName}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => alert("Conlang page not implemented")}
+          >
+            <DocumentText className="mr-2 h-4 w-4" />
+            <span>View</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={(e) => {
+              router.push(`/lang/edit/${conlangId}`);
+              e.stopPropagation();
+            }}
+          >
+            <Pencil className="mr-2 h-4 w-4" />
+            <span>Edit</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setExportOpen(true);
+            }}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            <span>Export</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => alert("Delete not implemented")}
+            className="text-red-700 focus:bg-red-800/10 focus:text-red-700"
+          >
+            <Trash className="mr-2 h-4 w-4" />
+            <span>Delete</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ExportConlangDialog
+        conlangId={conlangId}
+        conlangName={conlangName}
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+      />
+    </>
+  );
+}
 
 export function ConlangTable(props: {
   conlangs: Conlang[];
@@ -45,19 +106,6 @@ export function ConlangTable(props: {
   const { data: userList, isLoading } = useUsers({
     userId: props.conlangs.map((conlang) => conlang.ownerId),
   });
-
-  const handleExport = useCallback(
-    async (conlangId: number, format: "json" | "markdown") => {
-      try {
-        await downloadConlangExport(conlangId, format);
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Export failed.",
-        );
-      }
-    },
-    [],
-  );
 
   const columns: ColumnDef<Conlang>[] = useMemo(
     () => [
@@ -156,67 +204,12 @@ export function ConlangTable(props: {
       },
       {
         id: "actions",
-        cell: ({ row }) => {
-          const conlangId = row.original.id;
-          const conlangName = row.original.name;
-
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu for {conlangName}</span>
-                  <EllipsisHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>{conlangName}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => alert("Conlang page not implemented")}
-                >
-                  <DocumentText className="mr-2 h-4 w-4" />
-                  <span>View</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    router.push(`/lang/edit/${conlangId}`);
-                    e.stopPropagation();
-                  }}
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  <span>Edit</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void handleExport(conlangId, "json");
-                  }}
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  <span>Export as JSON</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void handleExport(conlangId, "markdown");
-                  }}
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  <span>Export as Markdown</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => alert("Delete not implemented")}
-                  className="text-red-700 focus:bg-red-800/10 focus:text-red-700"
-                >
-                  <Trash className="mr-2 h-4 w-4" />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        },
+        cell: ({ row }) => (
+          <RowActions
+            conlangId={row.original.id}
+            conlangName={row.original.name}
+          />
+        ),
       },
       {
         id: "open",
@@ -236,7 +229,7 @@ export function ConlangTable(props: {
         },
       },
     ],
-    [isLoading, router, userList, handleExport],
+    [isLoading, userList],
   );
 
   const handleRowClick = (row: RowType<Conlang>) => {
