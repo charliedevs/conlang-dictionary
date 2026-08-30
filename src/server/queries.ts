@@ -12,7 +12,7 @@ import { conlangs, tags, words, wordsToTags } from "./db/schema";
 
 // #region CONLANGS
 export async function getMyConlangs() {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const conlangs = await db.query.conlangs.findMany({
@@ -39,7 +39,7 @@ export async function getConlangById(id: number, { skipAuth = false } = {}) {
   if (!conlang) throw new Error("Conlang not found");
 
   if (!skipAuth && !conlang.isPublic) {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (conlang.ownerId !== userId) throw new Error("Unauthorized");
   }
 
@@ -70,7 +70,7 @@ export async function createConlang(
   emoji?: string,
   isPublic = false,
 ) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const conlang = await db
@@ -106,7 +106,7 @@ export async function updateConlang(
   emoji?: string,
   isPublic?: boolean,
 ) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const conlang = await db
@@ -127,7 +127,7 @@ export async function updateConlang(
 }
 
 export async function deleteConlang(id: number) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   await db
@@ -189,7 +189,7 @@ export interface WordInsert {
 }
 
 export async function insertWord(w: WordInsert) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const word = await db
@@ -212,7 +212,7 @@ export interface WordUpdate {
 }
 
 export async function updateWord(w: WordUpdate) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const word = await db
@@ -228,7 +228,7 @@ export async function updateWord(w: WordUpdate) {
 }
 
 export async function deleteWord(id: number) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   await db.delete(words).where(eq(words.id, id));
@@ -246,7 +246,7 @@ export async function getAllWordTags() {
 }
 
 export async function getWordTagsForUser() {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const userTags = await db.query.tags.findMany({
@@ -264,7 +264,7 @@ export interface TagInsert {
 }
 
 export async function insertTag(t: TagInsert) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const tag = await db
@@ -283,7 +283,7 @@ export async function insertTag(t: TagInsert) {
 }
 
 export async function addWordTagRelation(wordId: number, tagId: number) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const word = await db
@@ -298,7 +298,7 @@ export async function addWordTagRelation(wordId: number, tagId: number) {
 }
 
 export async function removeWordTagRelation(wordId: number, tagId: number) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const word = await db

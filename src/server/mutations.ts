@@ -41,7 +41,7 @@ export type InsertLexicalSectionInput = {
 };
 
 export async function insertLexicalSection(input: InsertLexicalSectionInput) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   if (!input.wordId || !input.sectionType || !input.properties) {
@@ -71,7 +71,7 @@ export interface LexicalSectionOrderUpdate {
 export async function updateLexicalSectionOrders(
   updates: LexicalSectionOrderUpdate[],
 ) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const results: Partial<typeof lexicalSections.$inferSelect>[] = [];
@@ -100,7 +100,7 @@ export async function updateLexicalSectionProperties(
   sectionId: string,
   input: UpdateLexicalSectionPropertiesInput,
 ) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const updated = await db
@@ -114,7 +114,7 @@ export async function updateLexicalSectionProperties(
 }
 
 export async function deleteLexicalSection(sectionId: string) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const deleted = await db
@@ -136,7 +136,7 @@ export interface LexicalCategoryInsert {
 }
 
 export async function insertLexicalCategory(l: LexicalCategoryInsert) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const lexicalCategory = await db
@@ -195,7 +195,7 @@ export async function importConlang(input: {
   conlangName: string;
   data: ConlangExport;
 }) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   return await db.transaction(async (tx) => {

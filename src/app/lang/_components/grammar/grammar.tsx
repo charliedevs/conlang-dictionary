@@ -7,12 +7,12 @@ import { GrammarNav } from "./grammar-nav";
 import { GrammarSectionSkeleton } from "./grammar-skeletons";
 import { LexicalCategories } from "./lexical-categories";
 
-export function Grammar(props: {
+export async function Grammar(props: {
   conlang: Conlang;
   searchParams: LanguagePageSearchParams;
 }) {
   const selectedSection = props.searchParams.grammar;
-  const isOwner = props.conlang.ownerId === auth().userId;
+  const isOwner = props.conlang.ownerId === (await auth()).userId;
 
   return (
     <div id="grammar" className="flex flex-col">

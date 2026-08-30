@@ -12,7 +12,7 @@ export interface CreateLexicalCategory {
 
 /** Throws unless the signed-in user owns the target conlang. */
 async function assertConlangOwner(conlangId: number) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
   const conlang = await getConlangById(conlangId, { skipAuth: true });
   if (conlang.ownerId !== userId) throw new Error("Unauthorized");

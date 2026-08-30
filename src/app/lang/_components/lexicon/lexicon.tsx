@@ -59,12 +59,12 @@ function AddWord(props: { conlangId: number; wordId?: number }) {
   );
 }
 
-export function Lexicon(props: {
+export async function Lexicon(props: {
   conlang: Conlang;
   wordId?: number;
   searchParams: LanguagePageSearchParams;
 }) {
-  const isConlangOwner = props.conlang.ownerId === auth().userId;
+  const isConlangOwner = props.conlang.ownerId === (await auth()).userId;
   const wordSelected = Boolean(props.wordId);
   return (
     <div id="lexicon" className="flex flex-col">

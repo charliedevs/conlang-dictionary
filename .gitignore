@@ -44,6 +44,9 @@ yarn-error.log*
 # Sentry Config File
 .sentryclirc
 
+# claude
+.claude/settings.local.json
+
 # impeccable-ignore-start
 # Ephemeral output, runtime state, and per-dev overrides.
 # Unanchored: .impeccable may sit at the repo root or under a nested
@@ -66,3 +69,6 @@ yarn-error.log*
 .impeccable/live/deferred-svelte-component-accepts.json
 .impeccable/live/*.png
 # impeccable-ignore-end
+
+# clerk identity snapshots — contain user email addresses, never commit
+/backups/

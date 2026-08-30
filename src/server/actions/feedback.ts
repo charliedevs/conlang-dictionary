@@ -17,7 +17,7 @@ export async function submitFeedback(input: SubmitFeedbackInput) {
   }
 
   const parsed = feedbackSchema.parse(input);
-  const { userId } = auth();
+  const { userId } = await auth();
 
   const saved = await insertFeedback({
     type: parsed.type,

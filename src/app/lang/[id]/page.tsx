@@ -121,7 +121,7 @@ export default async function LanguagePage({
     console.error("Error:", error);
     return <div className="py-5 text-center">Language not found.</div>;
   }
-  const isConlangOwner = conlang.ownerId === auth().userId;
+  const isConlangOwner = conlang.ownerId === (await auth()).userId;
   return (
     <div className="flex flex-col">
       <div className="my-3 flex items-center justify-between gap-4">

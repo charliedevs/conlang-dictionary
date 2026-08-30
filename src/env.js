@@ -14,6 +14,10 @@ export const env = createEnv({
     TABLE_PREFIX: z.string(),
     RESEND_API_KEY: z.string().optional(),
     FEEDBACK_NOTIFY_EMAIL: z.string().email().optional(),
+    // Clerk reads this from process.env itself; declaring it here makes a
+    // missing or malformed key fail the build instead of failing at runtime.
+    // sk_test_* is a development instance, sk_live_* is production.
+    CLERK_SECRET_KEY: z.string().startsWith("sk_"),
   },
 
   /**
@@ -22,7 +26,14 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith("pk_"),
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().optional(),
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().optional(),
+    // Fallback, not force: only redirects when there is no redirect_url in the
+    // querystring, so signing in from a conlang page returns there rather than
+    // bouncing the user to the dashboard.
+    NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: z.string().optional(),
+    NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: z.string().optional(),
   },
 
   /**
@@ -35,7 +46,15 @@ export const env = createEnv({
     TABLE_PREFIX: process.env.TABLE_PREFIX,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     FEEDBACK_NOTIFY_EMAIL: process.env.FEEDBACK_NOTIFY_EMAIL,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
+    NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL:
+      process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL,
+    NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL:
+      process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

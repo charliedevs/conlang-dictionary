@@ -31,12 +31,26 @@ npm run db:studio  # Drizzle Studio DB browser
 
 ## Conventions
 
-- Access env vars via `src/env.ts` (`@t3-oss/env-nextjs`), not `process.env` directly — it validates required vars at build time.
+- Access env vars via `src/env.js` (`@t3-oss/env-nextjs`), not `process.env` directly — it validates required vars at build time.
 - Import app code with the `~/*` alias (maps to `src/*`), not relative paths across top-level dirs.
+
+## Dependency Cadence
+
+- Run `npm outdated` monthly. Treat console deprecation warnings as bugs to ticket, not noise.
+- **`@clerk/nextjs` is pinned to an exact version** (currently `6.39.6`), not a caret range — an
+  unreviewed `npm install` must never shift the auth layer. Read
+  [`packages/nextjs/CHANGELOG.md`](https://github.com/clerk/javascript/blob/main/packages/nextjs/CHANGELOG.md)
+  before any Clerk bump.
+- **Do not upgrade `@clerk/nextjs` to v7.x.** Its peer dependency requires
+  `next ^15.2.8 || ^16`; this project is on Next 14. v6 is the last line supporting Next 14.
+  Moving to v7 means doing the Next 14 → 15 major upgrade first, which is its own project.
 
 ## Gotchas
 
 - There is no `drizzle/migrations` folder. Schema changes in `src/server/db/schema.ts` are applied by running `db:push` directly against the database, with no migration history to roll back through.
+- Clerk auth currently runs on a **development** instance holding 478 real users, over Clerk's
+  documented 100-user cap. `conlangs.ownerId` holds raw Clerk user IDs, which a production
+  instance would reissue. See `SPEC.md` and `tasks/plan.md` before touching anything auth-related.
 - Any user-supplied rich text (TipTap/markdown content) must pass through `sanitize-html` before being rendered as HTML — this closed a prior XSS gap; never render raw user HTML.
 
 ## Out of Scope

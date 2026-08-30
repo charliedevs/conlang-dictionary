@@ -17,6 +17,10 @@
     /* Bundled projects */
     "lib": ["dom", "dom.iterable", "ES2022"],
     "noEmit": true,
+    // Scripts in scripts/ run under Node's native TypeScript type stripping,
+    // which requires explicit .ts extensions on relative imports and does not
+    // resolve the ~/* alias. Safe here because noEmit is true.
+    "allowImportingTsExtensions": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "preserve",
@@ -24,7 +28,6 @@
     "incremental": true,
 
     /* Path Aliases */
-    "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
     }

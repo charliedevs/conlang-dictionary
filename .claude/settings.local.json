@@ -1,5 +1,8 @@
 {
   "description": "Impeccable design detector: immediate-tier checks after Edit/Write on UI files, full-rule deep pass on Stop.",
+  "permissions": {
+    "allow": ["Bash(node --env-file=.env.local scripts/*)"]
+  },
   "hooks": {
     "PostToolUse": [
       {
