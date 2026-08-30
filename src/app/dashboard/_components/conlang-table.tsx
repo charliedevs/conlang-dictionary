@@ -30,9 +30,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useUsers } from "~/hooks/data/useUsers";
 import { cn } from "~/lib/utils";
 import { ExportConlangDialog } from "~/components/conlang/export-conlang-dialog";
+import { type ConlangOwner } from "~/lib/auth/map-owners";
 import { type Conlang } from "~/types/conlang";
 
 export const dynamic = "force-dynamic";
@@ -96,9 +96,7 @@ function RowActions(props: { conlangId: number; conlangName: string }) {
             <Trash2 className="mr-2 h-4 w-4 shrink-0" />
             <div className="flex flex-col">
               <span>Delete</span>
-              <span className="text-xs text-muted-foreground">
-                Coming soon
-              </span>
+              <span className="text-xs text-muted-foreground">Coming soon</span>
             </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -115,13 +113,12 @@ function RowActions(props: { conlangId: number; conlangName: string }) {
 
 export function ConlangTable(props: {
   conlangs: Conlang[];
+  owners: Record<number, ConlangOwner>;
   visibility?: VisibilityState;
   className?: string;
 }) {
   const router = useRouter();
-  const { data: userList, isLoading } = useUsers({
-    userId: props.conlangs.map((conlang) => conlang.ownerId),
-  });
+  const { owners } = props;
 
   const columns: ColumnDef<Conlang>[] = useMemo(
     () => [
@@ -148,41 +145,25 @@ export function ConlangTable(props: {
       {
         accessorKey: "ownerId",
         header: "Creator",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            {isLoading ? (
-              <>
-                <div className="h-6 w-6 rounded-full bg-slate-300" />
-                Loading ...
-              </>
-            ) : userList && userList.length > 0 ? (
-              <>
+        cell: ({ row }) => {
+          const owner = owners[row.original.id];
+          return (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {owner?.imageUrl ? (
                 <Image
-                  src={
-                    userList.find((user) => user.id === row.original.ownerId)
-                      ?.imageUrl ?? ""
-                  }
-                  alt={
-                    userList.find((user) => user.id === row.original.ownerId)
-                      ?.name + "'s image" ?? "Unknown user"
-                  }
+                  src={owner.imageUrl}
+                  alt={owner.name ? `${owner.name}'s image` : "Unknown user"}
                   width={24}
                   height={24}
                   className="h-6 w-6 rounded-full bg-slate-300"
                 />
-                {
-                  userList.find((user) => user.id === row.original.ownerId)
-                    ?.name
-                }
-              </>
-            ) : (
-              <>
+              ) : (
                 <div className="h-6 w-6 rounded-full bg-slate-300" />
-                Unknown
-              </>
-            )}
-          </div>
-        ),
+              )}
+              {owner?.name ?? "Unknown"}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "createdAt",
@@ -246,7 +227,7 @@ export function ConlangTable(props: {
         },
       },
     ],
-    [isLoading, userList],
+    [owners],
   );
 
   const handleRowClick = (row: RowType<Conlang>) => {

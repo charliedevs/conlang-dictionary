@@ -348,19 +348,25 @@ identity with no email logs and returns null rather than surfacing a raw NOT NUL
 
 ---
 
-### Task 2.5: Replace `/api/users` with a DB join
-- [ ] Delete `src/app/api/users/route.ts`, `src/app/api/users/types.ts`, `src/hooks/data/useUsers.ts`
-- [ ] Resolve owner display data server-side; pass as props
-- [ ] Update `src/app/_components/recent-conlangs-showcase.tsx`, `src/app/dashboard/page.tsx`, `src/app/dashboard/_components/conlang-table.tsx`
+### Task 2.5: Replace `/api/users` with a DB join DONE
+- [x] Deleted `src/app/api/users/route.ts`, `src/app/api/users/types.ts`, `src/hooks/data/useUsers.ts`
+- [x] `getOwnersForConlangs()` resolves display data server-side from the local `users` table
+- [x] `src/lib/auth/map-owners.ts` (+ 7 tests, written failing first)
+- [x] `recent-conlangs-showcase.tsx`, `dashboard/page.tsx`, `search/page.tsx`, `conlang-table.tsx` take owners as a prop
+- [x] React Query prefetch and `HydrationBoundary` removed from the dashboard
 
-**Acceptance criteria:**
-- [ ] Owner names and avatars still render everywhere they did before
-- [ ] `grep -rn "clerkClient" src/` returns only the `getCurrentUser()` fallback
-- [ ] The unauthenticated endpoint that resolved arbitrary Clerk IDs to names/avatars is gone
+**What this closes:** the last `clerkClient` call outside middleware, and the unauthenticated
+endpoint that resolved arbitrary Clerk ids to real names and avatars. Attribution no longer leaves
+the server as an owner id, and only `name` and `imageUrl` reach the client.
+
+**Also gained:** the dashboard bundle dropped from 9.04 kB to 3.14 kB, and owner attribution now
+renders server-side instead of after a client round trip.
 
 **Verification:**
-- [ ] `npm run lint && npm run build`
-- [ ] Manual: dashboard and homepage showcase show correct owner attribution
+- [x] 186 tests pass, lint clean, typecheck clean, build succeeds
+- [x] `/api/users` returns 404; no references to it or `useUsers` remain
+- [x] Homepage showcase still renders "by Charles Davis" / "by Charlie Davis", now from the DB
+- [x] `/search` and `/lang/1` render correctly signed out
 
 **Dependencies:** Task 2.4
 

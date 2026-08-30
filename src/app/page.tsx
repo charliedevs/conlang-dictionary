@@ -12,7 +12,7 @@ import { Globe } from "~/components/icons/globe";
 import { PresentationChartLine } from "~/components/icons/presentation-chart-line";
 import { Users } from "~/components/icons/users";
 import { Button } from "~/components/ui/button";
-import { getRecentConlangs } from "~/server/queries";
+import { getOwnersForConlangs, getRecentConlangs } from "~/server/queries";
 import {
   RecentConlangsShowcase,
   RecentConlangsShowcaseSkeleton,
@@ -38,7 +38,8 @@ const ROADMAP_ITEMS = [
 
 async function RecentConlangs() {
   const recentConlangs = await getRecentConlangs();
-  return <RecentConlangsShowcase conlangs={recentConlangs} />;
+  const owners = await getOwnersForConlangs(recentConlangs);
+  return <RecentConlangsShowcase conlangs={recentConlangs} owners={owners} />;
 }
 
 export default function HomePage() {

@@ -1,13 +1,6 @@
-import {
-  HydrationBoundary,
-  QueryClient,
-  dehydrate,
-} from "@tanstack/react-query";
-
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
-import { getUsers } from "~/hooks/data/useUsers";
-import { getMyConlangs } from "~/server/queries";
+import { getMyConlangs, getOwnersForConlangs } from "~/server/queries";
 import { ConlangTable } from "./_components/conlang-table";
 import { EmptyDashboardState } from "./_components/empty-dashboard-state";
 import { ImportConlangDialog } from "./_components/import-conlang-dialog";
@@ -16,23 +9,8 @@ import { NewConlangForm } from "./_components/new-conlang-form";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  // Get user's conlangs
   const conlangs = await getMyConlangs();
-
-  // Prefetch user info for client
-  const queryClient = new QueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: [
-      "users",
-      {
-        userId: conlangs.map((conlang) => conlang.ownerId),
-      },
-    ],
-    queryFn: () =>
-      getUsers({
-        userId: conlangs.map((conlang) => conlang.ownerId),
-      }),
-  });
+  const owners = await getOwnersForConlangs(conlangs);
 
   return (
     <div className="mx-2 flex flex-col items-center gap-8 pt-6 md:container">
@@ -64,13 +42,12 @@ export default async function DashboardPage() {
               </Link>
             </div>
           </div>
-          <HydrationBoundary state={dehydrate(queryClient)}>
-            <ConlangTable
-              conlangs={conlangs}
-              visibility={{ ownerId: false }}
-              className="bg-card/80"
-            />
-          </HydrationBoundary>
+          <ConlangTable
+            conlangs={conlangs}
+            owners={owners}
+            visibility={{ ownerId: false }}
+            className="bg-card/80"
+          />
         </div>
       )}
     </div>

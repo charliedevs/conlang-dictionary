@@ -3,18 +3,16 @@
 import Link from "next/link";
 
 import { ArrowRightCircle } from "~/components/icons/arrow-right-circle";
-import { useUsers } from "~/hooks/data/useUsers";
+import { type ConlangOwner } from "~/lib/auth/map-owners";
 import { type Conlang } from "~/types/conlang";
 
 export function RecentConlangsShowcase({
   conlangs,
+  owners,
 }: {
   conlangs: Conlang[];
+  owners: Record<number, ConlangOwner>;
 }) {
-  const { data: userList } = useUsers({
-    userId: conlangs.map((conlang) => conlang.ownerId),
-  });
-
   if (conlangs.length === 0) {
     return (
       <div className="w-full rounded-lg border border-dashed p-8 text-center">
@@ -28,7 +26,7 @@ export function RecentConlangsShowcase({
   return (
     <div className="grid w-full gap-3 sm:grid-cols-2">
       {conlangs.map((conlang) => {
-        const owner = userList?.find((user) => user.id === conlang.ownerId);
+        const owner = owners[conlang.id];
         return (
           <Link
             key={conlang.id}

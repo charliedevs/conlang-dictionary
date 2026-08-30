@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { SearchForm } from "~/app/_components/search-form";
 import { ConlangTable } from "~/app/dashboard/_components/conlang-table";
 import { Button } from "~/components/ui/button";
-import { getPublicConlangs } from "~/server/queries";
+import { getOwnersForConlangs, getPublicConlangs } from "~/server/queries";
 
 interface SearchPageProps {
   searchParams: { q?: string };
@@ -18,6 +18,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       conlang.name.toLowerCase().includes(query) ||
       conlang.description.toLowerCase().includes(query),
   );
+  const owners = await getOwnersForConlangs(filteredConlangs);
 
   return (
     <div className="container mx-auto flex flex-col gap-4 p-4 md:p-8">
@@ -43,6 +44,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <div className="w-full">
         <ConlangTable
           conlangs={filteredConlangs}
+          owners={owners}
           visibility={{
             isPublic: false,
             ownerId: false,

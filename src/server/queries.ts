@@ -1,7 +1,12 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, or } from "drizzle-orm";
 import { isOwner } from "~/lib/auth/is-owner";
+import {
+  mapOwnersToConlangs,
+  type ConlangOwner,
+  type OwnedConlang,
+} from "~/lib/auth/map-owners";
 import { countWordsByCategory } from "~/lib/lexical-categories/membership";
 import { parseLexicalSection } from "~/types/parseLexicalSection";
 import { type TagColor, type TagType } from "~/types/tag";
@@ -9,7 +14,7 @@ import analyticsServerClient from "./analytics";
 import { getCurrentUser, requireCurrentUser } from "./auth/current-user";
 import { ownedByUser } from "./auth/ownership";
 import { db } from "./db";
-import { conlangs, tags, words, wordsToTags } from "./db/schema";
+import { conlangs, tags, users, words, wordsToTags } from "./db/schema";
 
 // #region CONLANGS
 export async function getMyConlangs() {
@@ -21,6 +26,34 @@ export async function getMyConlangs() {
   });
 
   return conlangs;
+}
+
+/** Display-only owner info per conlang id. Replaces the old /api/users route. */
+export async function getOwnersForConlangs(
+  list: OwnedConlang[],
+): Promise<Record<number, ConlangOwner>> {
+  if (list.length === 0) return {};
+
+  const localIds = list.flatMap((c) => (c.ownerUserId ? [c.ownerUserId] : []));
+  const clerkIds = list.flatMap((c) => (c.ownerId ? [c.ownerId] : []));
+
+  const owners = await db
+    .select({
+      id: users.id,
+      clerkUserId: users.clerkUserId,
+      displayName: users.displayName,
+      username: users.username,
+      imageUrl: users.imageUrl,
+    })
+    .from(users)
+    .where(
+      or(
+        localIds.length ? inArray(users.id, localIds) : undefined,
+        clerkIds.length ? inArray(users.clerkUserId, clerkIds) : undefined,
+      ),
+    );
+
+  return mapOwnersToConlangs(list, owners);
 }
 
 export async function getPublicConlangs() {
