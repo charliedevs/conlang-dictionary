@@ -106,16 +106,17 @@ export default function HomePage() {
                   <p className="text-sm font-medium text-foreground/80">
                     {title}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {description}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{description}</p>
                 </div>
               </li>
             ))}
           </ul>
         </div>
       </div>
-      <div id="recentConlangs" className="w-full rounded-xl bg-accent p-8 dark:bg-card">
+      <div
+        id="recentConlangs"
+        className="w-full rounded-xl bg-accent p-8 dark:bg-card"
+      >
         <h2 className="flex items-center gap-2 text-start text-xl font-semibold tracking-tight">
           <Globe className="size-5 shrink-0 text-muted-foreground" />
           Share your conlangs with the world!
@@ -129,7 +130,7 @@ export default function HomePage() {
           <RecentConlangs />
         </Suspense>
         <div className="mt-6 flex w-full justify-center">
-          <Button asChild>
+          <Button asChild variant="ghost">
             <Link href="/search">View All Conlangs</Link>
           </Button>
         </div>

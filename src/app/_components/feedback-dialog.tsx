@@ -10,6 +10,7 @@ import { DialogDrawer } from "~/components/ui/dialog-drawer";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -73,7 +74,7 @@ export function FeedbackDialog() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hover:underline hover:opacity-85"
+        className="whitespace-nowrap hover:underline hover:opacity-85"
       >
         Send feedback
       </button>
@@ -81,7 +82,7 @@ export function FeedbackDialog() {
         open={open}
         onClose={() => setOpen(false)}
         title="Send feedback"
-        description="Report a bug, share an idea, or just say hi — no account needed."
+        description="Report a bug, share an idea, or just say hi."
         content={
           <Form {...form}>
             <form
@@ -93,7 +94,9 @@ export function FeedbackDialog() {
                 aria-hidden="true"
                 className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden"
               >
-                <label htmlFor={HONEYPOT_FIELD_NAME}>Leave this field empty</label>
+                <label htmlFor={HONEYPOT_FIELD_NAME}>
+                  Leave this field empty
+                </label>
                 <input
                   ref={honeypotRef}
                   id={HONEYPOT_FIELD_NAME}
@@ -161,6 +164,10 @@ export function FeedbackDialog() {
                         {...field}
                       />
                     </FormControl>
+                    <FormDescription>
+                      Only needed if you&apos;d like a reply. Responses
+                      aren&apos;t guaranteed, but every message gets read.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -168,6 +175,18 @@ export function FeedbackDialog() {
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Sending..." : "Send feedback"}
               </Button>
+              <p className="border-t pt-3 text-center text-xs text-muted-foreground">
+                Have a GitHub account?{" "}
+                <a
+                  href="https://github.com/charliedevs/conlang-dictionary/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:opacity-85"
+                >
+                  File an issue there instead
+                </a>
+                .
+              </p>
             </form>
           </Form>
         }

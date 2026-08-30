@@ -11,8 +11,8 @@ export function Footer() {
       : `${FOUNDING_YEAR}`;
 
   return (
-    <footer className="mt-auto flex w-full items-end justify-between px-3 pb-2 pt-4 text-center text-xs text-muted-foreground md:px-6 md:text-sm">
-      <p className="text-left">
+    <footer className="mt-auto flex w-full flex-col items-center gap-2 px-3 pb-3 pt-4 text-center text-xs text-muted-foreground md:flex-row md:items-end md:justify-between md:gap-0 md:px-6 md:text-sm">
+      <p className="text-center md:text-left">
         © {copyrightYears}{" "}
         <a
           href="https://charliedevs.com"
@@ -22,25 +22,16 @@ export function Footer() {
           Charlie Davis
         </a>
       </p>
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 md:justify-end">
         <a
           href="https://github.com/charliedevs/conlang-dictionary"
           target="_blank"
-          className="flex items-center gap-1 hover:underline hover:opacity-85"
+          className="flex items-center gap-1 whitespace-nowrap hover:underline hover:opacity-85"
         >
           <Github className="h-4 w-4" />
           <span className="sr-only md:not-sr-only">View source code on </span>
           GitHub
         </a>
-        |
-        <a
-          href="https://github.com/charliedevs/conlang-dictionary/issues"
-          target="_blank"
-          className="hover:underline hover:opacity-85"
-        >
-          Report an issue
-        </a>
-        |
         <FeedbackDialog />
       </div>
     </footer>

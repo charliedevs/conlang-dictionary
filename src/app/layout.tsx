@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
+import { type Viewport } from "next";
 import { Inter, Noto_Sans } from "next/font/google";
 
 import { cn } from "~/lib/utils";
@@ -27,6 +28,13 @@ export const metadata = {
   title: "Conlang Dictionary",
   description: "Store and share your conlangs",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Make sure mobile drawers resize correctly to leave room for on-screen keyboards
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
