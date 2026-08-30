@@ -1,6 +1,7 @@
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
+import { filterWordsInCategory } from "~/lib/lexical-categories/membership";
 import {
   getLexicalCategoriesForConlang,
   getWordsByConlangId,
@@ -25,14 +26,7 @@ export async function LexicalCategoryView(props: LexicalCategoryViewProps) {
     return <div>Category not found</div>;
   }
 
-  const wordsInCategory = words.filter((word) =>
-    word.lexicalSections.some(
-      (section) =>
-        section.sectionType === "definition" &&
-        (section.properties as { lexicalCategoryId?: number })
-          ?.lexicalCategoryId === props.categoryId,
-    ),
-  );
+  const wordsInCategory = filterWordsInCategory(words, props.categoryId);
 
   const params = new URLSearchParams(props.searchParams);
   params.delete("category");

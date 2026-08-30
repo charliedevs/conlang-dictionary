@@ -3,6 +3,7 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 
 import { and, eq } from "drizzle-orm";
+import { countWordsByCategory } from "~/lib/lexical-categories/membership";
 import { parseLexicalSection } from "~/types/parseLexicalSection";
 import { type TagColor, type TagType } from "~/types/tag";
 import analyticsServerClient from "./analytics";
@@ -318,6 +319,7 @@ export async function getLexicalCategoriesForConlang(conlangId: number) {
 export async function getLexicalCategoryWordCounts(conlangId: number) {
   const words = await db.query.words.findMany({
     where: (model, { eq }) => eq(model.conlangId, conlangId),
+    columns: { id: true },
     with: {
       lexicalSections: {
         where: (model, { eq }) => eq(model.sectionType, "definition"),
@@ -325,27 +327,12 @@ export async function getLexicalCategoryWordCounts(conlangId: number) {
     },
   });
 
-  const categoryCounts = new Map<number, Set<number>>();
-
-  for (const word of words) {
-    for (const section of word.lexicalSections) {
-      const properties = section.properties as { lexicalCategoryId?: number };
-      if (properties.lexicalCategoryId) {
-        if (!categoryCounts.has(properties.lexicalCategoryId)) {
-          categoryCounts.set(properties.lexicalCategoryId, new Set());
-        }
-        categoryCounts.get(properties.lexicalCategoryId)?.add(word.id);
-      }
-    }
-  }
-
-  // Convert Sets to counts
-  const counts = new Map<number, number>();
-  for (const [categoryId, wordIds] of categoryCounts) {
-    counts.set(categoryId, wordIds.size);
-  }
-
-  return counts;
+  return countWordsByCategory(
+    words.map((word) => ({
+      id: word.id,
+      lexicalSections: word.lexicalSections.map(parseLexicalSection),
+    })),
+  );
 }
 // #endregion
 
