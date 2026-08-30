@@ -249,17 +249,40 @@ backfill reproducible from a file rather than dependent on Clerk being reachable
 
 ---
 
-### Task 2.2: Schema proposal — **ASK FIRST** (CLAUDE.md: out of scope without approval)
-- [ ] Present the exact `schema.ts` diff before touching anything
-- [ ] New `users` table: `id` uuid PK, `clerkUserId` varchar unique nullable, `email`, `emailVerified`, `username`, `displayName`, `imageUrl`, `createdAt`, `updatedAt`
-- [ ] Indexes on `clerkUserId` and `lower(email)`
-- [ ] Expand-phase nullable uuid FKs: `conlangs.ownerUserId`, `lexicalCategories.ownerUserId`, `tags.createdByUserId`, `feedback.submittedByUserId`
-- [ ] **No column drops. No column retypes.** Old columns stay populated and untouched
-- [ ] `db:push` against `test_` only — approval required
+### Task 2.2: Schema proposal ✅ (approved and applied to `test_` only)
+- [x] Exact diff presented and approved before editing `src/server/db/schema.ts`
+- [x] New `users` table: `id` uuid PK, `clerkUserId` varchar **unique, nullable**, `email`
+      varchar(320) **NOT NULL**, `emailVerified`, `username`, `displayName`, `imageUrl`, timestamps
+- [x] Indexes on `clerkUserId` and on `lower(email)` — the latter matches how `resolveUser`
+      compares, so a plain index would never be used
+- [x] Additive nullable uuid FKs: `conlang.ownerUserId`, `lexicalCategories.ownerUserId`,
+      `tag.createdByUserId`, `feedback.submittedByUserId`
+- [x] **No drops, no retypes.** Every pre-existing Clerk-id column keeps its data as recovery evidence
+- [x] `db:push` run against `TABLE_PREFIX=test_conlang-dictionary_` only
+
+**Decision (user, mid-task): `email` is `NOT NULL`.** The first push had it nullable to accommodate
+the single legacy Apple account with no address. That shapes the schema around dead data, so it was
+changed and re-pushed. Consequence: that account gets no `users` row and its conlang stays unmapped
+— accepted deliberately, and Phase 5 now covers decommissioning it.
+
+*Risk accepted:* a future sign-in yielding no email would now hard-fail at account creation rather
+than degrade. Empirically safe — Apple was the only provider producing a null email, all 27
+GitHub-only users have one, and email-code sign-in has one by definition. `getCurrentUser()`
+(Task 2.4) will fail loudly with a logged error rather than surfacing a raw constraint violation.
+
+**Also reworked (driven by the NOT NULL decision):** `toUserRecord` now returns a discriminated
+`{ ok: true, record } | { ok: false, clerkUserId, problems }` instead of a record with a nullable
+email. A record the schema cannot accept is reported and skipped rather than aborting the whole
+backfill transaction on a constraint violation. All problems are reported at once, not just the first.
 
 **Verification:**
-- [ ] Review the generated SQL before pushing; confirm additive-only
-- [ ] `npm run db:studio` shows the new table and columns under the `test_` prefix
+- [x] `information_schema` confirms `test_` has the `user` table (9 columns) and all four FK columns
+- [x] `email` is `NOT NULL`, `clerkUserId` is nullable
+- [x] **Production untouched** — no `conlang-dictionary_user` table, none of the four columns
+      present, all 611 production conlangs still holding `ownerId`
+- [x] Re-validated against the real snapshot: **477 accepted, 1 rejected** (`email is missing`,
+      the known account)
+- [x] `npm test` 166 pass · lint clean · `tsc --noEmit` clean · `npm run build` succeeds
 
 **Dependencies:** Task 2.1
 
@@ -370,3 +393,42 @@ backfill reproducible from a file rather than dependent on Clerk being reachable
 - [ ] `/admin` still gated
 - [ ] Sign-in emails no longer prefixed "development"
 - [ ] Audit still clean; dev instance untouched
+
+---
+
+## Phase 5 — Decommission dead accounts *(after cutover)*
+
+**Depends on:** Phase 4 complete and soaked. Deliberately last: the orphaned rows are recovery
+evidence, and deleting them before the cutover is proven would destroy the audit trail that shows
+who owned what.
+
+The audit already identifies the dead population precisely:
+
+| Category | Count | Detail |
+|---|---|---|
+| Clerk accounts deleted, conlang left behind | 7 | 1 conlang each, 0–2 words: `Poltese`, `test lang`, `Mafcadian`, `Basseterre`, `deleted`, `Landes`, `Pfaaqlan` (public) |
+| Live account with no email, unreachable after Apple is dropped | 1 | `user_2v84exbI7p1g5lWuXJeEdtYfaIC` — owns `Izaras` (1 word, private, last sign-in 2025-04-01) |
+| Accounts owning no conlang at all | 39 | Harmless; listed for completeness |
+
+`users.email` is `NOT NULL` precisely so the schema is not shaped around this population.
+
+### Tasks
+- [ ] **5.1** Define "dead" as a written rule — deleted-from-Clerk is unambiguous; decide separately
+      whether prolonged inactivity counts, and if so what the threshold is and whether a warning
+      email is sent first
+- [ ] **5.2** Extend `scripts/audit-users.ts` with a `--dead` report listing every candidate and the
+      exact conlangs, words, and lexical sections that would be destroyed
+- [ ] **5.3** Take a full logical backup of the affected rows to `./backups/` **before** deleting
+      anything — this is irreversible and there is no migration history to roll back through
+- [ ] **5.4** Decide the disposition of orphaned *public* conlangs (`Pfaaqlan` is public and would
+      disappear from the homepage showcase) — delete, or reassign to a tombstone owner
+- [ ] **5.5** Delete in dependency order (lexical sections → words → lexical categories → conlang →
+      user), inside a transaction, on `test_` first
+- [ ] **5.6** Re-run the audit; confirm zero orphans and that no live user lost anything
+
+### Boundaries
+- **Never** delete without an explicit, separate approval naming the exact rows — this is the one
+  genuinely irreversible operation in the whole plan and `git revert` cannot undo it.
+- **Never** run 5.5 against production before it has run clean against `test_`.
+- Deleting a Clerk account is **out of scope** — Clerk is not the source of truth for conlangs, and
+  the development instance stays intact for 90 days regardless.

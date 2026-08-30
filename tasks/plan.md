@@ -212,3 +212,42 @@ Manual fallback: `users` holds email + old Clerk ID, so any unmatched user is on
 ---
 
 *(Supersedes the completed Anonymous Feedback Form plan, archived as `tasks/plan-anonymous-feedback-form.md`. Its two unchecked items were environment blockers, not outstanding work: the Resend send was later confirmed working, and the Upstash DNS failure is carried forward under Open Items above.)*
+
+---
+
+## Phase 5 — Decommission dead accounts *(after cutover)*
+
+**Depends on:** Phase 4 complete and soaked. Deliberately last: the orphaned rows are recovery
+evidence, and deleting them before the cutover is proven would destroy the audit trail that shows
+who owned what.
+
+The audit already identifies the dead population precisely:
+
+| Category | Count | Detail |
+|---|---|---|
+| Clerk accounts deleted, conlang left behind | 7 | 1 conlang each, 0–2 words: `Poltese`, `test lang`, `Mafcadian`, `Basseterre`, `deleted`, `Landes`, `Pfaaqlan` (public) |
+| Live account with no email, unreachable after Apple is dropped | 1 | `user_2v84exbI7p1g5lWuXJeEdtYfaIC` — owns `Izaras` (1 word, private, last sign-in 2025-04-01) |
+| Accounts owning no conlang at all | 39 | Harmless; listed for completeness |
+
+`users.email` is `NOT NULL` precisely so the schema is not shaped around this population.
+
+### Tasks
+- [ ] **5.1** Define "dead" as a written rule — deleted-from-Clerk is unambiguous; decide separately
+      whether prolonged inactivity counts, and if so what the threshold is and whether a warning
+      email is sent first
+- [ ] **5.2** Extend `scripts/audit-users.ts` with a `--dead` report listing every candidate and the
+      exact conlangs, words, and lexical sections that would be destroyed
+- [ ] **5.3** Take a full logical backup of the affected rows to `./backups/` **before** deleting
+      anything — this is irreversible and there is no migration history to roll back through
+- [ ] **5.4** Decide the disposition of orphaned *public* conlangs (`Pfaaqlan` is public and would
+      disappear from the homepage showcase) — delete, or reassign to a tombstone owner
+- [ ] **5.5** Delete in dependency order (lexical sections → words → lexical categories → conlang →
+      user), inside a transaction, on `test_` first
+- [ ] **5.6** Re-run the audit; confirm zero orphans and that no live user lost anything
+
+### Boundaries
+- **Never** delete without an explicit, separate approval naming the exact rows — this is the one
+  genuinely irreversible operation in the whole plan and `git revert` cannot undo it.
+- **Never** run 5.5 against production before it has run clean against `test_`.
+- Deleting a Clerk account is **out of scope** — Clerk is not the source of truth for conlangs, and
+  the development instance stays intact for 90 days regardless.
