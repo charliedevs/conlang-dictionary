@@ -95,6 +95,8 @@ export async function createConlang(
       conlangIsPublic: conlang[0].isPublic,
     },
   });
+
+  return conlang[0];
 }
 
 export async function updateConlang(
@@ -120,6 +122,8 @@ export async function updateConlang(
     .returning();
 
   if (!conlang[0]) throw new Error("Conlang not updated");
+
+  return conlang[0];
 }
 
 export async function deleteConlang(id: number) {

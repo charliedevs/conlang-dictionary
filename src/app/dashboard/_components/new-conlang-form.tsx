@@ -37,7 +37,13 @@ const formSchema = z.object({
   isPublic: z.boolean().default(false),
 });
 
-export function NewConlangForm() {
+export function NewConlangForm({
+  title = "Create a new conlang:",
+  isFirstConlang = false,
+}: {
+  title?: string | null;
+  isFirstConlang?: boolean;
+}) {
   // Use react-hook-form to handle form submission with zod for validation
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,11 +81,19 @@ export function NewConlangForm() {
         }
         return res.json();
       })
-      .then(() => {
+      .then((data: { conlang?: { id: number } }) => {
         form.reset();
-        toast.success("Congratulations! Your conlang has been created.");
-        router.push("/dashboard");
-        router.refresh();
+        const conlangId = data?.conlang?.id;
+        if (isFirstConlang && conlangId) {
+          toast.success(
+            `${values.emoji ?? "🎉"} ${values.name} is born — time to start building its lexicon!`,
+          );
+          router.push(`/lang/${conlangId}`);
+        } else {
+          toast.success("Congratulations! Your conlang has been created.");
+          router.push("/dashboard");
+          router.refresh();
+        }
       })
       .catch((err) => {
         console.error("Error:", err);
@@ -102,9 +116,9 @@ export function NewConlangForm() {
 
   return (
     <div className="my-10 flex flex-col justify-center">
-      <h1 className="mb-5 text-start text-3xl font-bold">
-        Create a new conlang:
-      </h1>
+      {title && (
+        <h2 className="mb-5 text-start text-3xl font-bold">{title}</h2>
+      )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
