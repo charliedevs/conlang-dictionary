@@ -1,4 +1,5 @@
 import { InboxIcon } from "lucide-react";
+import { definitionSnippet } from "~/lib/lexical-categories/definition-snippet";
 import { filterWordsInCategory } from "~/lib/lexical-categories/membership";
 import {
   getLexicalCategoriesForConlang,
@@ -84,6 +85,7 @@ export async function LexicalCategoryView(props: LexicalCategoryViewProps) {
                 href={`/lang/${props.conlang.id}/?${wordParams.toString()}`}
                 label={word.text}
                 labelClassName="font-unicode"
+                hint={definitionSnippet(word, props.categoryId)}
                 ariaLabel={`Open ${word.text} in the Lexicon`}
               />
             );

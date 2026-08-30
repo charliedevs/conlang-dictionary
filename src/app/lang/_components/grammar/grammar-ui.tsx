@@ -65,7 +65,10 @@ export function ListPanel(props: { children: ReactNode; className?: string }) {
 export function RowLink(props: {
   href: string;
   label: ReactNode;
+  /** Secondary line rendered beneath the label. */
   secondary?: ReactNode;
+  /** Muted gloss rendered inline to the right of the label; truncates. */
+  hint?: ReactNode;
   meta?: ReactNode;
   labelClassName?: string;
   ariaLabel?: string;
@@ -76,21 +79,37 @@ export function RowLink(props: {
       aria-label={props.ariaLabel}
       className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-accent/50 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
     >
-      <span className="min-w-0 flex-1">
-        <span
-          className={cn(
-            "block truncate text-sm font-medium",
-            props.labelClassName,
-          )}
-        >
-          {props.label}
-        </span>
-        {props.secondary && (
-          <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-            {props.secondary}
+      {props.hint ? (
+        <span className="flex min-w-0 flex-1 items-baseline gap-2">
+          <span
+            className={cn(
+              "max-w-[60%] shrink-0 truncate text-sm font-medium",
+              props.labelClassName,
+            )}
+          >
+            {props.label}
           </span>
-        )}
-      </span>
+          <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+            {props.hint}
+          </span>
+        </span>
+      ) : (
+        <span className="min-w-0 flex-1">
+          <span
+            className={cn(
+              "block truncate text-sm font-medium",
+              props.labelClassName,
+            )}
+          >
+            {props.label}
+          </span>
+          {props.secondary && (
+            <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+              {props.secondary}
+            </span>
+          )}
+        </span>
+      )}
       {props.meta && (
         <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
           {props.meta}
