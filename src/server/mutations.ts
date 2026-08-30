@@ -18,6 +18,7 @@ import type {
 import { db } from "./db";
 import {
   conlangs,
+  feedback,
   lexicalCategories,
   lexicalSections,
   tags,
@@ -293,3 +294,30 @@ export async function importConlang(input: {
 }
 
 // #endregion Import
+
+// #region Feedback
+
+export interface FeedbackInsert {
+  type: "bug" | "idea" | "other";
+  message: string;
+  contactEmail?: string;
+  /** Attached opportunistically when the submitter happens to be signed in; feedback itself requires no auth. */
+  userId?: string | null;
+}
+
+export async function insertFeedback(input: FeedbackInsert) {
+  return await insertOneOrThrow(
+    db
+      .insert(feedback)
+      .values({
+        type: input.type,
+        message: input.message,
+        contactEmail: input.contactEmail ? input.contactEmail : null,
+        userId: input.userId ?? null,
+      })
+      .returning(),
+    "Failed to save feedback",
+  );
+}
+
+// #endregion Feedback

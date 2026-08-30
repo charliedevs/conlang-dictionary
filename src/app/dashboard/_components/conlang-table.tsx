@@ -140,7 +140,7 @@ export function ConlangTable(props: {
         accessorKey: "description",
         header: "Description",
         cell: ({ row }) => (
-          <div className="text-xs text-muted-foreground">
+          <div className="line-clamp-2 text-xs text-muted-foreground">
             {row.original.description}
           </div>
         ),

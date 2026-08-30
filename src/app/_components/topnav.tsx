@@ -10,31 +10,31 @@ import { SearchForm } from "./search-form";
 export function TopNav() {
   return (
     <nav
-      className="sticky top-0 z-50 flex w-full items-center justify-between border-b bg-background p-2 md:p-4"
+      className="sticky top-0 z-50 flex w-full items-center justify-between gap-3 border-b bg-background p-2 md:p-4"
       aria-label="Global navigation"
     >
       <div
         id="header-left"
-        className="flex items-center justify-between gap-2 md:w-auto md:gap-4"
+        className="flex min-w-0 items-center gap-2 md:w-auto md:gap-4"
       >
-        <Link href="/" title="Go to homepage">
+        <Link href="/" title="Go to homepage" className="shrink-0">
           <Image
             src="/images/conlang_dictionary_upscale.png"
             alt="Conlang Flag Logo"
             width={96}
             height={96}
-            className="size-9 rounded-full opacity-100 outline outline-1 hover:opacity-95 dark:outline-slate-200 md:size-12"
+            className="size-9 rounded-full opacity-100 outline outline-1 outline-border hover:opacity-95 md:size-12"
           />
         </Link>
         <Link
           href="/"
-          className="text-sm font-bold hover:text-slate-700 dark:hover:text-slate-200 sm:text-xl"
+          className="truncate text-sm font-bold hover:text-foreground/70 sm:text-xl"
         >
           Conlang Dictionary
         </Link>
       </div>
-      <div id="header-right" className="flex items-center gap-4">
-        <div className="flex flex-grow flex-row items-center justify-end gap-4">
+      <div id="header-right" className="flex shrink-0 items-center gap-4">
+        <div className="flex flex-grow flex-row items-center justify-end gap-2 md:gap-4">
           <div className="hidden md:block">
             <SearchForm className="w-full max-w-sm" />
           </div>

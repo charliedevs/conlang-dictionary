@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import { getUsers } from "~/hooks/data/useUsers";
 import { getMyConlangs } from "~/server/queries";
 import { ConlangTable } from "./_components/conlang-table";
+import { EmptyDashboardState } from "./_components/empty-dashboard-state";
 import { ImportConlangDialog } from "./_components/import-conlang-dialog";
 import { NewConlangForm } from "./_components/new-conlang-form";
 
@@ -38,10 +39,8 @@ export default async function DashboardPage() {
       <h1 className="w-full text-start text-3xl font-medium">Dashboard</h1>
       {conlangs.length === 0 ? (
         <div className="flex w-full flex-col items-center gap-4">
-          <div className="flex justify-center">
-            <ImportConlangDialog />
-          </div>
-          <NewConlangForm />
+          <EmptyDashboardState />
+          <NewConlangForm title={null} isFirstConlang />
         </div>
       ) : (
         <div
@@ -52,7 +51,8 @@ export default async function DashboardPage() {
             <div className="mx-1 flex flex-col gap-1">
               <h2 className="text-xl font-medium">My conlangs</h2>
               <p className="text-sm text-muted-foreground">
-                View and manage your languages here.
+                View and manage your {conlangs.length}{" "}
+                {conlangs.length === 1 ? "language" : "languages"} here.
               </p>
             </div>
             <div className="flex w-full flex-wrap gap-2 sm:w-auto">

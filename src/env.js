@@ -12,6 +12,8 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     TABLE_PREFIX: z.string(),
+    RESEND_API_KEY: z.string().optional(),
+    FEEDBACK_NOTIFY_EMAIL: z.string().email().optional(),
   },
 
   /**
@@ -31,6 +33,8 @@ export const env = createEnv({
     POSTGRES_URL: process.env.POSTGRES_URL,
     NODE_ENV: process.env.NODE_ENV,
     TABLE_PREFIX: process.env.TABLE_PREFIX,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    FEEDBACK_NOTIFY_EMAIL: process.env.FEEDBACK_NOTIFY_EMAIL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

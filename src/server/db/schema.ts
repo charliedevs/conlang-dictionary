@@ -248,3 +248,16 @@ export const lexicalSectionsRelations = relations(
     }),
   }),
 );
+
+// Feedback
+export const feedbackType = pgEnum("feedbackType", ["bug", "idea", "other"]);
+export const feedback = createTable("feedback", {
+  id: serial("id").primaryKey(),
+  type: feedbackType("type").notNull(),
+  message: text("message").notNull(),
+  contactEmail: varchar("contactEmail", { length: 256 }),
+  userId: varchar("userId", { length: 256 }),
+  createdAt: timestamp("createdAt")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});

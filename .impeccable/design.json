@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-29T22:11:16Z",
+  "title": "Design System: Conlang Dictionary",
+  "extensions": {
+    "colorMeta": {
+      "signal-orange": {
+        "role": "primary",
+        "displayName": "Signal Orange",
+        "canonical": "hsl(20, 100%, 50%)",
+        "tonalRamp": ["hsl(20,100%,12%)", "hsl(20,100%,24%)", "hsl(20,100%,36%)", "hsl(20,100%,48%)", "hsl(20,95%,60%)", "hsl(20,85%,72%)", "hsl(20,75%,84%)", "hsl(20,65%,95%)"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "hsl(210, 40%, 98%)",
+        "tonalRamp": ["hsl(210,40%,12%)", "hsl(210,40%,24%)", "hsl(210,40%,36%)", "hsl(210,40%,48%)", "hsl(210,40%,60%)", "hsl(210,40%,72%)", "hsl(210,40%,86%)", "hsl(210,40%,98%)"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "hsl(222.2, 47.4%, 11.2%)",
+        "tonalRamp": ["hsl(222.2,47.4%,8%)", "hsl(222.2,47.4%,20%)", "hsl(222.2,47.4%,32%)", "hsl(222.2,47.4%,44%)", "hsl(222.2,47.4%,56%)", "hsl(222.2,47.4%,68%)", "hsl(222.2,47.4%,80%)", "hsl(222.2,47.4%,92%)"]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "hsl(0, 0%, 100%)",
+        "tonalRamp": ["hsl(0,0%,10%)", "hsl(0,0%,22%)", "hsl(0,0%,34%)", "hsl(0,0%,46%)", "hsl(0,0%,58%)", "hsl(0,0%,70%)", "hsl(0,0%,85%)", "hsl(0,0%,100%)"]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "hsl(210, 40%, 96.1%)",
+        "tonalRamp": ["hsl(210,40%,12%)", "hsl(210,40%,24%)", "hsl(210,40%,36%)", "hsl(210,40%,48%)", "hsl(210,40%,60%)", "hsl(210,40%,72%)", "hsl(210,40%,84%)", "hsl(210,40%,96.1%)"]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "hsl(215.4, 16.3%, 46.9%)",
+        "tonalRamp": ["hsl(215.4,16.3%,10%)", "hsl(215.4,16.3%,22%)", "hsl(215.4,16.3%,34%)", "hsl(215.4,16.3%,46.9%)", "hsl(215.4,16.3%,58%)", "hsl(215.4,16.3%,70%)", "hsl(215.4,16.3%,82%)", "hsl(215.4,16.3%,94%)"]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "hsl(214.3, 31.8%, 91.4%)",
+        "tonalRamp": ["hsl(214.3,31.8%,12%)", "hsl(214.3,31.8%,24%)", "hsl(214.3,31.8%,36%)", "hsl(214.3,31.8%,48%)", "hsl(214.3,31.8%,60%)", "hsl(214.3,31.8%,72%)", "hsl(214.3,31.8%,84%)", "hsl(214.3,31.8%,91.4%)"]
+      },
+      "alarm": {
+        "role": "semantic",
+        "displayName": "Alarm",
+        "canonical": "hsl(0, 84.2%, 60.2%)",
+        "tonalRamp": ["hsl(0,84.2%,12%)", "hsl(0,84.2%,24%)", "hsl(0,84.2%,36%)", "hsl(0,84.2%,48%)", "hsl(0,84.2%,60.2%)", "hsl(0,75%,72%)", "hsl(0,65%,84%)", "hsl(0,55%,95%)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Homepage hero headline only." },
+      "title": { "displayName": "Title", "purpose": "Section and entity titles (word headwords, dashboard headers)." },
+      "body": { "displayName": "Body", "purpose": "Default UI text: tables, forms, nav, most copy." },
+      "label": { "displayName": "Label", "purpose": "Metadata, badge text, footer links, result counts." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "accordion", "value": "0.2s ease-out", "purpose": "Radix accordion/collapsible expand and collapse." },
+      { "name": "indeterminate-progress", "value": "1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite", "purpose": "Indeterminate loading-bar sweep." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1400px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default/primary action button — inverted-ink fill, used for the main action on a screen.",
+      "html": "<button class=\"ds-btn-primary\">Save Changes</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 2.5rem; padding: 0.5rem 1rem; border: none; border-radius: 6px; background: hsl(222.2, 47.4%, 11.2%); color: hsl(210, 40%, 98%); font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; white-space: nowrap; transition: background-color 0.15s ease; } .ds-btn-primary:hover { background: hsla(222.2, 47.4%, 11.2%, 0.9); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(210,40%,98%), 0 0 0 4px hsl(222.2, 84%, 4.9%); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary-weight action — bordered, paper background.",
+      "html": "<button class=\"ds-btn-outline\">Sign in</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 2.5rem; padding: 0.5rem 1rem; border: 1px solid hsl(214.3, 31.8%, 91.4%); border-radius: 6px; background: hsl(210, 40%, 98%); color: hsl(222.2, 47.4%, 11.2%); font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; transition: background-color 0.15s ease; } .ds-btn-outline:hover { background: hsl(210, 40%, 96.1%); } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(210,40%,98%), 0 0 0 4px hsl(222.2, 84%, 4.9%); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Low-emphasis inline action, e.g. \"Edit\" beside a word headword.",
+      "html": "<button class=\"ds-btn-ghost\">Edit</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; height: 2rem; padding: 0 0.75rem; border: none; border-radius: 6px; background: transparent; color: hsl(222.2, 47.4%, 11.2%); font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; transition: background-color 0.15s ease; } .ds-btn-ghost:hover { background: hsl(210, 40%, 96.1%); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Default text field, with optional trailing icon slot (used for the site search box).",
+      "html": "<div class=\"ds-input-wrap\"><input class=\"ds-input\" type=\"text\" placeholder=\"Search words...\" /></div>",
+      "css": ".ds-input-wrap { position: relative; display: flex; align-items: center; width: 100%; } .ds-input { width: 100%; height: 2.5rem; padding: 0.5rem 0.75rem; border: 1px solid hsl(214.3, 31.8%, 91.4%); border-radius: 6px; background: hsl(210, 40%, 98%); color: hsl(222.2, 47.4%, 11.2%); font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; } .ds-input::placeholder { color: hsl(215.4, 16.3%, 46.9%); } .ds-input:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(210,40%,98%), 0 0 0 4px hsl(222.2, 84%, 4.9%); }"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sticky global nav: circular logo mark + wordmark, search, auth state.",
+      "html": "<nav class=\"ds-nav\"><div class=\"ds-nav-brand\"><span class=\"ds-nav-mark\"></span><span class=\"ds-nav-word\">Conlang Dictionary</span></div><div class=\"ds-nav-actions\"><button class=\"ds-btn-outline\">Sign in</button></div></nav>",
+      "css": ".ds-nav { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.5rem 1rem; background: hsl(210, 40%, 98%); border-bottom: 1px solid hsl(214.3, 31.8%, 91.4%); } .ds-nav-brand { display: flex; align-items: center; gap: 0.5rem; } .ds-nav-mark { display: inline-block; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: hsl(210, 40%, 96.1%); outline: 1px solid hsl(214.3, 31.8%, 91.4%); } .ds-nav-word { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 0.875rem; color: hsl(222.2, 47.4%, 11.2%); } .ds-nav-actions { display: flex; align-items: center; gap: 1rem; } .ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 2.5rem; padding: 0.5rem 1rem; border: 1px solid hsl(214.3, 31.8%, 91.4%); border-radius: 6px; background: hsl(210, 40%, 98%); color: hsl(222.2, 47.4%, 11.2%); font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; }"
+    },
+    {
+      "name": "Feature Tile",
+      "kind": "card",
+      "refersTo": "feature-tile",
+      "description": "Signature homepage component — icon-led promo tile on a Mist background, used for the feature grid.",
+      "html": "<div class=\"ds-tile\"><div class=\"ds-tile-icon\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" width=\"24\" height=\"24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25\"/></svg></div><h3 class=\"ds-tile-title\">Grow Your Dictionary</h3><p class=\"ds-tile-body\">Build your language's lexicon, grammar, and phonological inventory.</p></div>",
+      "css": ".ds-tile { border-radius: 12px; background: hsl(210, 40%, 96.1%); padding: 1.5rem; } .ds-tile-icon { margin-bottom: 1rem; height: 3rem; width: 3rem; border-radius: 8px; background: hsl(0, 0%, 100%); padding: 0.5rem; color: hsla(20, 100%, 50%, 0.8); } .ds-tile-title { margin-bottom: 1rem; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 1rem; font-weight: 600; color: hsl(222.2, 47.4%, 11.2%); } .ds-tile-body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em; color: hsl(215.4, 16.3%, 46.9%); }"
+    },
+    {
+      "name": "Notice Banner",
+      "kind": "custom",
+      "refersTo": "notice-banner",
+      "description": "Dismissible in-product alert — currently the only semantic-color usage outside the token system (raw Tailwind yellow).",
+      "html": "<div class=\"ds-notice\"><span class=\"ds-notice-text\"><strong>Notice:</strong> Word sections were recently updated.</span><button class=\"ds-notice-dismiss\">Dismiss</button></div>",
+      "css": ".ds-notice { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border-radius: 6px; border: 1px solid #fde68a; background: #fefce8; color: #713f12; padding: 1rem; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; } .ds-notice-dismiss { border: 1px solid #fde68a; border-radius: 6px; background: #fef9c3; color: #713f12; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Modern Reference Shelf",
+    "overview": "Conlang Dictionary reads as the reference work it's trying to become: the structural seriousness of Wiktionary — categorized definitions, pronunciation, etymology, custom fields, all per word — rebuilt for a screen a hobbyist actually wants to open on their phone. The system is quiet by design: a near-monochrome slate-and-paper surface carries almost all of the interface, so that the one saturated color in the whole app — Signal Orange — reads as a mark, not decoration. Nothing about the visual language claims more finish than the product has; this is an honest early-alpha reference tool, not a polished consumer product wearing a Wiktionary costume.\n\nMobile-first is structural, not cosmetic: the top nav collapses its search field into an icon button under `md`, the homepage feature grid drops from three columns to one, and layout decisions default to stacking before they default to arranging side-by-side.",
+    "keyCharacteristics": [
+      "Cool, low-saturation slate/paper neutrals carry ~95% of every screen",
+      "One warm, saturated accent (Signal Orange) used only for brand marks and rare emphasis — never for general UI chrome",
+      "Flat surfaces, hairline borders instead of shadows — depth comes from background-color steps (paper → mist → ink), not elevation",
+      "Heroicons-style 1.5px outline icons for editorial/marketing content, Lucide icons for functional UI controls",
+      "Mobile-first responsive rules throughout, not a desktop layout patched down"
+    ],
+    "rules": [
+      { "name": "The One Mark Rule", "body": "Signal Orange appears in at most one or two places per screen — a wordmark, a single banner tint. If a screen has more than one orange element competing for attention, that's a violation, not a stylistic choice.", "section": "colors" }
+    ],
+    "dos": [
+      "Do keep Signal Orange to one or two touches per screen (see The One Mark Rule).",
+      "Do default new layouts to stacked/mobile behavior first, then widen — this product's mobile-first commitment is a product principle, not just a media query habit.",
+      "Do use background-color steps (Paper/Mist/Surface/Ink) to convey grouping and depth before reaching for a shadow.",
+      "Do keep marketing/editorial icon needs on the hand-authored Heroicons-outline set, and functional UI icon needs on Lucide."
+    ],
+    "donts": [
+      "Don't use Signal Orange as a general interactive color (links, buttons, active states) — it is a brand mark, not a UI accent.",
+      "Don't add drop shadows reflexively; the system is currently flat by (unconfirmed) default — introducing elevation is a deliberate design decision for a future pass, not a one-off.",
+      "Don't present incomplete or \"coming soon\" functionality (e.g. rule enforcement, inflection generation) with the same visual finish as shipped features — the product is genuinely early-alpha and the UI shouldn't oversell it.",
+      "Don't invent a second semantic-alert color family beyond Alarm; fold the existing yellow-notice pattern into the token system rather than adding a third ad hoc one."
+    ]
+  }
+}
