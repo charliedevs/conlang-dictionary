@@ -14,15 +14,20 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import {
+  CUSTOM_FIELD_KEY_MAX_LENGTH,
+  CUSTOM_FIELD_VALUE_MAX_LENGTH,
+  SECTION_TITLE_MAX_LENGTH,
+} from "~/lib/form-limits";
 import { type Word } from "~/types/word";
 
 const customFieldSchema = z.object({
-  key: z.string().min(1, "Key required"),
-  value: z.string(),
+  key: z.string().min(1, "Key required").max(CUSTOM_FIELD_KEY_MAX_LENGTH),
+  value: z.string().max(CUSTOM_FIELD_VALUE_MAX_LENGTH),
 });
 
 const customFieldsSectionProps = z.object({
-  title: z.string().optional(),
+  title: z.string().max(SECTION_TITLE_MAX_LENGTH).optional(),
   customFields: z.array(customFieldSchema),
 });
 
@@ -98,6 +103,7 @@ export function CustomFieldsSectionForm({
                 <Input
                   {...field}
                   placeholder="e.g. Extra Info"
+                  maxLength={SECTION_TITLE_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>
@@ -119,6 +125,7 @@ export function CustomFieldsSectionForm({
                         {...field}
                         list={`key-suggestions-${idx}`}
                         placeholder="Field name"
+                        maxLength={CUSTOM_FIELD_KEY_MAX_LENGTH}
                         disabled={disabled}
                       />
                     </FormControl>
@@ -138,7 +145,12 @@ export function CustomFieldsSectionForm({
                   <FormItem className="flex-1">
                     <FormLabel>Value</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" disabled={disabled} />
+                      <Input
+                        {...field}
+                        type="text"
+                        maxLength={CUSTOM_FIELD_VALUE_MAX_LENGTH}
+                        disabled={disabled}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

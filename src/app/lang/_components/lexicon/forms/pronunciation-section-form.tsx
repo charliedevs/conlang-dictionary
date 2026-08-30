@@ -26,22 +26,33 @@ import {
 import { Input } from "~/components/ui/input";
 import { useIPAReaderHealth } from "~/hooks/data/useIPAReaderHealth";
 import useIsMobile from "~/hooks/responsiveness/useIsMobile";
+import {
+  AUDIO_URL_MAX_LENGTH,
+  IPA_LABEL_MAX_LENGTH,
+  IPA_VALUE_MAX_LENGTH,
+  SECTION_RICH_TEXT_MAX_LENGTH,
+  SECTION_TITLE_MAX_LENGTH,
+} from "~/lib/form-limits";
 import { htmlToMarkdown } from "~/lib/strings";
 import { cn, sanitizeHtmlInput } from "~/lib/utils";
 import { type Word } from "~/types/word";
 
 const ipaEntrySchema = z.object({
-  label: z.string().optional(),
-  value: z.string().min(1, "IPA value required").trim(),
+  label: z.string().max(IPA_LABEL_MAX_LENGTH).optional(),
+  value: z
+    .string()
+    .min(1, "IPA value required")
+    .max(IPA_VALUE_MAX_LENGTH)
+    .trim(),
 });
 
 const pronunciationFormProps = z
   .object({
-    title: z.string().optional(),
+    title: z.string().max(SECTION_TITLE_MAX_LENGTH).optional(),
     pronunciationText: z.string().optional().default(""),
     ipaEntries: z.array(ipaEntrySchema).optional(),
     audioUrl: z.union([
-      z.string().trim().url("Invalid URL").optional(),
+      z.string().trim().max(AUDIO_URL_MAX_LENGTH).url("Invalid URL").optional(),
       z.literal(""),
     ]),
     region: z.string().optional(),
@@ -133,6 +144,7 @@ export function PronunciationSectionForm({
                 <Input
                   {...field}
                   placeholder="e.g. Pronunciation"
+                  maxLength={SECTION_TITLE_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>
@@ -160,6 +172,7 @@ export function PronunciationSectionForm({
                     value={field.value}
                     className="min-h-[80px] bg-background"
                     showOrderedList
+                    maxLength={SECTION_RICH_TEXT_MAX_LENGTH}
                     disabled={disabled}
                   />
                 </FormControl>
@@ -189,6 +202,7 @@ export function PronunciationSectionForm({
                           <Input
                             {...field}
                             placeholder={`IPA${idx === 0 ? "" : ` ${idx + 1}`}`}
+                            maxLength={IPA_LABEL_MAX_LENGTH}
                             disabled={disabled}
                           />
                         )}
@@ -212,7 +226,9 @@ export function PronunciationSectionForm({
                           <Input
                             {...field}
                             placeholder="e.g. /ˈmaʊ̯̃ʔn̩/"
+                            maxLength={IPA_VALUE_MAX_LENGTH}
                             disabled={disabled}
+                            className="font-unicode"
                           />
                         )}
                       />
@@ -333,6 +349,7 @@ export function PronunciationSectionForm({
                           {...field}
                           type="url"
                           placeholder="Paste audio file URL"
+                          maxLength={AUDIO_URL_MAX_LENGTH}
                           disabled={disabled}
                         />
                       </FormControl>

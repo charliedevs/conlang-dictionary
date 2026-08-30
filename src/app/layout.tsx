@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
+import { Inter, Noto_Sans } from "next/font/google";
 
 import { cn } from "~/lib/utils";
 import { Toaster } from "../components/ui/sonner";
@@ -18,6 +18,11 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
+const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  variable: "--font-unicode",
+});
+
 export const metadata = {
   title: "Conlang Dictionary",
   description: "Store and share your conlangs",
@@ -32,7 +37,13 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={cn("font-sans antialiased", inter.variable)}>
+        <body
+          className={cn(
+            "font-sans antialiased",
+            inter.variable,
+            notoSans.variable,
+          )}
+        >
           <Providers>
             <div className="flex min-h-screen flex-col ">
               <TopNav />

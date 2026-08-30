@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -17,18 +18,25 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
+import {
+  EXAMPLE_SENTENCE_MAX_LENGTH,
+  SECTION_RICH_TEXT_MAX_LENGTH,
+  SECTION_TITLE_MAX_LENGTH,
+} from "~/lib/form-limits";
 import { htmlToMarkdown } from "~/lib/strings";
 import { sanitizeHtmlInput } from "~/lib/utils";
-import { type Word } from "~/types/word";
+import { type LexicalCategory, type Word } from "~/types/word";
 import { LexicalCategorySelect } from "./lexical-category-select";
 
 export const definitionProps = z.object({
-  title: z.string().optional(),
+  title: z.string().max(SECTION_TITLE_MAX_LENGTH).optional(),
   lexicalCategoryId: z.coerce.number({ invalid_type_error: "Required" }),
   definitionText: z
     .string()
     .refine((val) => val !== "", "Definition cannot be empty"),
-  examples: z.array(z.object({ value: z.string() })).optional(),
+  examples: z
+    .array(z.object({ value: z.string().max(EXAMPLE_SENTENCE_MAX_LENGTH) }))
+    .optional(),
 });
 
 export type DefinitionSectionProperties = z.infer<typeof definitionProps>;
@@ -76,6 +84,7 @@ export function DefinitionSectionForm({
   });
   const [newExample, setNewExample] = useState("");
   const { lexicalCategories } = useLexicalCategories(word.conlangId);
+  const queryClient = useQueryClient();
 
   function handleAddExample() {
     if (newExample.trim() && fields.length < 10) {
@@ -104,23 +113,6 @@ export function DefinitionSectionForm({
       >
         <FormField
           control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Section Title (optional)</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="e.g. Noun, Verb, etc."
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="lexicalCategoryId"
           render={({ field }) => (
             <FormItem>
@@ -132,14 +124,22 @@ export function DefinitionSectionForm({
                   onChange={(val) => {
                     const oldCategoryID = form.getValues("lexicalCategoryId");
                     const newCategoryID = Number(val);
+                    // Read the freshest list from the cache: a just-added
+                    // category isn't in this render's snapshot yet, which would
+                    // otherwise leave the autofilled title blank.
+                    const categories =
+                      queryClient.getQueryData<LexicalCategory[]>([
+                        "lexicalCategories",
+                        word.conlangId,
+                      ]) ??
+                      lexicalCategories.data ??
+                      [];
                     const oldCategory =
-                      lexicalCategories.data?.find(
-                        (c) => c.id === oldCategoryID,
-                      )?.category ?? "";
+                      categories.find((c) => c.id === oldCategoryID)?.category ??
+                      "";
                     const newCategory =
-                      lexicalCategories.data?.find(
-                        (c) => c.id === newCategoryID,
-                      )?.category ?? "";
+                      categories.find((c) => c.id === newCategoryID)?.category ??
+                      "";
                     const currentTitle = form.getValues("title");
 
                     if (!currentTitle || currentTitle == oldCategory) {
@@ -165,6 +165,7 @@ export function DefinitionSectionForm({
                   {...field}
                   className="min-h-[80px] bg-background md:max-h-[400px]"
                   showOrderedList
+                  maxLength={SECTION_RICH_TEXT_MAX_LENGTH}
                   disabled={disabled}
                 />
               </FormControl>
@@ -191,7 +192,9 @@ export function DefinitionSectionForm({
                       handleAddExample();
                     }
                   }}
+                  maxLength={EXAMPLE_SENTENCE_MAX_LENGTH}
                   disabled={disabled || fields.length >= 10}
+                  className="font-unicode"
                 />
                 <Button
                   type="button"
@@ -211,7 +214,12 @@ export function DefinitionSectionForm({
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormControl>
-                            <Input {...field} disabled={disabled} />
+                            <Input
+                              {...field}
+                              maxLength={EXAMPLE_SENTENCE_MAX_LENGTH}
+                              disabled={disabled}
+                              className="font-unicode"
+                            />
                           </FormControl>
                         </FormItem>
                       )}
@@ -230,6 +238,24 @@ export function DefinitionSectionForm({
               </ul>
               <FormMessage />
             </fieldset>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Section Title (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Defaults to the part of speech"
+                  maxLength={SECTION_TITLE_MAX_LENGTH}
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
         <div className="flex justify-end gap-2">

@@ -8,7 +8,7 @@ import {
   ListOrderedIcon,
   StrikethroughIcon,
 } from "lucide-react";
-import { forwardRef, type ReactNode } from "react";
+import { forwardRef, useEffect, useState, type ReactNode } from "react";
 import { cn } from "~/lib/utils";
 import { Separator } from "./ui/separator";
 import { Toggle } from "./ui/toggle";
@@ -20,6 +20,8 @@ interface TextEditorProps {
   customToolbarActions?: ReactNode;
   className?: string;
   disabled?: boolean;
+  /** Caps the plain-text length; blocks further typing/paste past the limit and shows a live count. */
+  maxLength?: number;
 }
 
 export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
@@ -31,6 +33,7 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
       customToolbarActions,
       className,
       disabled = false,
+      maxLength,
     },
     ref,
   ) => {
@@ -38,9 +41,29 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
       editorProps: {
         attributes: {
           class: cn(
-            "min-h-[150px] max-h-[300px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-background px-3 py-2 border-b-0 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
+            "min-h-[150px] max-h-[300px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-background px-3 py-2 border-b-0 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 overflow-auto font-unicode",
             className,
           ),
+        },
+        handleTextInput: (view, from, to, text) => {
+          if (!maxLength) return false;
+          const currentLength = view.state.doc.textContent.length;
+          const nextLength = currentLength - (to - from) + text.length;
+          return nextLength > maxLength;
+        },
+        handlePaste: (view, event) => {
+          if (!maxLength) return false;
+          const pasted = event.clipboardData?.getData("text/plain") ?? "";
+          if (!pasted) return false;
+          const { from, to } = view.state.selection;
+          const currentLength = view.state.doc.textContent.length;
+          const remaining = maxLength - (currentLength - (to - from));
+          if (remaining <= 0) return true;
+          if (pasted.length <= remaining) return false;
+          view.dispatch(
+            view.state.tr.insertText(pasted.slice(0, remaining), from, to),
+          );
+          return true;
         },
       },
       extensions: [
@@ -67,11 +90,16 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
       ],
       content: value,
       onUpdate: ({ editor }) => {
-        const html = editor.getHTML();
-        onChange(html);
+        onChange(editor.getHTML());
+        if (maxLength) setCharCount(editor.getText().length);
       },
       editable: !disabled,
     });
+
+    const [charCount, setCharCount] = useState(0);
+    useEffect(() => {
+      if (editor && maxLength) setCharCount(editor.getText().length);
+    }, [editor, maxLength]);
 
     return (
       <div
@@ -87,6 +115,16 @@ export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
             customToolbarActions={customToolbarActions}
           />
         ) : null}
+        {maxLength && (
+          <div
+            className={cn(
+              "mt-1 text-right text-xs text-muted-foreground",
+              charCount >= maxLength && "text-destructive",
+            )}
+          >
+            {charCount} / {maxLength}
+          </div>
+        )}
       </div>
     );
   },

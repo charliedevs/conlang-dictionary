@@ -21,6 +21,7 @@ const config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
+        unicode: ["var(--font-unicode)", ...fontFamily.sans],
       },
       colors: {
         dictionary: "#ff5600",

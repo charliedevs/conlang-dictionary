@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
+import { LexicalCategorySuggestions } from "../../grammar/lexical-category-suggestions";
 
 export interface LexicalCategorySelectProps {
   conlangId: number;
@@ -58,7 +59,11 @@ export const LexicalCategorySelect = forwardRef<
     <>
       <Select
         value={props.value ? String(props.value) : ""}
-        onValueChange={props.onChange}
+        // Ignore spurious empty-string changes (e.g. Radix firing while the add
+        // dialog closes over the open popover), which would clear the selection.
+        onValueChange={(value) => {
+          if (value) props.onChange(value);
+        }}
         disabled={props.disabled}
       >
         <SelectTrigger
@@ -97,10 +102,7 @@ export const LexicalCategorySelect = forwardRef<
       </Select>
       <DialogDrawer
         open={isAdding}
-        onClose={() => {
-          setIsAdding(false);
-          props.onChange("");
-        }}
+        onClose={() => setIsAdding(false)}
         title="Add Part of Speech"
         content={
           <div className="flex flex-col gap-2 md:gap-4 md:px-2 md:pt-6">
@@ -121,6 +123,20 @@ export const LexicalCategorySelect = forwardRef<
             >
               Save
             </Button>
+            <LexicalCategorySuggestions
+              conlangId={props.conlangId}
+              existing={lexicalCategories.data?.map((c) => c.category) ?? []}
+              onAdded={async (created) => {
+                setIsAdding(false);
+                // Refetch before selecting so the option (and its name, used to
+                // autofill the section title) is available when we select it.
+                await lexicalCategories.refetch();
+                if (created.length === 1 && created[0]) {
+                  props.onChange(created[0].id.toString());
+                }
+              }}
+              className="mt-2"
+            />
           </div>
         }
       />

@@ -83,7 +83,7 @@ export function WordViewEdit(props: { word: Word }) {
               className="hidden h-8 md:flex"
               onClick={handleExitEditMode}
             >
-              <ArrowTurnLeft className="mr-2 size-4" /> Return
+              <ArrowTurnLeft className="mr-2 size-4" /> Done Editing
             </Button>
           )}
         </div>
@@ -136,14 +136,16 @@ export function WordViewEdit(props: { word: Word }) {
         </div>
       )}
       {lexicalSections.length > 0 && (
-        <Button
-          variant="outline"
-          size="lg"
-          className="mb-4 flex h-8 md:mb-0 md:hidden"
-          onClick={handleExitEditMode}
-        >
-          <ArrowTurnLeft className="mr-2 size-4" /> Exit Edit Mode
-        </Button>
+        <div className="sticky bottom-0 -mx-1 mt-2 border-t bg-background/95 px-1 pb-[env(safe-area-inset-bottom)] pt-3 backdrop-blur md:hidden">
+          <Button
+            variant="outline"
+            size="lg"
+            className="flex h-10 w-full"
+            onClick={handleExitEditMode}
+          >
+            <ArrowTurnLeft className="mr-2 size-4" /> Done Editing
+          </Button>
+        </div>
       )}
     </div>
   );

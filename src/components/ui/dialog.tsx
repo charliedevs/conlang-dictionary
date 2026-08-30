@@ -46,7 +46,7 @@ const DialogContent = React.forwardRef<
     >
       <ScrollArea
         className={cn(
-          "flex max-h-[90vh] w-full max-w-lg flex-col gap-4 px-1",
+          "flex max-h-[90dvh] w-full max-w-lg flex-col gap-4 px-1",
           className,
         )}
       >
