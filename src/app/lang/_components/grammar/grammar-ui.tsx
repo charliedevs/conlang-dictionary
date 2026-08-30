@@ -80,10 +80,11 @@ export function RowLink(props: {
       className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-accent/50 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
     >
       {props.hint ? (
-        <span className="flex min-w-0 flex-1 items-baseline gap-2">
+        <span className="flex min-w-0 flex-1 items-baseline gap-3 sm:gap-5">
           <span
+            title={typeof props.label === "string" ? props.label : undefined}
             className={cn(
-              "max-w-[60%] shrink-0 truncate text-sm font-medium",
+              "min-w-[5rem] max-w-[55%] shrink-0 truncate text-sm font-semibold sm:min-w-[8rem]",
               props.labelClassName,
             )}
           >
