@@ -386,3 +386,39 @@ export async function getCustomFieldKeysForConlang(
   return Array.from(keySet);
 }
 // #endregion
+
+// #region EXPORT
+/**
+ * Fetches everything needed to export a conlang (details + lexicon) as
+ * raw, unparsed data — section `properties` are returned exactly as
+ * stored (still markdown, not converted to HTML), so the caller can
+ * serialize a round-trippable export file. Enforces the same visibility
+ * rule as `getConlangById` (owner or public).
+ */
+export async function getConlangExportData(conlangId: number) {
+  const conlang = await getConlangById(conlangId);
+
+  const lexicalCategories = await getLexicalCategoriesForConlang(conlangId);
+
+  const wordsRaw = await db.query.words.findMany({
+    where: (model, { eq }) => eq(model.conlangId, conlangId),
+    orderBy: (model, { asc }) => [asc(model.text)],
+    with: {
+      tags: { with: { tag: true } },
+      lexicalSections: {
+        orderBy: (model, { asc }) => [asc(model.order)],
+      },
+    },
+  });
+
+  return {
+    conlang,
+    lexicalCategories,
+    words: wordsRaw.map((w) => ({
+      text: w.text,
+      tags: w.tags.map((t) => t.tag),
+      lexicalSections: w.lexicalSections,
+    })),
+  };
+}
+// #endregion
