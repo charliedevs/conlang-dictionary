@@ -55,6 +55,7 @@ export async function LexicalCategoryView(props: LexicalCategoryViewProps) {
     <div className="flex flex-col gap-4">
       <GrammarSectionHeader
         title={category.category}
+        titleClassName="capitalize"
         backHref={backHref}
         backLabel="Back to Lexical Categories"
         meta={

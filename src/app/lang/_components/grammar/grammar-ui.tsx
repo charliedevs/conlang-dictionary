@@ -15,9 +15,12 @@ export function GrammarSectionHeader(props: {
   backHref?: string;
   backLabel?: string;
   meta?: ReactNode;
+  /** Right-aligned control, e.g. an "Add" button. */
+  action?: ReactNode;
+  titleClassName?: string;
 }) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       {props.backHref && (
         <Button variant="ghost" size="icon" className="size-8 shrink-0" asChild>
           <Link href={props.backHref}>
@@ -28,16 +31,22 @@ export function GrammarSectionHeader(props: {
       )}
       <h2
         className={cn(
-          "text-lg font-semibold tracking-tight",
+          "truncate text-lg font-semibold tracking-tight",
           !props.backHref && "pl-1",
+          props.titleClassName,
         )}
       >
         {props.title}
       </h2>
-      {props.meta && (
-        <span className="ml-auto text-xs tabular-nums text-muted-foreground">
-          {props.meta}
-        </span>
+      {(props.meta ?? props.action) && (
+        <div className="ml-auto flex shrink-0 items-center gap-3">
+          {props.meta && (
+            <span className="text-xs tabular-nums text-muted-foreground">
+              {props.meta}
+            </span>
+          )}
+          {props.action}
+        </div>
       )}
     </div>
   );

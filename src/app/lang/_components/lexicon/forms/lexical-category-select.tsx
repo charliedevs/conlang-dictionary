@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useLexicalCategories } from "~/hooks/data/useLexicalCategories";
+import { LexicalCategorySuggestions } from "../../grammar/lexical-category-suggestions";
 
 export interface LexicalCategorySelectProps {
   conlangId: number;
@@ -121,6 +122,12 @@ export const LexicalCategorySelect = forwardRef<
             >
               Save
             </Button>
+            <LexicalCategorySuggestions
+              conlangId={props.conlangId}
+              existing={lexicalCategories.data?.map((c) => c.category) ?? []}
+              onAdded={() => void lexicalCategories.refetch()}
+              className="mt-2"
+            />
           </div>
         }
       />

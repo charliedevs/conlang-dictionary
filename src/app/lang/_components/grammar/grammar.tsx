@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { type Conlang } from "~/types/conlang";
 import { type LanguagePageSearchParams } from "../../[id]/page";
@@ -11,6 +12,7 @@ export function Grammar(props: {
   searchParams: LanguagePageSearchParams;
 }) {
   const selectedSection = props.searchParams.grammar;
+  const isOwner = props.conlang.ownerId === auth().userId;
 
   return (
     <div id="grammar" className="flex flex-col">
@@ -28,6 +30,7 @@ export function Grammar(props: {
               <LexicalCategories
                 conlang={props.conlang}
                 searchParams={props.searchParams}
+                isOwner={isOwner}
               />
             ) : (
               <GrammarDashboard
