@@ -1,10 +1,18 @@
 import { Github } from "~/components/icons/github";
 
+const FOUNDING_YEAR = 2024;
+
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+  const copyrightYears =
+    currentYear > FOUNDING_YEAR
+      ? `${FOUNDING_YEAR}–${currentYear}`
+      : `${FOUNDING_YEAR}`;
+
   return (
     <footer className="mt-auto flex w-full items-end justify-between px-3 pb-2 pt-4 text-center text-xs text-muted-foreground md:px-6 md:text-sm">
       <p className="text-left">
-        © 2024–2025{" "}
+        © {copyrightYears}{" "}
         <a
           href="https://charliedevs.com"
           target="_blank"
